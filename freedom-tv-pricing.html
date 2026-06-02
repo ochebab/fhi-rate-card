@@ -1,0 +1,3583 @@
+<!DOCTYPE html>
+<html lang="en-CA" ng-app="freedomTvApp">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Freedom TV Pricing Card — Pricing Plans Comparison</title>
+  <meta name="description" content="Compare Freedom TV Starter pricing plans with promotional offers.">
+  <!-- AngularJS 1.8.2 -->
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-sanitize.min.js"></script>
+  <style>
+    @font-face {
+      font-family: 'Ambra Sans';
+      src: url('fonts/Ambra-Sans-Text-Medium.otf') format('opentype');
+      font-weight: 500;
+      font-style: normal;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* Accessibility: Skip Link */
+    .skip-link {
+      position: absolute;
+      top: -40px;
+      left: 0;
+      background: #136BA3;
+      color: white;
+      padding: 8px 16px;
+      z-index: 1000;
+      text-decoration: none;
+      font-weight: 600;
+      border-radius: 0 0 8px 0;
+    }
+
+    .skip-link:focus {
+      top: 0;
+    }
+
+    /* Accessibility: Focus States */
+    *:focus {
+      outline: 2px solid #136BA3;
+      outline-offset: 2px;
+    }
+
+    *:focus:not(:focus-visible) {
+      outline: none;
+    }
+
+    *:focus-visible {
+      outline: 2px solid #136BA3;
+      outline-offset: 2px;
+    }
+
+    /* Reduce motion for users who prefer it */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    body {
+      font-family: 'Ambra Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f0f0f0;
+      min-height: 100vh;
+      padding: 40px 0;
+    }
+
+    .section {
+      margin-bottom: 60px;
+      max-width: 100%;
+    }
+
+    .section-title {
+      text-align: center;
+      font-size: 20px;
+      font-weight: 700;
+      color: #333;
+      margin-bottom: 8px;
+    }
+
+    .section-subtitle {
+      text-align: center;
+      font-size: 13px;
+      color: #888;
+      margin-bottom: 24px;
+    }
+
+    /* Filter Bar */
+    .filter-bar {
+      display: flex;
+      justify-content: center;
+      gap: 32px;
+      padding: 16px 40px;
+      background: #fff;
+      border-radius: 16px;
+      margin: 0 40px 24px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+      flex-wrap: wrap;
+    }
+
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .filter-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .filter-buttons {
+      display: flex;
+      gap: 6px;
+    }
+
+    .filter-btn {
+      padding: 8px 16px;
+      border: 2px solid #e5e5e5;
+      background: #fff;
+      border-radius: 50px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #666;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .filter-btn:hover {
+      border-color: #136BA3;
+      color: #136BA3;
+    }
+
+    .filter-btn.active {
+      background: #136BA3;
+      border-color: #136BA3;
+      color: white;
+    }
+
+    .cards-count {
+      font-size: 13px;
+      color: #888;
+      text-align: center;
+      margin-bottom: 8px;
+    }
+
+    .horizontal-scroll {
+      display: flex;
+      gap: 24px;
+      overflow-x: auto;
+      padding: 20px 40px 30px;
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .horizontal-scroll::-webkit-scrollbar {
+      height: 8px;
+    }
+
+    .horizontal-scroll::-webkit-scrollbar-track {
+      background: #e0e0e0;
+      border-radius: 4px;
+    }
+
+    .horizontal-scroll::-webkit-scrollbar-thumb {
+      background: #999;
+      border-radius: 4px;
+    }
+
+    .horizontal-scroll::-webkit-scrollbar-thumb:hover {
+      background: #666;
+    }
+
+    .card-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+      scroll-snap-align: start;
+      width: 411px;
+    }
+
+    .card-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #555;
+      background: #fff;
+      padding: 6px 16px;
+      border-radius: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      text-align: center;
+    }
+
+    .pricing-card {
+      background: #fff;
+      border-radius: 24px;
+      width: 411px;
+      overflow: hidden;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Header - Dark gradient */
+    .card-header {
+      background: linear-gradient(180deg, #0a1628 0%, #162a4a 100%);
+      color: white;
+      padding: 20px 20px 24px;
+    }
+
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+
+    .plan-badge {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+      padding: 8px 20px;
+      border-radius: 30px;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .plan-headline {
+      font-size: 40px;
+      font-weight: 800;
+      color: #EA5A0B;
+      margin-top: 8px;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      width: 100%;
+      text-align: left;
+    }
+
+    .header-top:has(.plan-headline) {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .image-header .plan-headline {
+      color: #fff;
+    }
+
+    /* Price block */
+    .price-block {
+      margin-top: 4px;
+    }
+
+    .original-price {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.6);
+      text-decoration: line-through;
+      margin-bottom: 4px;
+    }
+
+    .hero-price {
+      display: flex;
+      align-items: baseline;
+    }
+
+    .currency {
+      font-size: 22px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .amount {
+      font-size: 52px;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1;
+    }
+
+    .period {
+      font-size: 16px;
+      color: rgba(255, 255, 255, 0.8);
+      font-weight: 500;
+    }
+
+    .price-note {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.7);
+      margin-top: 4px;
+    }
+
+    .savings-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(234, 90, 11, 0.9);
+      color: white;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-top: 12px;
+    }
+
+    .savings-label svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    /* Price breakdown toggle */
+    .breakdown-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 14px 20px;
+      background: #f5f7fa;
+      border: none;
+      border-bottom: 1px solid #e5e5e5;
+      cursor: pointer;
+      font-size: 14px;
+      color: #333;
+      font-weight: 500;
+      transition: background 0.2s;
+    }
+
+    .breakdown-toggle:hover {
+      background: #eef1f5;
+    }
+
+    .breakdown-toggle .arrow {
+      transition: transform 0.3s ease;
+      width: 16px;
+      height: 16px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .breakdown-toggle .arrow::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      border-right: 2.5px solid #EA5A0B;
+      border-bottom: 2.5px solid #EA5A0B;
+      transform: rotate(45deg);
+      margin-top: -4px;
+    }
+
+    .breakdown-toggle.active .arrow {
+      transform: rotate(180deg);
+    }
+
+    /* Collapsible breakdown */
+    .price-breakdown-section {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease-out;
+      background: #f5f7fa;
+    }
+
+    .price-breakdown-section.open {
+      max-height: 300px;
+      border-bottom: 1px solid #e5e5e5;
+    }
+
+    .breakdown-content {
+      padding: 0 20px 16px;
+    }
+
+    .breakdown-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px 12px;
+      font-size: 13px;
+    }
+
+    .breakdown-grid.three-periods {
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+    }
+
+    .breakdown-header {
+      font-weight: 600;
+      color: #333;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #e5e5e5;
+      text-align: center;
+    }
+
+    .breakdown-header:first-child {
+      text-align: left;
+    }
+
+    .breakdown-label {
+      color: #666;
+      padding: 8px 0;
+    }
+
+    .breakdown-value {
+      text-align: center;
+      padding: 8px 0;
+      font-weight: 500;
+    }
+
+    .breakdown-value.discount {
+      color: #3EB4E0;
+      font-weight: 600;
+    }
+
+    .breakdown-value.future {
+      color: #999;
+    }
+
+    .breakdown-total {
+      font-weight: 700 !important;
+      color: #333 !important;
+      border-top: 2px solid #333;
+      padding-top: 10px !important;
+    }
+
+    /* FREE price highlight in table */
+    .breakdown-value.free-highlight {
+      background: #3EB4E0;
+      color: white !important;
+      font-size: 11px;
+      font-weight: 700 !important;
+      padding: 4px 12px;
+      border-radius: 50px;
+      box-shadow: 0 1px 4px rgba(62, 180, 224, 0.3);
+      animation: pulse-free 2s infinite;
+    }
+
+    @keyframes pulse-free {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.03); }
+    }
+
+    .breakdown-total.free-highlight {
+      background: #3EB4E0;
+      color: white !important;
+      font-size: 12px;
+      font-weight: 700 !important;
+      padding: 5px 14px;
+      border-radius: 50px;
+      border-top: none;
+      box-shadow: 0 2px 6px rgba(62, 180, 224, 0.4);
+    }
+
+    /* Discounted price highlight in table (second tier price) */
+    .breakdown-total.discounted-highlight {
+      background: #136BA3;
+      color: white !important;
+      font-size: 12px;
+      font-weight: 700 !important;
+      padding: 5px 14px;
+      border-radius: 50px;
+      border-top: none;
+      box-shadow: 0 2px 6px rgba(19, 107, 163, 0.4);
+    }
+
+    /* Timeline Styles */
+    .price-timeline {
+      padding: 16px 20px;
+    }
+
+    .timeline-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .timeline-title {
+      font-weight: 600;
+      color: #333;
+      font-size: 14px;
+    }
+
+    .timeline-savings {
+      font-size: 12px;
+      color: #3EB4E0;
+      font-weight: 600;
+    }
+
+    .timeline-container {
+      position: relative;
+    }
+
+    .timeline-bar {
+      position: absolute;
+      top: 50%;
+      left: 10%;
+      right: 10%;
+      height: 4px;
+      background: #e5e5e5;
+      border-radius: 2px;
+      transform: translateY(-50%);
+      z-index: 0;
+    }
+
+    .timeline-bar-progress {
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      background: linear-gradient(90deg, #3EB4E0, #136BA3);
+      border-radius: 2px;
+      width: 0;
+      transition: width 0.6s ease;
+    }
+
+    .timeline-track {
+      display: flex;
+      justify-content: space-between;
+      position: relative;
+      z-index: 1;
+    }
+
+    .timeline-segment {
+      text-align: center;
+      flex: 1;
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 8px;
+      transition: background 0.2s;
+    }
+
+    .timeline-segment:hover {
+      background: rgba(0,0,0,0.03);
+    }
+
+    .segment-badge {
+      display: inline-block;
+      font-size: 9px;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 2px 8px;
+      border-radius: 10px;
+      margin-bottom: 6px;
+    }
+
+    .segment-badge.now {
+      background: #3EB4E0;
+      color: white;
+    }
+
+    .segment-badge.future {
+      background: #0a1628;
+      color: white;
+    }
+
+    .segment-badge.discounted {
+      background: #136BA3;
+      color: white;
+    }
+
+    .segment-price {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .segment-price.free {
+      color: #3EB4E0;
+    }
+
+    .segment-price.discounted {
+      color: #136BA3;
+    }
+
+    .segment-price.regular {
+      color: #0a1628;
+    }
+
+    .segment-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      margin: 0 auto 8px;
+      border: 3px solid white;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+
+    .segment-dot.active {
+      background: #3EB4E0;
+    }
+
+    .segment-dot.discounted {
+      background: #136BA3;
+    }
+
+    .segment-dot.regular {
+      background: #0a1628;
+    }
+
+    .segment-label {
+      font-size: 12px;
+      color: #333;
+      font-weight: 600;
+    }
+
+    .segment-sublabel {
+      font-size: 10px;
+      color: #888;
+      margin-top: 2px;
+    }
+
+    .timeline-legend {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 16px;
+      padding-top: 12px;
+      border-top: 1px solid #e5e5e5;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: #666;
+    }
+
+    .legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    .legend-dot.free {
+      background: #3EB4E0;
+    }
+
+    .legend-dot.discounted {
+      background: #136BA3;
+    }
+
+    .legend-dot.regular {
+      background: #666;
+    }
+
+    /* Journey Style */
+    .price-journey {
+      padding: 16px 20px;
+    }
+
+    .journey-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .journey-title {
+      font-weight: 600;
+      color: #333;
+      font-size: 14px;
+    }
+
+    .journey-savings {
+      font-size: 12px;
+      color: #3EB4E0;
+      font-weight: 600;
+    }
+
+    .journey-steps {
+      display: flex;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .journey-step {
+      flex: 1;
+      background: #f5f5f5;
+      border-radius: 10px;
+      padding: 20px 8px 12px 8px;
+      text-align: center;
+      position: relative;
+      transition: all 0.3s;
+      min-width: 0;
+    }
+
+    .journey-step.active {
+      background: linear-gradient(145deg, #3EB4E0, #2a9fc7);
+      color: white;
+    }
+
+    .journey-step.discounted {
+      background: linear-gradient(145deg, #136BA3, #0f5a8a);
+      color: white;
+    }
+
+    .step-period {
+      display: block;
+      font-size: 10px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      opacity: 0.9;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .step-price {
+      display: block;
+      font-size: 18px;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    .step-price.free {
+      color: white;
+    }
+
+    .step-price.discounted {
+      color: white;
+    }
+
+    .step-price.regular {
+      color: #0a1628;
+    }
+
+    .step-tag {
+      position: absolute;
+      top: -6px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #0a1628;
+      color: white;
+      font-size: 7px;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 2px 8px;
+      border-radius: 10px;
+    }
+
+    /* Internet Speed Specs */
+    .internet-specs {
+      padding: 16px 20px;
+      background: #fafafa;
+      border-bottom: 1px solid #e5e5e5;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .internet-specs .speed-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      color: #333;
+    }
+
+    .internet-specs .speed-item .check-icon {
+      flex-shrink: 0;
+      width: 18px;
+      height: 18px;
+      background: #136BA3;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .internet-specs .speed-item .check-icon svg {
+      width: 10px;
+      height: 10px;
+      color: white;
+    }
+
+    /* Channels preview */
+    .channels-preview {
+      padding: 16px 20px;
+      background: #fafafa;
+      border-bottom: 1px solid #e5e5e5;
+    }
+
+    .channels-preview-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .channels-preview-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .channels-preview-link {
+      font-size: 12px;
+      color: #136BA3;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .channels-preview-link:hover {
+      text-decoration: underline;
+    }
+
+    .channels-preview-grid {
+      display: flex;
+      gap: 10px;
+      flex-wrap: nowrap;
+      justify-content: space-between;
+    }
+
+    .channel-preview-logo {
+      flex: 1;
+      height: 40px;
+      background: #fff;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+
+    .channel-preview-logo img {
+      max-width: 85%;
+      max-height: 85%;
+      object-fit: contain;
+    }
+
+    .channel-more {
+      flex: 1;
+      height: 40px;
+      background: #136BA3;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .channel-more:hover {
+      background: #ea5a0b;
+    }
+
+    /* Features list */
+    .card-content {
+      padding: 16px 20px 24px;
+    }
+
+    .features-list {
+      list-style: none;
+      margin-bottom: 16px;
+    }
+
+    .features-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 6px 0;
+      font-size: 13px;
+      color: #444;
+    }
+
+    .check-icon {
+      flex-shrink: 0;
+      width: 18px;
+      height: 18px;
+      background: #136BA3;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .check-icon.plus {
+      background: #3EB4E0;
+    }
+
+    .check-icon svg {
+      width: 10px;
+      height: 10px;
+      color: white;
+    }
+
+    /* CTA button - Pill shape, flat color with elevator hover */
+    .cta-button {
+      width: 100%;
+      padding: 18px;
+      background: #ea5a0b;
+      border: none;
+      border-radius: 50px;
+      color: white;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+      transition: color 0.3s ease;
+    }
+
+    .cta-button::before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 0;
+      background: #000;
+      z-index: -1;
+      transition: height 0.3s ease;
+    }
+
+    .cta-button:hover {
+      color: white;
+    }
+
+    .cta-button:hover::before {
+      height: 100%;
+    }
+
+    /* Legal note */
+    .legal-note {
+      text-align: center;
+      padding: 12px 20px;
+      font-size: 11px;
+      color: #888;
+      background: #f8f8f8;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════ */
+    /* URGENCY EFFECTS STYLES */
+    /* ═══════════════════════════════════════════════════════════════ */
+    
+    /* Urgency Badge - Corner Ribbon */
+    .urgency-ribbon {
+      position: absolute;
+      top: 12px;
+      right: -35px;
+      background: linear-gradient(135deg, #e53935, #c62828);
+      color: white;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 6px 40px;
+      transform: rotate(45deg);
+      box-shadow: 0 2px 8px rgba(229, 57, 53, 0.4);
+      z-index: 10;
+      letter-spacing: 0.5px;
+    }
+
+    /* Urgency Badge - Top Banner */
+    .urgency-banner {
+      background: linear-gradient(90deg, #e53935, #ff5722);
+      color: white;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 8px 16px;
+      text-align: center;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .urgency-banner .icon {
+      font-size: 14px;
+      animation: pulse 1.5s infinite;
+    }
+
+    /* Pulse Animation */
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.7; transform: scale(1.1); }
+    }
+
+    /* Countdown Timer */
+    .countdown-timer {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      padding: 12px;
+      background: #0a1628;
+    }
+
+    .countdown-unit {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-width: 45px;
+    }
+
+    .countdown-value {
+      font-size: 20px;
+      font-weight: 700;
+      color: #3EB4E0;
+      line-height: 1;
+    }
+
+    .countdown-label {
+      font-size: 8px;
+      color: #888;
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+
+    .countdown-separator {
+      font-size: 18px;
+      font-weight: 700;
+      color: #3EB4E0;
+      align-self: flex-start;
+      margin-top: 2px;
+    }
+
+    /* Glowing Border Effect */
+    .card.urgency-glow {
+      animation: glowPulse 2s infinite;
+    }
+
+    @keyframes glowPulse {
+      0%, 100% { box-shadow: 0 4px 20px rgba(229, 57, 53, 0.3); }
+      50% { box-shadow: 0 4px 30px rgba(229, 57, 53, 0.6), 0 0 20px rgba(229, 57, 53, 0.3); }
+    }
+
+    /* Flash Sale Badge */
+    .flash-badge {
+      position: absolute;
+      top: -10px;
+      left: 20px;
+      background: linear-gradient(135deg, #ffc107, #ff9800);
+      color: #0a1628;
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      padding: 6px 12px;
+      border-radius: 4px;
+      box-shadow: 0 2px 8px rgba(255, 152, 0, 0.4);
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .flash-badge .lightning {
+      font-size: 12px;
+    }
+
+    /* Stock Counter */
+    .stock-warning {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px 16px;
+      background: #fff3e0;
+      border-bottom: 1px solid #ffe0b2;
+      font-size: 12px;
+      font-weight: 600;
+      color: #e65100;
+    }
+
+    .stock-warning .dot {
+      width: 8px;
+      height: 8px;
+      background: #e65100;
+      border-radius: 50%;
+      animation: blink 1s infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    /* Progress Bar (Limited Spots) */
+    .spots-progress {
+      padding: 10px 20px;
+      background: #fafafa;
+      border-bottom: 1px solid #e5e5e5;
+    }
+
+    .spots-progress-label {
+      font-size: 11px;
+      color: #666;
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .spots-progress-bar {
+      height: 6px;
+      background: #e0e0e0;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .spots-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #e53935, #ff5722);
+      border-radius: 3px;
+      transition: width 0.5s ease;
+    }
+
+    /* Shake Animation for CTA */
+    .cta-button.shake {
+      animation: shake 0.5s ease-in-out infinite;
+      animation-delay: 3s;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-3px); }
+      40%, 80% { transform: translateX(3px); }
+    }
+
+    /* Breaking News Ticker */
+    .ticker-wrapper {
+      width: 100%;
+      overflow: hidden;
+      background: linear-gradient(90deg, #e53935, #ff5722);
+      padding: 8px 0;
+    }
+
+    .ticker-content {
+      display: flex;
+      width: max-content;
+      animation: ticker 8s linear infinite;
+    }
+
+    .ticker-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 40px;
+      color: white;
+      font-size: 13px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .ticker-item svg {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+    }
+
+    @keyframes ticker {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* Animated Keyline Border */
+    .keyline-wrapper {
+      position: relative;
+      padding: 2px;
+      border-radius: 20px;
+      background: linear-gradient(
+        90deg,
+        #ff6a00,
+        #ff9500,
+        #3EB4E0,
+        #136BA3,
+        #0a1628,
+        #136BA3,
+        #3EB4E0,
+        #ff9500,
+        #ff6a00
+      );
+      background-size: 400% 100%;
+      animation: keylineMove 3s linear infinite;
+      box-shadow: 
+        0 0 15px rgba(62, 180, 224, 0.5),
+        0 0 30px rgba(255, 106, 0, 0.3),
+        0 0 45px rgba(19, 107, 163, 0.2);
+    }
+
+    .keyline-wrapper::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      border-radius: 22px;
+      background: inherit;
+      background-size: inherit;
+      animation: inherit;
+      filter: blur(8px);
+      opacity: 0.7;
+      z-index: -1;
+    }
+
+    .keyline-wrapper .pricing-card {
+      border-radius: 18px;
+    }
+
+    @keyframes keylineMove {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 200% 50%; }
+      100% { background-position: 400% 50%; }
+    }
+
+    /* Image Header with Animated Gradient Overlay */
+    .card-header.image-header {
+      position: relative;
+      background: url('images/background_card.png') center center / cover no-repeat;
+      overflow: hidden;
+    }
+
+    .card-header.image-header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -50%;
+      right: -50%;
+      bottom: 0;
+      background: linear-gradient(
+        90deg,
+        rgba(20, 107, 163, 0.4),
+        rgba(234, 90, 11, 0.4),
+        rgba(20, 107, 163, 0.4),
+        rgba(234, 90, 11, 0.4),
+        rgba(20, 107, 163, 0.4)
+      );
+      background-size: 200% 100%;
+      animation: waveOverlay 4s ease-in-out infinite;
+    }
+
+    @keyframes waveOverlay {
+      0% { 
+        transform: translateX(0) skewX(-5deg);
+      }
+      50% { 
+        transform: translateX(25%) skewX(5deg);
+      }
+      100% { 
+        transform: translateX(0) skewX(-5deg);
+      }
+    }
+
+    .card-header.image-header .header-top,
+    .card-header.image-header .price-block {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* EFFECT 4: Full Gradient Body */
+    .pricing-card.full-gradient {
+      background: #fff;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Gradient wrapper for bottom sections */
+    .pricing-card.full-gradient .gradient-body {
+      background: linear-gradient(45deg, #0a1628 0%, #162a4a 100%);
+    }
+
+    .pricing-card.full-gradient .internet-specs {
+      background: transparent;
+      border-top: none;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .pricing-card.full-gradient .internet-specs .speed-item {
+      color: #fff;
+    }
+
+    .pricing-card.full-gradient .internet-specs .check-icon {
+      background: #3EB4E0;
+    }
+
+    .pricing-card.full-gradient .card-content {
+      background: transparent;
+    }
+
+    .pricing-card.full-gradient .features-list li {
+      color: #fff;
+    }
+
+    .pricing-card.full-gradient .features-list .check-icon {
+      background: #3EB4E0;
+    }
+
+    .pricing-card.full-gradient .legal-note {
+      color: rgba(255, 255, 255, 0.7);
+      background: transparent;
+    }
+
+    /* Modal styles */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s;
+    }
+
+    .modal-overlay.open {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal {
+      background: white;
+      border-radius: 20px;
+      width: 90%;
+      max-width: 600px;
+      max-height: 80vh;
+      overflow: hidden;
+      transform: scale(0.9);
+      transition: transform 0.3s;
+    }
+
+    .modal-overlay.open .modal {
+      transform: scale(1);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 24px;
+      border-bottom: 1px solid #e5e5e5;
+      background: linear-gradient(180deg, #0a1628 0%, #162a4a 100%);
+      color: white;
+    }
+
+    .modal-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin: 0;
+    }
+
+    .modal-subtitle {
+      font-size: 13px;
+      opacity: 0.7;
+      margin: 0;
+    }
+
+    .modal-close {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(255,255,255,0.2);
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+    }
+
+    .modal-close:hover {
+      background: rgba(255,255,255,0.3);
+    }
+
+    .modal-body {
+      padding: 20px 24px;
+      overflow-y: auto;
+      max-height: calc(80vh - 140px);
+    }
+
+    .channels-section {
+      margin-bottom: 16px;
+      border: 1px solid #e5e5e5;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .channels-section-toggle {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      padding: 14px 16px;
+      background: #f5f7fa;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      color: #333;
+      transition: background 0.2s;
+    }
+
+    .channels-section-toggle:hover {
+      background: #eef1f5;
+    }
+
+    .channels-section-arrow {
+      transition: transform 0.3s;
+      font-size: 12px;
+      color: #666;
+    }
+
+    .channels-section.open .channels-section-arrow {
+      transform: rotate(180deg);
+    }
+
+    .channels-section-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease-out;
+    }
+
+    .channels-section.open .channels-section-content {
+      max-height: 500px;
+    }
+
+    .channels-grid-wrapper {
+      padding: 16px;
+    }
+
+    .channels-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 12px;
+    }
+
+    .channel-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding: 12px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .channel-item:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .channel-logo {
+      width: 60px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .channel-logo img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    .channel-name {
+      font-size: 11px;
+      color: #666;
+      text-align: center;
+    }
+
+    .modal-footer {
+      padding: 16px 24px;
+      background: #f5f7fa;
+      text-align: center;
+      font-size: 11px;
+      color: #888;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════ */
+    /* RESPONSIVE / MOBILE STYLES */
+    /* ═══════════════════════════════════════════════════════════════ */
+    
+    @media (max-width: 768px) {
+      /* Page container */
+      .pricing-container {
+        padding: 20px 12px;
+      }
+
+      /* Section titles */
+      .section-title {
+        font-size: 24px;
+      }
+
+      .section-subtitle {
+        font-size: 14px;
+      }
+
+      /* Filter buttons - mobile friendly */
+      .filters-container {
+        padding: 0 12px;
+        margin-bottom: 20px;
+      }
+
+      .filter-row {
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .filter-group {
+        flex-wrap: nowrap;
+        gap: 8px;
+        overflow-x: auto;
+        padding-bottom: 8px;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+      }
+
+      .filter-group::-webkit-scrollbar {
+        display: none;
+      }
+
+      .filter-group label {
+        font-size: 12px;
+        white-space: nowrap;
+        min-width: fit-content;
+      }
+
+      .filter-btn {
+        padding: 12px 18px;
+        font-size: 14px;
+        min-height: 44px;
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+
+      /* Cards - 90% of viewport width */
+      .card-wrapper {
+        width: 90vw;
+        max-width: 420px;
+      }
+
+      .pricing-card {
+        width: 90vw;
+        max-width: 420px;
+      }
+
+      .card-label {
+        font-size: 11px;
+        padding: 5px 12px;
+      }
+
+      /* Card header */
+      .card-header {
+        padding: 24px 20px;
+      }
+
+      .plan-badge {
+        font-size: 12px;
+        padding: 6px 14px;
+      }
+
+      .plan-headline {
+        font-size: 32px;
+      }
+
+      /* Price block */
+      .original-price {
+        font-size: 12px;
+      }
+
+      .amount {
+        font-size: 42px;
+      }
+
+      .currency {
+        font-size: 22px;
+      }
+
+      .period {
+        font-size: 16px;
+      }
+
+      .price-note {
+        font-size: 12px;
+      }
+
+      .savings-label {
+        font-size: 12px;
+        padding: 6px 12px;
+      }
+
+      /* Breakdown toggle */
+      .breakdown-toggle {
+        padding: 12px 16px;
+        font-size: 13px;
+      }
+
+      /* Breakdown grid */
+      .breakdown-grid {
+        font-size: 12px;
+        gap: 6px 8px;
+      }
+
+      .breakdown-header,
+      .breakdown-label,
+      .breakdown-value {
+        font-size: 11px;
+      }
+
+      /* Internet specs */
+      .internet-specs {
+        padding: 16px;
+        gap: 10px;
+      }
+
+      .speed-item {
+        font-size: 13px;
+      }
+
+      /* Features */
+      .card-content {
+        padding: 20px 16px;
+      }
+
+      .features-list li {
+        font-size: 13px;
+      }
+
+      /* CTA button */
+      .cta-button {
+        padding: 18px 24px;
+        font-size: 15px;
+      }
+
+      /* Legal note */
+      .legal-note {
+        font-size: 10px;
+        padding: 12px 16px;
+      }
+
+      /* Timeline */
+      .timeline-container {
+        padding: 16px 12px;
+      }
+
+      .timeline-segment .price {
+        font-size: 18px;
+      }
+
+      /* Journey */
+      .journey-steps {
+        padding: 12px;
+        gap: 8px;
+      }
+
+      .step-price {
+        font-size: 20px;
+      }
+
+      /* Channels preview */
+      .channels-preview {
+        padding: 16px;
+      }
+
+      .channel-icon {
+        width: 36px;
+        height: 36px;
+      }
+
+      /* Modal */
+      .modal-content {
+        width: 95%;
+        max-height: 90vh;
+        margin: 20px;
+      }
+
+      .modal-header h2 {
+        font-size: 20px;
+      }
+
+      /* Ticker */
+      .ticker-wrapper {
+        padding: 8px 0;
+      }
+
+      .ticker-item {
+        font-size: 12px;
+        padding: 0 16px;
+      }
+
+      /* Keyline wrapper - fix overflow on mobile */
+      .keyline-wrapper {
+        padding: 2px;
+        width: calc(90vw - 20px);
+        max-width: 400px;
+        box-shadow: none;
+        margin: 0 auto;
+      }
+
+      .keyline-wrapper::before {
+        display: none;
+      }
+
+      .keyline-wrapper .pricing-card {
+        width: 100%;
+        border-radius: 18px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      /* Extra small screens - 92% of viewport */
+      .card-wrapper,
+      .pricing-card {
+        width: 92vw;
+        max-width: 380px;
+      }
+
+      .plan-headline {
+        font-size: 28px;
+      }
+
+      .amount {
+        font-size: 36px;
+      }
+
+      .currency {
+        font-size: 18px;
+      }
+
+      .breakdown-grid {
+        font-size: 10px;
+      }
+
+      .filter-btn {
+        padding: 10px 16px;
+        font-size: 13px;
+        min-height: 44px;
+      }
+
+      .cta-button {
+        padding: 16px 20px;
+        font-size: 14px;
+      }
+    }
+
+  </style>
+</head>
+<body ng-controller="PricingController as vm">
+  <!-- Skip Link for Keyboard Navigation -->
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  
+  <main id="main-content" role="main">
+  <!-- ═══════════════════════════════════════════════════════════════════════════ -->
+  <!-- Classic Wireless Ratecard Template -->
+  <!-- ═══════════════════════════════════════════════════════════════════════════ -->
+  <section class="section" id="section-classic" aria-labelledby="section1-title">
+    <h2 class="section-title" id="section1-title">{{vm.sectionTitle}}</h2>
+    <p class="section-subtitle">{{vm.sectionSubtitle}}</p>
+    
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+      <div class="filter-group">
+        <span class="filter-label">Pack</span>
+        <div class="filter-buttons">
+          <button class="filter-btn" 
+                  ng-class="{'active': vm.filters.pack === 'all'}"
+                  ng-click="vm.setFilter('pack', 'all')">All</button>
+          <button class="filter-btn" 
+                  ng-class="{'active': vm.filters.pack === 'starter'}"
+                  ng-click="vm.setFilter('pack', 'starter')">Starter</button>
+          <button class="filter-btn" 
+                  ng-class="{'active': vm.filters.pack === 'sport'}"
+                  ng-click="vm.setFilter('pack', 'sport')">Sport</button>
+          <button class="filter-btn" 
+                  ng-class="{'active': vm.filters.pack === 'movie'}"
+                  ng-click="vm.setFilter('pack', 'movie')">Movie</button>
+        </div>
+      </div>
+      <div class="filter-group">
+        <span class="filter-label">Duration</span>
+        <div class="filter-buttons">
+          <button class="filter-btn" 
+                  ng-class="{'active': vm.filters.duration === 'all'}"
+                  ng-click="vm.setFilter('duration', 'all')">All</button>
+          <button class="filter-btn" 
+                  ng-class="{'active': vm.filters.duration === '12'}"
+                  ng-click="vm.setFilter('duration', '12')">12-Month</button>
+          <button class="filter-btn" 
+                  ng-class="{'active': vm.filters.duration === '3'}"
+                  ng-click="vm.setFilter('duration', '3')">3-Month</button>
+        </div>
+      </div>
+      <div class="filter-group">
+        <span class="filter-label">Price Journey</span>
+        <div class="filter-buttons">
+          <button class="filter-btn" 
+                  ng-class="{'active': vm.filters.type === 'all'}"
+                  ng-click="vm.setFilter('type', 'all')">All</button>
+          <button class="filter-btn" 
+                  ng-class="{'active': vm.filters.type === 'table'}"
+                  ng-click="vm.setFilter('type', 'table')">Table</button>
+          <button class="filter-btn" 
+                  ng-class="{'active': vm.filters.type === 'timeline'}"
+                  ng-click="vm.setFilter('type', 'timeline')">Timeline</button>
+          <button class="filter-btn" 
+                  ng-class="{'active': vm.filters.type === 'journey'}"
+                  ng-click="vm.setFilter('type', 'journey')">Journey</button>
+        </div>
+      </div>
+    </div>
+
+    <p class="cards-count">Showing {{vm.filteredCards().length}} of {{vm.cards.length}} cards</p>
+    
+    <div class="horizontal-scroll">
+      <!-- Cards generated with ng-repeat -->
+      <div class="card-wrapper" ng-repeat="card in vm.filteredCards() track by card.id">
+        <span class="card-label">{{card.label}}</span>
+        <div class="pricing-card">
+          <!-- Header -->
+          <div class="card-header">
+            <div class="header-top">
+              <span class="plan-badge">{{card.planName}}</span>
+            </div>
+            <div class="price-block">
+              <p class="original-price">Reg. Price: ${{card.regularPrice}}/mo.</p>
+              <div class="hero-price">
+                <span class="currency">$</span>
+                <span class="amount">{{card.heroPrice}}</span>
+                <span class="period">/mo.</span>
+              </div>
+              <p class="price-note">{{card.priceNote}}</p>
+              <div class="savings-label">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                </svg>
+                Save ${{card.savings}} in your first year
+              </div>
+            </div>
+          </div>
+
+          <!-- Price Breakdown Toggle -->
+          <button class="breakdown-toggle" 
+                  ng-class="{'active': card.isOpen}"
+                  ng-click="vm.toggleBreakdown(card)"
+                  aria-expanded="{{card.isOpen}}">
+            <span>{{card.toggleLabel}}</span>
+            <span class="arrow"></span>
+          </button>
+
+          <!-- TABLE Type -->
+          <div class="price-breakdown-section" ng-class="{'open': card.isOpen}" ng-if="card.type === 'table'">
+            <div class="breakdown-content">
+              <div class="breakdown-grid" ng-class="{'three-periods': card.periods.length > 2}">
+                <span class="breakdown-header"></span>
+                <span class="breakdown-header" ng-repeat="period in card.periods">{{period.label}}</span>
+                
+                <span class="breakdown-label">Regular price</span>
+                <span class="breakdown-value" ng-repeat="period in card.periods">${{card.regularPrice}}</span>
+                
+                <span class="breakdown-label">Loyalty discount</span>
+                <span class="breakdown-value" ng-repeat="period in card.periods" 
+                      ng-class="{'discount': period.loyaltyDiscount, 'future': !period.loyaltyDiscount}">
+                  {{period.loyaltyDiscount ? '-$' + period.loyaltyDiscount : '—'}}
+                </span>
+                
+                <span class="breakdown-label">Launch promo</span>
+                <span class="breakdown-value" ng-repeat="period in card.periods"
+                      ng-class="{'discount': period.launchPromo, 'future': !period.launchPromo}">
+                  {{period.launchPromo ? '-$' + period.launchPromo : '—'}}
+                </span>
+                
+                <span class="breakdown-label breakdown-total">You pay</span>
+                <span class="breakdown-value breakdown-total" 
+                      ng-repeat="period in card.periods"
+                      ng-class="{'free-highlight': period.youPay === 0, 'discounted-highlight': period.youPay > 0 && period.youPay < card.regularPrice}">
+                  <span ng-if="period.youPay === 0">FREE!</span>
+                  <span ng-if="period.youPay > 0 && period.youPay < card.regularPrice">${{period.youPay}}/mo</span>
+                  <span ng-if="period.youPay >= card.regularPrice">${{period.youPay}}</span>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- TIMELINE Type -->
+          <div class="price-breakdown-section" ng-class="{'open': card.isOpen}" ng-if="card.type === 'timeline'">
+            <div class="price-timeline">
+              <div class="timeline-header">
+                <span class="timeline-title">Your Price Journey</span>
+                <span class="timeline-savings">💰 Save ${{card.savings}}/year</span>
+              </div>
+              <div class="timeline-container">
+                <div class="timeline-bar">
+                  <div class="timeline-bar-progress" ng-style="{'width': card.progressWidth + '%'}"></div>
+                </div>
+                <div class="timeline-track">
+                  <div class="timeline-segment" 
+                       ng-repeat="segment in card.segments"
+                       ng-mouseenter="vm.setProgress(card, segment.progress)">
+                    <span class="segment-badge" ng-class="segment.badgeClass">{{segment.badgeLabel}}</span>
+                    <div class="segment-price" ng-class="segment.priceClass">${{segment.price}}</div>
+                    <div class="segment-dot" ng-class="segment.dotClass"></div>
+                    <div class="segment-label">{{segment.label}}</div>
+                    <div class="segment-sublabel">{{segment.sublabel}}</div>
+                  </div>
+                </div>
+              </div>
+              <div class="timeline-legend">
+                <div class="legend-item"><span class="legend-dot free"></span>Promo period</div>
+                <div class="legend-item" ng-if="card.hasDiscountedPeriod"><span class="legend-dot discounted"></span>Discounted</div>
+                <div class="legend-item"><span class="legend-dot regular"></span>Regular price</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- JOURNEY Type -->
+          <div class="price-breakdown-section" ng-class="{'open': card.isOpen}" ng-if="card.type === 'journey'">
+            <div class="price-journey">
+              <div class="journey-steps">
+                <div class="journey-step" 
+                     ng-repeat="step in card.steps"
+                     ng-class="step.stepClass">
+                  <span class="step-period">{{step.period}}</span>
+                  <span class="step-price" ng-class="step.priceClass">
+                    <span ng-if="step.price === 0">FREE</span>
+                    <span ng-if="step.price > 0">${{step.price}}/mo</span>
+                  </span>
+                  <span class="step-tag" ng-if="step.tag">{{step.tag}}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Channels Preview -->
+          <div class="channels-preview">
+            <div class="channels-preview-header">
+              <span class="channels-preview-title">Included Channels</span>
+              <a class="channels-preview-link" ng-click="vm.openModal(card.pack)">See all {{card.previewChannels.length + card.moreChannels}} ›</a>
+            </div>
+            <div class="channels-preview-grid">
+              <div class="channel-preview-logo" ng-repeat="channel in card.previewChannels">
+                <img ng-src="{{channel.logo}}" alt="{{channel.name}}">
+              </div>
+              <div class="channel-more" ng-click="vm.openModal(card.pack)">+{{card.moreChannels}}</div>
+            </div>
+          </div>
+
+          <!-- Features -->
+          <div class="card-content">
+            <ul class="features-list">
+              <li ng-repeat="feature in vm.getFeatures(card)">
+                <span class="check-icon" ng-class="{'plus': feature.isPlus}">
+                  <svg ng-if="!feature.isPlus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  <svg ng-if="feature.isPlus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                  </svg>
+                </span>
+                <span ng-bind-html="feature.text"></span>
+              </li>
+            </ul>
+            <button class="cta-button" ng-click="vm.choosePlan(card)">Choose This Plan</button>
+          </div>
+
+          <p class="legal-note">{{card.legalNote}}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- HOME INTERNET SECTION -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <section class="pricing-section" id="internet-plans" style="margin-top: 60px; padding-top: 40px; border-top: 1px solid #e5e5e5;">
+    <h2 class="section-title">{{vm.internetSectionTitle}}</h2>
+    <p class="section-subtitle">{{vm.internetSectionSubtitle}}</p>
+
+    <!-- Internet Filters -->
+    <div class="filter-bar">
+      <div class="filter-group">
+        <span class="filter-label">Plan</span>
+        <div class="filter-buttons">
+          <button class="filter-btn" 
+                  ng-class="{'active': vm.internetFilters.plan === 'all'}"
+                  ng-click="vm.setInternetFilter('plan', 'all')">All</button>
+          <button class="filter-btn" 
+                  ng-class="{'active': vm.internetFilters.plan === 'internet30'}"
+                  ng-click="vm.setInternetFilter('plan', 'internet30')">Internet 30</button>
+          <button class="filter-btn" 
+                  ng-class="{'active': vm.internetFilters.plan === 'internet1g'}"
+                  ng-click="vm.setInternetFilter('plan', 'internet1g')">Internet 1G</button>
+        </div>
+      </div>
+      <div class="filter-group">
+        <span class="filter-label">Price Journey</span>
+        <div class="filter-buttons">
+          <button class="filter-btn" 
+                  ng-class="{'active': vm.internetFilters.type === 'all'}"
+                  ng-click="vm.setInternetFilter('type', 'all')">All</button>
+          <button class="filter-btn" 
+                  ng-class="{'active': vm.internetFilters.type === 'table'}"
+                  ng-click="vm.setInternetFilter('type', 'table')">Table</button>
+          <button class="filter-btn" 
+                  ng-class="{'active': vm.internetFilters.type === 'timeline'}"
+                  ng-click="vm.setInternetFilter('type', 'timeline')">Timeline</button>
+          <button class="filter-btn" 
+                  ng-class="{'active': vm.internetFilters.type === 'journey'}"
+                  ng-click="vm.setInternetFilter('type', 'journey')">Journey</button>
+        </div>
+      </div>
+    </div>
+
+    <p class="cards-count">Showing {{vm.filteredInternetCards().length}} of {{vm.internetCards.length}} cards</p>
+    
+    <div class="horizontal-scroll">
+      <!-- Internet Cards -->
+      <div class="card-wrapper" ng-repeat="card in vm.filteredInternetCards() track by card.id">
+        <span class="card-label">{{card.label}}</span>
+        <div class="pricing-card">
+          <!-- Header -->
+          <div class="card-header">
+            <div class="header-top">
+              <span class="plan-badge">{{card.planName}}</span>
+              <div class="plan-headline">{{card.planName}}</div>
+            </div>
+            <div class="price-block">
+              <p class="original-price">Reg. Price: ${{card.regularPrice}}/mo.</p>
+              <div class="hero-price">
+                <span class="currency">$</span>
+                <span class="amount">{{card.heroPrice}}</span>
+                <span class="period">/mo.</span>
+              </div>
+              <p class="price-note">{{card.priceNote}}</p>
+              <div class="savings-label">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                </svg>
+                Save ${{card.savings}} in your first year
+              </div>
+            </div>
+          </div>
+
+          <!-- Price Breakdown Toggle -->
+          <button class="breakdown-toggle" 
+                  ng-class="{'active': card.isOpen}"
+                  ng-click="vm.toggleBreakdown(card)"
+                  aria-expanded="{{card.isOpen}}">
+            <span>{{card.toggleLabel}}</span>
+            <span class="arrow"></span>
+          </button>
+
+          <!-- TABLE Type -->
+          <div class="price-breakdown-section" ng-class="{'open': card.isOpen}" ng-if="card.type === 'table'">
+            <div class="breakdown-content">
+              <div class="breakdown-grid" ng-class="{'three-periods': card.periods.length > 2}">
+                <span class="breakdown-header"></span>
+                <span class="breakdown-header" ng-repeat="period in card.periods">{{period.label}}</span>
+                
+                <span class="breakdown-label">Regular price</span>
+                <span class="breakdown-value" ng-repeat="period in card.periods">${{card.regularPrice}}</span>
+                
+                <span class="breakdown-label">Loyalty credit</span>
+                <span class="breakdown-value" ng-repeat="period in card.periods" 
+                      ng-class="{'discount': period.loyaltyDiscount, 'future': !period.loyaltyDiscount}">
+                  {{period.loyaltyDiscount ? '-$' + period.loyaltyDiscount : '—'}}
+                </span>
+                
+                <span class="breakdown-label">Launch promo</span>
+                <span class="breakdown-value" ng-repeat="period in card.periods"
+                      ng-class="{'discount': period.launchPromo, 'future': !period.launchPromo}">
+                  {{period.launchPromo ? '-$' + period.launchPromo : '—'}}
+                </span>
+                
+                <span class="breakdown-label breakdown-total">You pay</span>
+                <span class="breakdown-value breakdown-total" 
+                      ng-repeat="period in card.periods"
+                      ng-class="{'free-highlight': period.youPay === 0, 'discounted-highlight': period.youPay > 0 && period.youPay < card.regularPrice}">
+                  <span ng-if="period.youPay === 0">FREE!</span>
+                  <span ng-if="period.youPay > 0 && period.youPay < card.regularPrice">${{period.youPay}}/mo</span>
+                  <span ng-if="period.youPay >= card.regularPrice">${{period.youPay}}</span>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- TIMELINE Type -->
+          <div class="price-breakdown-section" ng-class="{'open': card.isOpen}" ng-if="card.type === 'timeline'">
+            <div class="price-timeline">
+              <div class="timeline-header">
+                <span class="timeline-title">Your Price Journey</span>
+                <span class="timeline-savings">💰 Save ${{card.savings}}/year</span>
+              </div>
+              <div class="timeline-container">
+                <div class="timeline-bar">
+                  <div class="timeline-bar-progress" ng-style="{'width': card.progressWidth + '%'}"></div>
+                </div>
+                <div class="timeline-track">
+                  <div class="timeline-segment" 
+                       ng-repeat="segment in card.segments"
+                       ng-mouseenter="vm.setProgress(card, segment.progress)">
+                    <span class="segment-badge" ng-class="segment.badgeClass">{{segment.badgeLabel}}</span>
+                    <div class="segment-price" ng-class="segment.priceClass">${{segment.price}}</div>
+                    <div class="segment-dot" ng-class="segment.dotClass"></div>
+                    <div class="segment-label">{{segment.label}}</div>
+                    <div class="segment-sublabel">{{segment.sublabel}}</div>
+                  </div>
+                </div>
+              </div>
+              <div class="timeline-legend">
+                <div class="legend-item"><span class="legend-dot free"></span>Promo period</div>
+                <div class="legend-item" ng-if="card.hasDiscountedPeriod"><span class="legend-dot discounted"></span>Discounted</div>
+                <div class="legend-item"><span class="legend-dot regular"></span>Regular price</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- JOURNEY Type -->
+          <div class="price-breakdown-section" ng-class="{'open': card.isOpen}" ng-if="card.type === 'journey'">
+            <div class="price-journey">
+              <div class="journey-header">
+                <span class="journey-title">Your Price Journey</span>
+                <span class="journey-savings">💰 Save ${{card.savings}}/year</span>
+              </div>
+              <div class="journey-steps">
+                <div class="journey-step" 
+                     ng-repeat="step in card.steps"
+                     ng-class="step.stepClass">
+                  <span class="step-period">{{step.period}}</span>
+                  <span class="step-price" ng-class="step.priceClass">
+                    <span ng-if="step.price === 0">FREE</span>
+                    <span ng-if="step.price > 0">${{step.price}}/mo</span>
+                  </span>
+                  <span class="step-tag" ng-if="step.tag">{{step.tag}}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Internet Specs (instead of Channels) -->
+          <div class="internet-specs">
+            <div class="speed-item">
+              <span class="check-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 4v12m0 0l-4-4m4 4l4-4"></path>
+                  <path d="M4 20h16"></path>
+                </svg>
+              </span>
+              <span ng-if="card.downloadSpeed < 1000"><strong>{{card.downloadSpeed}} Mbps</strong> download speed</span>
+              <span ng-if="card.downloadSpeed >= 1000"><strong>{{card.downloadSpeed / 1000}} Gbps</strong> download speed</span>
+            </div>
+            <div class="speed-item">
+              <span class="check-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 20V8m0 0l4 4m-4-4l-4 4"></path>
+                  <path d="M4 4h16"></path>
+                </svg>
+              </span>
+              <span ng-if="card.uploadSpeed < 1000"><strong>{{card.uploadSpeed}} Mbps</strong> upload speed</span>
+              <span ng-if="card.uploadSpeed >= 1000"><strong>{{card.uploadSpeed / 1000}} Gbps</strong> upload speed</span>
+            </div>
+            <div class="speed-item">
+              <span class="check-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M18.178 8c5.096 0 5.096 8 0 8-5.095 0-7.133-8-12.267-8-5.096 0-5.096 8 0 8 5.134 0 7.172-8 12.267-8z"></path>
+                </svg>
+              </span>
+              <span><strong>Unlimited</strong> monthly usage</span>
+            </div>
+          </div>
+
+          <!-- Features -->
+          <div class="card-content">
+            <ul class="features-list">
+              <li ng-repeat="feature in card.features">
+                <span class="check-icon" ng-class="{'plus': feature.isPlus}">
+                  <svg ng-if="!feature.isPlus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  <svg ng-if="feature.isPlus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                  </svg>
+                </span>
+                <span ng-bind-html="feature.text"></span>
+              </li>
+            </ul>
+            <button class="cta-button" ng-click="vm.choosePlan(card)">Choose This Plan</button>
+          </div>
+
+          <p class="legal-note">{{card.legalNote}}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- URGENCY LAB SECTION -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <section class="pricing-section" id="urgency-lab" style="margin-top: 60px; padding-top: 40px; border-top: 1px solid #e5e5e5;">
+    <h2 class="section-title">⚡ Urgency Effects Lab</h2>
+    <p class="section-subtitle">Testing visual cues to communicate offer urgency and scarcity</p>
+
+    <div class="horizontal-scroll">
+      <!-- EFFECT 1: Breaking News Ticker -->
+      <div class="card-wrapper">
+        <span class="card-label">🔴 Breaking News Ticker</span>
+        <div class="pricing-card">
+          <!-- Header -->
+          <div class="card-header">
+            <div class="header-top">
+              <span class="plan-badge">Internet 1G</span>
+              <div class="plan-headline">Internet 1G</div>
+            </div>
+            <div class="price-block">
+              <p class="original-price">Reg. Price: $95/mo.</p>
+              <div class="hero-price">
+                <span class="currency">$</span>
+                <span class="amount">75</span>
+                <span class="period">/mo.</span>
+              </div>
+              <p class="price-note">for your first 12 months</p>
+            </div>
+          </div>
+          <!-- Breaking News Ticker -->
+          <div class="ticker-wrapper">
+            <div class="ticker-content">
+              <span class="ticker-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                </svg>
+                Save $240 in your first year
+              </span>
+              <span class="ticker-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                </svg>
+                Limited Time Offer
+              </span>
+              <span class="ticker-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                </svg>
+                Save $240 in your first year
+              </span>
+              <span class="ticker-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                </svg>
+                Limited Time Offer
+              </span>
+            </div>
+          </div>
+
+          <!-- Price Breakdown Toggle -->
+          <button class="breakdown-toggle" aria-expanded="false" onclick="this.classList.toggle('active'); this.nextElementSibling.classList.toggle('open'); this.setAttribute('aria-expanded', this.classList.contains('active'));">
+            <span>See price breakdown</span>
+            <span class="arrow"></span>
+          </button>
+
+          <!-- TABLE Type -->
+          <div class="price-breakdown-section">
+            <div class="breakdown-content">
+              <div class="breakdown-grid">
+                <span class="breakdown-header"></span>
+                <span class="breakdown-header">Mo. 1-12</span>
+                <span class="breakdown-header">Mo. 13+</span>
+                
+                <span class="breakdown-label">Regular price</span>
+                <span class="breakdown-value">$95</span>
+                <span class="breakdown-value">$95</span>
+                
+                <span class="breakdown-label">Loyalty credit</span>
+                <span class="breakdown-value discount">-$15</span>
+                <span class="breakdown-value future">—</span>
+                
+                <span class="breakdown-label">Launch promo</span>
+                <span class="breakdown-value discount">-$5</span>
+                <span class="breakdown-value future">—</span>
+                
+                <span class="breakdown-label breakdown-total">You pay</span>
+                <span class="breakdown-value breakdown-total discounted-highlight">$75/mo</span>
+                <span class="breakdown-value breakdown-total">$95</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Internet Specs -->
+          <div class="internet-specs">
+            <div class="speed-item">
+              <span class="check-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 4v12m0 0l-4-4m4 4l4-4"></path>
+                  <path d="M4 20h16"></path>
+                </svg>
+              </span>
+              <span><strong>1 Gbps</strong> download speed</span>
+            </div>
+            <div class="speed-item">
+              <span class="check-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 20V8m0 0l4 4m-4-4l-4 4"></path>
+                  <path d="M4 4h16"></path>
+                </svg>
+              </span>
+              <span><strong>50 Mbps</strong> upload speed</span>
+            </div>
+            <div class="speed-item">
+              <span class="check-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M18.178 8c5.096 0 5.096 8 0 8-5.095 0-7.133-8-12.267-8-5.096 0-5.096 8 0 8 5.134 0 7.172-8 12.267-8z"></path>
+                </svg>
+              </span>
+              <span><strong>Unlimited</strong> monthly usage</span>
+            </div>
+          </div>
+
+          <!-- Features -->
+          <div class="card-content">
+            <ul class="features-list">
+              <li>
+                <span class="check-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                </span>
+                <span><strong>Ideal for 20+ devices</strong> online at the same time</span>
+              </li>
+              <li>
+                <span class="check-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                </span>
+                <span><strong>Perfect for streaming</strong>, gaming & 4K video</span>
+              </li>
+              <li>
+                <span class="check-icon plus">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                  </svg>
+                </span>
+                <span><strong>No contracts</strong> — cancel anytime</span>
+              </li>
+            </ul>
+            <button class="cta-button">Choose This Plan</button>
+          </div>
+
+          <p class="legal-note">*Promotional pricing. $95/mo. starting month 13. Taxes extra.</p>
+        </div>
+      </div>
+
+      <!-- EFFECT 2: Glowing Keyline -->
+      <div class="card-wrapper">
+        <span class="card-label">✨ Glowing Keyline</span>
+        <div class="keyline-wrapper">
+        <div class="pricing-card">
+          <!-- Header -->
+          <div class="card-header">
+            <div class="header-top">
+              <span class="plan-badge">Internet 1G</span>
+              <div class="plan-headline">Internet 1G</div>
+            </div>
+            <div class="price-block">
+              <p class="original-price">Reg. Price: $95/mo.</p>
+              <div class="hero-price">
+                <span class="currency">$</span>
+                <span class="amount">75</span>
+                <span class="period">/mo.</span>
+              </div>
+              <p class="price-note">for your first 12 months</p>
+              <div class="savings-label">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                </svg>
+                Save $240 in your first year
+              </div>
+            </div>
+          </div>
+
+          <!-- Price Breakdown Toggle -->
+          <button class="breakdown-toggle" aria-expanded="false" onclick="this.classList.toggle('active'); this.nextElementSibling.classList.toggle('open'); this.setAttribute('aria-expanded', this.classList.contains('active'));">
+            <span>See price breakdown</span>
+            <span class="arrow"></span>
+          </button>
+
+          <!-- TABLE Type -->
+          <div class="price-breakdown-section">
+            <div class="breakdown-content">
+              <div class="breakdown-grid">
+                <span class="breakdown-header"></span>
+                <span class="breakdown-header">Mo. 1-12</span>
+                <span class="breakdown-header">Mo. 13+</span>
+                
+                <span class="breakdown-label">Regular price</span>
+                <span class="breakdown-value">$95</span>
+                <span class="breakdown-value">$95</span>
+                
+                <span class="breakdown-label">Loyalty credit</span>
+                <span class="breakdown-value discount">-$15</span>
+                <span class="breakdown-value future">—</span>
+                
+                <span class="breakdown-label">Launch promo</span>
+                <span class="breakdown-value discount">-$5</span>
+                <span class="breakdown-value future">—</span>
+                
+                <span class="breakdown-label breakdown-total">You pay</span>
+                <span class="breakdown-value breakdown-total discounted-highlight">$75/mo</span>
+                <span class="breakdown-value breakdown-total">$95</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Internet Specs -->
+          <div class="internet-specs">
+            <div class="speed-item">
+              <span class="check-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 4v12m0 0l-4-4m4 4l4-4"></path>
+                  <path d="M4 20h16"></path>
+                </svg>
+              </span>
+              <span><strong>1 Gbps</strong> download speed</span>
+            </div>
+            <div class="speed-item">
+              <span class="check-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 20V8m0 0l4 4m-4-4l-4 4"></path>
+                  <path d="M4 4h16"></path>
+                </svg>
+              </span>
+              <span><strong>50 Mbps</strong> upload speed</span>
+            </div>
+            <div class="speed-item">
+              <span class="check-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M18.178 8c5.096 0 5.096 8 0 8-5.095 0-7.133-8-12.267-8-5.096 0-5.096 8 0 8 5.134 0 7.172-8 12.267-8z"></path>
+                </svg>
+              </span>
+              <span><strong>Unlimited</strong> monthly usage</span>
+            </div>
+          </div>
+
+          <!-- Features -->
+          <div class="card-content">
+            <ul class="features-list">
+              <li>
+                <span class="check-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                </span>
+                <span><strong>Ideal for 20+ devices</strong> online at the same time</span>
+              </li>
+              <li>
+                <span class="check-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                </span>
+                <span><strong>Perfect for streaming</strong>, gaming & 4K video</span>
+              </li>
+              <li>
+                <span class="check-icon plus">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                  </svg>
+                </span>
+                <span><strong>No contracts</strong> — cancel anytime</span>
+              </li>
+            </ul>
+            <button class="cta-button">Choose This Plan</button>
+          </div>
+
+          <p class="legal-note">*Promotional pricing. $95/mo. starting month 13. Taxes extra.</p>
+        </div>
+        </div>
+      </div>
+
+      <!-- EFFECT 3: Image Header -->
+      <div class="card-wrapper">
+        <span class="card-label">🖼️ Cinematic Header</span>
+        <div class="pricing-card">
+          <!-- Header with Background Image -->
+          <div class="card-header image-header">
+            <div class="header-top">
+              <span class="plan-badge">Internet 1G</span>
+              <div class="plan-headline">Internet 1G</div>
+            </div>
+            <div class="price-block">
+              <p class="original-price">Reg. Price: $95/mo.</p>
+              <div class="hero-price">
+                <span class="currency">$</span>
+                <span class="amount">75</span>
+                <span class="period">/mo.</span>
+              </div>
+              <p class="price-note">for your first 12 months</p>
+              <div class="savings-label">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                </svg>
+                Save $240 in your first year
+              </div>
+            </div>
+          </div>
+
+          <!-- Price Breakdown Toggle -->
+          <button class="breakdown-toggle" aria-expanded="false" onclick="this.classList.toggle('active'); this.nextElementSibling.classList.toggle('open'); this.setAttribute('aria-expanded', this.classList.contains('active'));">
+            <span>See price breakdown</span>
+            <span class="arrow"></span>
+          </button>
+
+          <!-- TABLE Type -->
+          <div class="price-breakdown-section">
+            <div class="breakdown-content">
+              <div class="breakdown-grid">
+                <span class="breakdown-header"></span>
+                <span class="breakdown-header">Mo. 1-12</span>
+                <span class="breakdown-header">Mo. 13+</span>
+                
+                <span class="breakdown-label">Regular price</span>
+                <span class="breakdown-value">$95</span>
+                <span class="breakdown-value">$95</span>
+                
+                <span class="breakdown-label">Loyalty credit</span>
+                <span class="breakdown-value discount">-$15</span>
+                <span class="breakdown-value future">—</span>
+                
+                <span class="breakdown-label">Launch promo</span>
+                <span class="breakdown-value discount">-$5</span>
+                <span class="breakdown-value future">—</span>
+                
+                <span class="breakdown-label breakdown-total">You pay</span>
+                <span class="breakdown-value breakdown-total discounted-highlight">$75/mo</span>
+                <span class="breakdown-value breakdown-total">$95</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Internet Specs -->
+          <div class="internet-specs">
+            <div class="speed-item">
+              <span class="check-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 4v12m0 0l-4-4m4 4l4-4"></path>
+                  <path d="M4 20h16"></path>
+                </svg>
+              </span>
+              <span><strong>1 Gbps</strong> download speed</span>
+            </div>
+            <div class="speed-item">
+              <span class="check-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 20V8m0 0l4 4m-4-4l-4 4"></path>
+                  <path d="M4 4h16"></path>
+                </svg>
+              </span>
+              <span><strong>50 Mbps</strong> upload speed</span>
+            </div>
+            <div class="speed-item">
+              <span class="check-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M18.178 8c5.096 0 5.096 8 0 8-5.095 0-7.133-8-12.267-8-5.096 0-5.096 8 0 8 5.134 0 7.172-8 12.267-8z"></path>
+                </svg>
+              </span>
+              <span><strong>Unlimited</strong> monthly usage</span>
+            </div>
+          </div>
+
+          <!-- Features -->
+          <div class="card-content">
+            <ul class="features-list">
+              <li>
+                <span class="check-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                </span>
+                <span><strong>Ideal for 20+ devices</strong> online at the same time</span>
+              </li>
+              <li>
+                <span class="check-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                </span>
+                <span><strong>Perfect for streaming</strong>, gaming & 4K video</span>
+              </li>
+              <li>
+                <span class="check-icon plus">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                  </svg>
+                </span>
+                <span><strong>No contracts</strong> — cancel anytime</span>
+              </li>
+            </ul>
+            <button class="cta-button">Choose This Plan</button>
+          </div>
+
+          <p class="legal-note">*Promotional pricing. $95/mo. starting month 13. Taxes extra.</p>
+        </div>
+      </div>
+
+      <!-- EFFECT 4: Full Gradient Body -->
+      <div class="card-wrapper">
+        <span class="card-label">🎨 Full Gradient Body</span>
+        <div class="pricing-card full-gradient">
+          <!-- Header with Background Image -->
+          <div class="card-header image-header">
+            <div class="header-top">
+              <span class="plan-badge">Internet 1G</span>
+              <div class="plan-headline">Internet 1G</div>
+            </div>
+            <div class="price-block">
+              <p class="original-price">Reg. Price: $95/mo.</p>
+              <div class="hero-price">
+                <span class="currency">$</span>
+                <span class="amount">75</span>
+                <span class="period">/mo.</span>
+              </div>
+              <p class="price-note">for your first 12 months</p>
+              <div class="savings-label">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                </svg>
+                Save $240 in your first year
+              </div>
+            </div>
+          </div>
+
+          <!-- Price Breakdown Toggle -->
+          <button class="breakdown-toggle" aria-expanded="false" onclick="this.classList.toggle('active'); this.nextElementSibling.classList.toggle('open'); this.setAttribute('aria-expanded', this.classList.contains('active'));">
+            <span>See price breakdown</span>
+            <span class="arrow"></span>
+          </button>
+
+          <!-- TABLE Type -->
+          <div class="price-breakdown-section">
+            <div class="breakdown-content">
+              <div class="breakdown-grid">
+                <span class="breakdown-header"></span>
+                <span class="breakdown-header">Mo. 1-12</span>
+                <span class="breakdown-header">Mo. 13+</span>
+                
+                <span class="breakdown-label">Regular price</span>
+                <span class="breakdown-value">$95</span>
+                <span class="breakdown-value">$95</span>
+                
+                <span class="breakdown-label">Loyalty credit</span>
+                <span class="breakdown-value discount">-$15</span>
+                <span class="breakdown-value future">—</span>
+                
+                <span class="breakdown-label">Launch promo</span>
+                <span class="breakdown-value discount">-$5</span>
+                <span class="breakdown-value future">—</span>
+                
+                <span class="breakdown-label breakdown-total">You pay</span>
+                <span class="breakdown-value breakdown-total discounted-highlight">$75/mo</span>
+                <span class="breakdown-value breakdown-total">$95</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Gradient Body Wrapper -->
+          <div class="gradient-body">
+            <!-- Internet Specs -->
+            <div class="internet-specs">
+              <div class="speed-item">
+                <span class="check-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 4v12m0 0l-4-4m4 4l4-4"></path>
+                    <path d="M4 20h16"></path>
+                  </svg>
+                </span>
+                <span><strong>1 Gbps</strong> download speed</span>
+              </div>
+              <div class="speed-item">
+                <span class="check-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 20V8m0 0l4 4m-4-4l-4 4"></path>
+                    <path d="M4 4h16"></path>
+                  </svg>
+                </span>
+                <span><strong>50 Mbps</strong> upload speed</span>
+              </div>
+              <div class="speed-item">
+                <span class="check-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18.178 8c5.096 0 5.096 8 0 8-5.095 0-7.133-8-12.267-8-5.096 0-5.096 8 0 8 5.134 0 7.172-8 12.267-8z"></path>
+                  </svg>
+                </span>
+                <span><strong>Unlimited</strong> monthly usage</span>
+              </div>
+            </div>
+
+            <!-- Features -->
+            <div class="card-content">
+              <ul class="features-list">
+                <li>
+                  <span class="check-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                  </span>
+                  <span><strong>Ideal for 20+ devices</strong> online at the same time</span>
+                </li>
+                <li>
+                  <span class="check-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                  </span>
+                  <span><strong>Perfect for streaming</strong>, gaming & 4K video</span>
+                </li>
+                <li>
+                  <span class="check-icon plus">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                      <line x1="12" y1="5" x2="12" y2="19"></line>
+                      <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                  </span>
+                  <span><strong>No contracts</strong> — cancel anytime</span>
+                </li>
+              </ul>
+              <button class="cta-button">Choose This Plan</button>
+            </div>
+
+            <p class="legal-note">*Promotional pricing. $95/mo. starting month 13. Taxes extra.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  </main>
+
+  <!-- Channels Modal -->
+  <div class="modal-overlay" 
+       ng-class="{'open': vm.modalOpen}" 
+       ng-click="vm.closeModal($event)"
+       role="dialog" 
+       aria-modal="true" 
+       aria-labelledby="modal-title">
+    <div class="modal" ng-click="$event.stopPropagation()">
+      <div class="modal-header">
+        <div>
+          <h3 class="modal-title" id="modal-title">Included Channels</h3>
+          <p class="modal-subtitle" ng-switch="vm.currentModalPack">
+            <span ng-switch-when="starter">23 channels with Starter Pack</span>
+            <span ng-switch-when="sport">34 channels with Sport Pack</span>
+            <span ng-switch-when="movie">31 channels with Movies+ Pack</span>
+          </p>
+        </div>
+        <button class="modal-close" ng-click="vm.closeModal()" aria-label="Close channels modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="channels-section" 
+             ng-repeat="section in vm.channelSections"
+             ng-class="{'open': section.isOpen}">
+          <button class="channels-section-toggle" ng-click="vm.toggleSection(section)">
+            <span class="channels-section-title">{{section.title}} ({{section.channels.length}})</span>
+            <span class="channels-section-arrow">▼</span>
+          </button>
+          <div class="channels-section-content">
+            <div class="channels-grid-wrapper">
+              <div class="channels-grid">
+                <div class="channel-item" ng-repeat="channel in section.channels">
+                  <div class="channel-logo">
+                    <img ng-src="{{channel.logo}}" alt="{{channel.name}}">
+                  </div>
+                  <span class="channel-name">{{channel.name}}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        Additional channels may be available and vary by province/region.
+      </div>
+    </div>
+  </div>
+
+  <!-- AngularJS Application -->
+  <script>
+    angular.module('freedomTvApp', ['ngSanitize'])
+      .controller('PricingController', ['$scope', '$sce', function($scope, $sce) {
+        var vm = this;
+
+        // Section info
+        vm.sectionTitle = 'Freedom TV Pricing Cards';
+        vm.sectionSubtitle = 'Starter, Sport & Movie Packs — 12 pricing card variations (Table • Timeline • Journey)';
+        vm.totalChannels = 42;
+        vm.moreChannels = 37;
+
+        // Preview channels (5 icons + more button on single line)
+        vm.previewChannels = [
+          { name: 'CTV', logo: 'TV Logos/CTV.avif' },
+          { name: 'CBC', logo: 'TV Logos/CBC-TELE.webp' },
+          { name: 'Global', logo: 'TV Logos/GLOBAL.avif' },
+          { name: 'ABC', logo: 'TV Logos/ABC.webp' },
+          { name: 'NBC', logo: 'TV Logos/NBC.webp' }
+        ];
+
+        // Features by pack
+        vm.starterFeatures = [
+          { text: $sce.trustAsHtml('<strong>All major Canadian & U.S. networks</strong>'), isPlus: false },
+          { text: $sce.trustAsHtml('<strong>HD streaming</strong> on 1 device at a time'), isPlus: false },
+          { text: $sce.trustAsHtml('<strong>7-day replay</strong> — watch what you missed'), isPlus: false },
+          { text: $sce.trustAsHtml('<strong>Add theme packs</strong> or à la carte channels'), isPlus: true }
+        ];
+
+        vm.sportFeatures = [
+          { text: $sce.trustAsHtml('<strong>TSN & Sportsnet</strong> — all regional feeds'), isPlus: false },
+          { text: $sce.trustAsHtml('<strong>Live sports</strong> — NHL, NBA, MLB, NFL & more'), isPlus: false },
+          { text: $sce.trustAsHtml('<strong>Includes Starter Pack</strong> — 23 channels'), isPlus: false },
+          { text: $sce.trustAsHtml('<strong>34 channels total</strong> — best value for sports fans'), isPlus: true }
+        ];
+
+        vm.movieFeatures = [
+          { text: $sce.trustAsHtml('<strong>Hollywood blockbusters</strong> & latest original series'), isPlus: false },
+          { text: $sce.trustAsHtml('<strong>Crave, HBO & Starz</strong> — premium content'), isPlus: false },
+          { text: $sce.trustAsHtml('<strong>Includes Starter Pack</strong> — 23 channels'), isPlus: false },
+          { text: $sce.trustAsHtml('<strong>31 channels total</strong> — best value for movie lovers'), isPlus: true }
+        ];
+
+        // Get features for a card
+        vm.getFeatures = function(card) {
+          if (card.pack === 'sport') return vm.sportFeatures;
+          if (card.pack === 'movie') return vm.movieFeatures;
+          return vm.starterFeatures;
+        };
+
+        // Filters
+        vm.filters = {
+          pack: 'all',
+          duration: 'all',
+          type: 'all'
+        };
+
+        // Set filter
+        vm.setFilter = function(filterName, value) {
+          vm.filters[filterName] = value;
+        };
+
+        // Filter cards
+        vm.filteredCards = function() {
+          return vm.cards.filter(function(card) {
+            var matchPack = vm.filters.pack === 'all' || card.pack === vm.filters.pack;
+            var matchDuration = vm.filters.duration === 'all' || card.duration === vm.filters.duration;
+            var matchType = vm.filters.type === 'all' || card.type === vm.filters.type;
+            return matchPack && matchDuration && matchType;
+          });
+        };
+
+        // Cards data
+        vm.cards = [
+          // ═══════════════════════════════════════════════════════════════
+          // STARTER PACK
+          // ═══════════════════════════════════════════════════════════════
+          // Starter Card 1: 12-Month Table
+          {
+            id: 1,
+            pack: 'starter',
+            planName: 'Freedom TV Starter',
+            regularPrice: 19,
+            label: 'Starter • 12-Month • Table',
+            type: 'table',
+            duration: '12',
+            heroPrice: 0,
+            priceNote: 'for your first 12 months',
+            savings: 228,
+            toggleLabel: 'See price breakdown',
+            isOpen: false,
+            legalNote: '*Promotional pricing. $19/mo. starting month 13. Taxes extra.',
+            periods: [
+              { label: 'Mo. 1-12', loyaltyDiscount: 9, launchPromo: 10, youPay: 0 },
+              { label: 'Mo. 13+', loyaltyDiscount: null, launchPromo: null, youPay: 19 }
+            ],
+            previewChannels: [
+              { name: 'CTV', logo: 'TV Logos/CTV.avif' },
+              { name: 'CBC', logo: 'TV Logos/CBC-TELE.webp' },
+              { name: 'Global', logo: 'TV Logos/GLOBAL.avif' },
+              { name: 'ABC', logo: 'TV Logos/ABC.webp' },
+              { name: 'NBC', logo: 'TV Logos/NBC.webp' }
+            ],
+            moreChannels: 18
+          },
+          // Starter Card 2: 12-Month Timeline
+          {
+            id: 2,
+            pack: 'starter',
+            planName: 'Freedom TV Starter',
+            regularPrice: 19,
+            label: 'Starter • 12-Month • Timeline',
+            type: 'timeline',
+            duration: '12',
+            heroPrice: 0,
+            priceNote: 'for your first 12 months',
+            savings: 228,
+            toggleLabel: 'See price journey',
+            isOpen: false,
+            progressWidth: 0,
+            hasDiscountedPeriod: false,
+            legalNote: '*Promotional pricing. $19/mo. starting month 13. Taxes extra.',
+            segments: [
+              { badgeLabel: 'Now', badgeClass: 'now', price: 0, priceClass: 'free', dotClass: 'active', label: 'Months 1-12', sublabel: '12 months FREE', progress: 19 },
+              { badgeLabel: 'Later', badgeClass: 'future', price: 19, priceClass: 'regular', dotClass: 'regular', label: 'Month 13+', sublabel: 'Regular price', progress: 81 }
+            ],
+            previewChannels: [
+              { name: 'CTV', logo: 'TV Logos/CTV.avif' },
+              { name: 'CBC', logo: 'TV Logos/CBC-TELE.webp' },
+              { name: 'Global', logo: 'TV Logos/GLOBAL.avif' },
+              { name: 'ABC', logo: 'TV Logos/ABC.webp' },
+              { name: 'NBC', logo: 'TV Logos/NBC.webp' }
+            ],
+            moreChannels: 18
+          },
+          // Starter Card 3: 12-Month Journey
+          {
+            id: 3,
+            pack: 'starter',
+            planName: 'Freedom TV Starter',
+            regularPrice: 19,
+            label: 'Starter • 12-Month • Journey',
+            type: 'journey',
+            duration: '12',
+            heroPrice: 0,
+            priceNote: 'for your first 12 months',
+            savings: 228,
+            toggleLabel: 'See price journey',
+            isOpen: false,
+            legalNote: '*Promotional pricing. $19/mo. starting month 13. Taxes extra.',
+            steps: [
+              { period: 'Months 1-12', price: 0, priceClass: 'free', stepClass: 'active', tag: 'Now' },
+              { period: 'Month 13+', price: 19, priceClass: 'regular', stepClass: '', tag: null }
+            ],
+            previewChannels: [
+              { name: 'CTV', logo: 'TV Logos/CTV.avif' },
+              { name: 'CBC', logo: 'TV Logos/CBC-TELE.webp' },
+              { name: 'Global', logo: 'TV Logos/GLOBAL.avif' },
+              { name: 'ABC', logo: 'TV Logos/ABC.webp' },
+              { name: 'NBC', logo: 'TV Logos/NBC.webp' }
+            ],
+            moreChannels: 18
+          },
+          // Starter Card 4: 3-Month Table
+          {
+            id: 4,
+            pack: 'starter',
+            planName: 'Freedom TV Starter',
+            regularPrice: 19,
+            label: 'Starter • 3-Month • Table',
+            type: 'table',
+            duration: '3',
+            heroPrice: 0,
+            priceNote: 'for your first 3 months',
+            savings: 138,
+            toggleLabel: 'See price breakdown',
+            isOpen: false,
+            legalNote: '*Promotional pricing. $10/mo. months 4-12, then $19/mo. Taxes extra.',
+            periods: [
+              { label: 'Mo. 1-3', loyaltyDiscount: 9, launchPromo: 10, youPay: 0 },
+              { label: 'Mo. 4-12', loyaltyDiscount: 9, launchPromo: null, youPay: 10 },
+              { label: 'Mo. 13+', loyaltyDiscount: null, launchPromo: null, youPay: 19 }
+            ],
+            previewChannels: [
+              { name: 'CTV', logo: 'TV Logos/CTV.avif' },
+              { name: 'CBC', logo: 'TV Logos/CBC-TELE.webp' },
+              { name: 'Global', logo: 'TV Logos/GLOBAL.avif' },
+              { name: 'ABC', logo: 'TV Logos/ABC.webp' },
+              { name: 'NBC', logo: 'TV Logos/NBC.webp' }
+            ],
+            moreChannels: 18
+          },
+          // Starter Card 5: 3-Month Timeline
+          {
+            id: 5,
+            pack: 'starter',
+            planName: 'Freedom TV Starter',
+            regularPrice: 19,
+            label: 'Starter • 3-Month • Timeline',
+            type: 'timeline',
+            duration: '3',
+            heroPrice: 0,
+            priceNote: 'for your first 3 months',
+            savings: 138,
+            toggleLabel: 'See price journey',
+            isOpen: false,
+            progressWidth: 0,
+            hasDiscountedPeriod: true,
+            legalNote: '*Promotional pricing. $10/mo. months 4-12, then $19/mo. Taxes extra.',
+            segments: [
+              { badgeLabel: 'Now', badgeClass: 'now', price: 0, priceClass: 'free', dotClass: 'active', label: 'Months 1-3', sublabel: '3 months FREE', progress: 8 },
+              { badgeLabel: 'Then', badgeClass: 'discounted', price: 10, priceClass: 'discounted', dotClass: 'discounted', label: 'Months 4-12', sublabel: 'Discounted', progress: 50 },
+              { badgeLabel: 'Later', badgeClass: 'future', price: 19, priceClass: 'regular', dotClass: 'regular', label: 'Month 13+', sublabel: 'Regular price', progress: 92 }
+            ],
+            previewChannels: [
+              { name: 'CTV', logo: 'TV Logos/CTV.avif' },
+              { name: 'CBC', logo: 'TV Logos/CBC-TELE.webp' },
+              { name: 'Global', logo: 'TV Logos/GLOBAL.avif' },
+              { name: 'ABC', logo: 'TV Logos/ABC.webp' },
+              { name: 'NBC', logo: 'TV Logos/NBC.webp' }
+            ],
+            moreChannels: 18
+          },
+          // Starter Card 6: 3-Month Journey
+          {
+            id: 6,
+            pack: 'starter',
+            planName: 'Freedom TV Starter',
+            regularPrice: 19,
+            label: 'Starter • 3-Month • Journey',
+            type: 'journey',
+            duration: '3',
+            heroPrice: 0,
+            priceNote: 'for your first 3 months',
+            savings: 138,
+            toggleLabel: 'See price journey',
+            isOpen: false,
+            legalNote: '*Promotional pricing. $10/mo. months 4-12, then $19/mo. Taxes extra.',
+            steps: [
+              { period: 'Months 1-3', price: 0, priceClass: 'free', stepClass: 'active', tag: 'Now' },
+              { period: 'Months 4-12', price: 10, priceClass: 'discounted', stepClass: 'discounted', tag: null },
+              { period: 'Month 13+', price: 19, priceClass: 'regular', stepClass: '', tag: null }
+            ],
+            previewChannels: [
+              { name: 'CTV', logo: 'TV Logos/CTV.avif' },
+              { name: 'CBC', logo: 'TV Logos/CBC-TELE.webp' },
+              { name: 'Global', logo: 'TV Logos/GLOBAL.avif' },
+              { name: 'ABC', logo: 'TV Logos/ABC.webp' },
+              { name: 'NBC', logo: 'TV Logos/NBC.webp' }
+            ],
+            moreChannels: 18
+          },
+          // ═══════════════════════════════════════════════════════════════
+          // SPORT PACK
+          // ═══════════════════════════════════════════════════════════════
+          // Sport Card 7: 12-Month Table
+          {
+            id: 7,
+            pack: 'sport',
+            planName: 'Freedom TV Sport',
+            regularPrice: 39,
+            label: 'Sport • 12-Month • Table',
+            type: 'table',
+            duration: '12',
+            heroPrice: 19,
+            priceNote: 'Only $19/mo. for your first 12 months',
+            savings: 240,
+            toggleLabel: 'See price breakdown',
+            isOpen: false,
+            legalNote: '*Promotional pricing. $39/mo. starting month 13. Taxes extra.',
+            periods: [
+              { label: 'Mo. 1-12', loyaltyDiscount: 10, launchPromo: 10, youPay: 19 },
+              { label: 'Mo. 13+', loyaltyDiscount: null, launchPromo: null, youPay: 39 }
+            ],
+            previewChannels: [
+              { name: 'TSN', logo: 'TV Logos/TV packages _ Fibe TV _ Bell Canada_files/logo_TSN.png' },
+              { name: 'Sportsnet', logo: 'TV Logos/TV packages _ Fibe TV _ Bell Canada_files/logo_sportsnet.jpg' },
+              { name: 'Sportsnet ONE', logo: 'TV Logos/SPORTSNET_ONE.webp' },
+              { name: 'Sportsnet 360', logo: 'TV Logos/logo_Sportsnet-360.avif' },
+              { name: 'CTV', logo: 'TV Logos/CTV.avif' }
+            ],
+            moreChannels: 29
+          },
+          // Sport Card 8: 12-Month Timeline
+          {
+            id: 8,
+            pack: 'sport',
+            planName: 'Freedom TV Sport',
+            regularPrice: 39,
+            label: 'Sport • 12-Month • Timeline',
+            type: 'timeline',
+            duration: '12',
+            heroPrice: 19,
+            priceNote: 'Only $19/mo. for your first 12 months',
+            savings: 240,
+            toggleLabel: 'See price journey',
+            isOpen: false,
+            progressWidth: 0,
+            hasDiscountedPeriod: false,
+            legalNote: '*Promotional pricing. $39/mo. starting month 13. Taxes extra.',
+            segments: [
+              { badgeLabel: 'Now', badgeClass: 'now', price: 19, priceClass: 'discounted', dotClass: 'active', label: 'Months 1-12', sublabel: '$20 off/mo', progress: 19 },
+              { badgeLabel: 'Later', badgeClass: 'future', price: 39, priceClass: 'regular', dotClass: 'regular', label: 'Month 13+', sublabel: 'Regular price', progress: 81 }
+            ],
+            previewChannels: [
+              { name: 'TSN', logo: 'TV Logos/TV packages _ Fibe TV _ Bell Canada_files/logo_TSN.png' },
+              { name: 'Sportsnet', logo: 'TV Logos/TV packages _ Fibe TV _ Bell Canada_files/logo_sportsnet.jpg' },
+              { name: 'Sportsnet ONE', logo: 'TV Logos/SPORTSNET_ONE.webp' },
+              { name: 'Sportsnet 360', logo: 'TV Logos/logo_Sportsnet-360.avif' },
+              { name: 'CTV', logo: 'TV Logos/CTV.avif' }
+            ],
+            moreChannels: 29
+          },
+          // Sport Card 9: 12-Month Journey
+          {
+            id: 9,
+            pack: 'sport',
+            planName: 'Freedom TV Sport',
+            regularPrice: 39,
+            label: 'Sport • 12-Month • Journey',
+            type: 'journey',
+            duration: '12',
+            heroPrice: 19,
+            priceNote: 'Only $19/mo. for your first 12 months',
+            savings: 240,
+            toggleLabel: 'See price journey',
+            isOpen: false,
+            legalNote: '*Promotional pricing. $39/mo. starting month 13. Taxes extra.',
+            steps: [
+              { period: 'Months 1-12', price: 19, priceClass: 'discounted', stepClass: 'active', tag: 'Now' },
+              { period: 'Month 13+', price: 39, priceClass: 'regular', stepClass: '', tag: null }
+            ],
+            previewChannels: [
+              { name: 'TSN', logo: 'TV Logos/TV packages _ Fibe TV _ Bell Canada_files/logo_TSN.png' },
+              { name: 'Sportsnet', logo: 'TV Logos/TV packages _ Fibe TV _ Bell Canada_files/logo_sportsnet.jpg' },
+              { name: 'Sportsnet ONE', logo: 'TV Logos/SPORTSNET_ONE.webp' },
+              { name: 'Sportsnet 360', logo: 'TV Logos/logo_Sportsnet-360.avif' },
+              { name: 'CTV', logo: 'TV Logos/CTV.avif' }
+            ],
+            moreChannels: 29
+          },
+          // ═══════════════════════════════════════════════════════════════
+          // MOVIE PACK (3-Month only)
+          // ═══════════════════════════════════════════════════════════════
+          // Movie Card 10: 3-Month Table
+          {
+            id: 10,
+            pack: 'movie',
+            planName: 'Freedom TV Movies+',
+            regularPrice: 39,
+            label: 'Movie • 3-Month • Table',
+            type: 'table',
+            duration: '3',
+            heroPrice: 10,
+            priceNote: 'Only $10/mo. for your first 3 months',
+            savings: 168,
+            toggleLabel: 'See price breakdown',
+            isOpen: false,
+            legalNote: '*Promotional pricing. $30/mo. months 4-12, then $39/mo. Taxes extra.',
+            periods: [
+              { label: 'Mo. 1-3', loyaltyDiscount: 9, launchPromo: 20, youPay: 10 },
+              { label: 'Mo. 4-12', loyaltyDiscount: 9, launchPromo: null, youPay: 30 },
+              { label: 'Mo. 13+', loyaltyDiscount: null, launchPromo: null, youPay: 39 }
+            ],
+            previewChannels: [
+              { name: 'Crave', logo: 'TV Logos/crave.jpg' },
+              { name: 'HBO', logo: 'TV Logos/HBO.png' },
+              { name: 'STARZ', logo: 'TV Logos/starz 1.webp' },
+              { name: 'CTV', logo: 'TV Logos/CTV.avif' },
+              { name: 'CBC', logo: 'TV Logos/CBC-TELE.webp' }
+            ],
+            moreChannels: 26
+          },
+          // Movie Card 11: 3-Month Timeline
+          {
+            id: 11,
+            pack: 'movie',
+            planName: 'Freedom TV Movies+',
+            regularPrice: 39,
+            label: 'Movie • 3-Month • Timeline',
+            type: 'timeline',
+            duration: '3',
+            heroPrice: 10,
+            priceNote: 'Only $10/mo. for your first 3 months',
+            savings: 168,
+            toggleLabel: 'See price journey',
+            isOpen: false,
+            progressWidth: 0,
+            hasDiscountedPeriod: true,
+            legalNote: '*Promotional pricing. $30/mo. months 4-12, then $39/mo. Taxes extra.',
+            segments: [
+              { badgeLabel: 'Now', badgeClass: 'now', price: 10, priceClass: 'discounted', dotClass: 'active', label: 'Months 1-3', sublabel: '$29 off/mo', progress: 8 },
+              { badgeLabel: 'Then', badgeClass: 'discounted', price: 30, priceClass: 'discounted', dotClass: 'discounted', label: 'Months 4-12', sublabel: '$9 off/mo', progress: 50 },
+              { badgeLabel: 'Later', badgeClass: 'future', price: 39, priceClass: 'regular', dotClass: 'regular', label: 'Month 13+', sublabel: 'Regular price', progress: 92 }
+            ],
+            previewChannels: [
+              { name: 'Crave', logo: 'TV Logos/crave.jpg' },
+              { name: 'HBO', logo: 'TV Logos/HBO.png' },
+              { name: 'STARZ', logo: 'TV Logos/starz 1.webp' },
+              { name: 'CTV', logo: 'TV Logos/CTV.avif' },
+              { name: 'CBC', logo: 'TV Logos/CBC-TELE.webp' }
+            ],
+            moreChannels: 26
+          },
+          // Movie Card 12: 3-Month Journey
+          {
+            id: 12,
+            pack: 'movie',
+            planName: 'Freedom TV Movies+',
+            regularPrice: 39,
+            label: 'Movie • 3-Month • Journey',
+            type: 'journey',
+            duration: '3',
+            heroPrice: 10,
+            priceNote: 'Only $10/mo. for your first 3 months',
+            savings: 168,
+            toggleLabel: 'See price journey',
+            isOpen: false,
+            legalNote: '*Promotional pricing. $30/mo. months 4-12, then $39/mo. Taxes extra.',
+            steps: [
+              { period: 'Months 1-3', price: 10, priceClass: 'discounted', stepClass: 'active', tag: 'Now' },
+              { period: 'Months 4-12', price: 30, priceClass: 'discounted', stepClass: 'discounted', tag: null },
+              { period: 'Month 13+', price: 39, priceClass: 'regular', stepClass: '', tag: null }
+            ],
+            previewChannels: [
+              { name: 'Crave', logo: 'TV Logos/crave.jpg' },
+              { name: 'HBO', logo: 'TV Logos/HBO.png' },
+              { name: 'STARZ', logo: 'TV Logos/starz 1.webp' },
+              { name: 'CTV', logo: 'TV Logos/CTV.avif' },
+              { name: 'CBC', logo: 'TV Logos/CBC-TELE.webp' }
+            ],
+            moreChannels: 26
+          }
+        ];
+
+        // ═══════════════════════════════════════════════════════════════
+        // HOME INTERNET SECTION
+        // ═══════════════════════════════════════════════════════════════
+        vm.internetSectionTitle = 'Home Internet Plans';
+        vm.internetSectionSubtitle = 'Fast & reliable internet with promotional pricing';
+
+        // Internet cards
+        vm.internetCards = [
+          // Internet 30 - Table
+          {
+            id: 101,
+            planName: 'Internet 30',
+            label: 'Internet 30 • 3-Month • Table',
+            type: 'table',
+            regularPrice: 45,
+            heroPrice: 0,
+            priceNote: 'for your first 3 months',
+            savings: 189,
+            toggleLabel: 'See price breakdown',
+            isOpen: false,
+            legalNote: '*Promotional pricing. $39/mo. months 4-12, then $45/mo. Taxes extra.',
+            downloadSpeed: 30,
+            uploadSpeed: 5,
+            periods: [
+              { label: 'Mo. 1-3', loyaltyDiscount: 6, launchPromo: 39, youPay: 0 },
+              { label: 'Mo. 4-12', loyaltyDiscount: 6, launchPromo: null, youPay: 39 },
+              { label: 'Mo. 13+', loyaltyDiscount: null, launchPromo: null, youPay: 45 }
+            ],
+            features: [
+              { text: $sce.trustAsHtml('<strong>Ideal for up to 4 devices</strong> online at the same time'), isPlus: false },
+              { text: $sce.trustAsHtml('<strong>Perfect for browsing</strong>, email & social media'), isPlus: false },
+              { text: $sce.trustAsHtml('<strong>No contracts</strong> — cancel anytime'), isPlus: true }
+            ]
+          },
+          // Internet 30 - Timeline
+          {
+            id: 102,
+            planName: 'Internet 30',
+            label: 'Internet 30 • 3-Month • Timeline',
+            type: 'timeline',
+            regularPrice: 45,
+            heroPrice: 0,
+            priceNote: 'for your first 3 months',
+            savings: 189,
+            toggleLabel: 'See price journey',
+            isOpen: false,
+            progressWidth: 0,
+            hasDiscountedPeriod: true,
+            legalNote: '*Promotional pricing. $39/mo. months 4-12, then $45/mo. Taxes extra.',
+            downloadSpeed: 30,
+            uploadSpeed: 5,
+            segments: [
+              { badgeLabel: 'Now', badgeClass: 'now', price: 0, priceClass: 'free', dotClass: 'active', label: 'Months 1-3', sublabel: '3 months FREE', progress: 8 },
+              { badgeLabel: 'Then', badgeClass: 'discounted', price: 39, priceClass: 'discounted', dotClass: 'discounted', label: 'Months 4-12', sublabel: '$6 off/mo', progress: 50 },
+              { badgeLabel: 'Later', badgeClass: 'future', price: 45, priceClass: 'regular', dotClass: 'regular', label: 'Month 13+', sublabel: 'Regular price', progress: 92 }
+            ],
+            features: [
+              { text: $sce.trustAsHtml('<strong>Ideal for up to 4 devices</strong> online at the same time'), isPlus: false },
+              { text: $sce.trustAsHtml('<strong>Perfect for browsing</strong>, email & social media'), isPlus: false },
+              { text: $sce.trustAsHtml('<strong>No contracts</strong> — cancel anytime'), isPlus: true }
+            ]
+          },
+          // Internet 30 - Journey
+          {
+            id: 103,
+            planName: 'Internet 30',
+            label: 'Internet 30 • 3-Month • Journey',
+            type: 'journey',
+            regularPrice: 45,
+            heroPrice: 0,
+            priceNote: 'for your first 3 months',
+            savings: 189,
+            toggleLabel: 'See price journey',
+            isOpen: false,
+            legalNote: '*Promotional pricing. $39/mo. months 4-12, then $45/mo. Taxes extra.',
+            downloadSpeed: 30,
+            uploadSpeed: 5,
+            steps: [
+              { period: 'Months 1-3', price: 0, priceClass: 'free', stepClass: 'active', tag: 'Now' },
+              { period: 'Months 4-12', price: 39, priceClass: 'discounted', stepClass: 'discounted', tag: null },
+              { period: 'Month 13+', price: 45, priceClass: 'regular', stepClass: '', tag: null }
+            ],
+            features: [
+              { text: $sce.trustAsHtml('<strong>Ideal for up to 4 devices</strong> online at the same time'), isPlus: false },
+              { text: $sce.trustAsHtml('<strong>Perfect for browsing</strong>, email & social media'), isPlus: false },
+              { text: $sce.trustAsHtml('<strong>No contracts</strong> — cancel anytime'), isPlus: true }
+            ]
+          },
+          // ═══════════════════════════════════════════════════════════════
+          // INTERNET 1 GBPS
+          // ═══════════════════════════════════════════════════════════════
+          // Internet 1G - Table
+          {
+            id: 201,
+            planName: 'Internet 1G',
+            label: 'Internet 1G • 12-Month • Table',
+            type: 'table',
+            regularPrice: 95,
+            heroPrice: 75,
+            priceNote: 'for your first 12 months',
+            savings: 240,
+            toggleLabel: 'See price breakdown',
+            isOpen: false,
+            legalNote: '*Promotional pricing. $95/mo. starting month 13. Taxes extra.',
+            downloadSpeed: 1000,
+            uploadSpeed: 50,
+            periods: [
+              { label: 'Mo. 1-12', loyaltyDiscount: 15, launchPromo: 5, youPay: 75 },
+              { label: 'Mo. 13+', loyaltyDiscount: null, launchPromo: null, youPay: 95 }
+            ],
+            features: [
+              { text: $sce.trustAsHtml('<strong>Ideal for 20+ devices</strong> online at the same time'), isPlus: false },
+              { text: $sce.trustAsHtml('<strong>Perfect for streaming</strong>, gaming & 4K video'), isPlus: false },
+              { text: $sce.trustAsHtml('<strong>No contracts</strong> — cancel anytime'), isPlus: true }
+            ]
+          },
+          // Internet 1G - Timeline
+          {
+            id: 202,
+            planName: 'Internet 1G',
+            label: 'Internet 1G • 12-Month • Timeline',
+            type: 'timeline',
+            regularPrice: 95,
+            heroPrice: 75,
+            priceNote: 'for your first 12 months',
+            savings: 240,
+            toggleLabel: 'See price journey',
+            isOpen: false,
+            progressWidth: 0,
+            hasDiscountedPeriod: false,
+            legalNote: '*Promotional pricing. $95/mo. starting month 13. Taxes extra.',
+            downloadSpeed: 1000,
+            uploadSpeed: 50,
+            segments: [
+              { badgeLabel: 'Now', badgeClass: 'now', price: 75, priceClass: 'discounted', dotClass: 'active', label: 'Months 1-12', sublabel: '$20 off/mo', progress: 19 },
+              { badgeLabel: 'Later', badgeClass: 'future', price: 95, priceClass: 'regular', dotClass: 'regular', label: 'Month 13+', sublabel: 'Regular price', progress: 81 }
+            ],
+            features: [
+              { text: $sce.trustAsHtml('<strong>Ideal for 20+ devices</strong> online at the same time'), isPlus: false },
+              { text: $sce.trustAsHtml('<strong>Perfect for streaming</strong>, gaming & 4K video'), isPlus: false },
+              { text: $sce.trustAsHtml('<strong>No contracts</strong> — cancel anytime'), isPlus: true }
+            ]
+          },
+          // Internet 1G - Journey
+          {
+            id: 203,
+            planName: 'Internet 1G',
+            label: 'Internet 1G • 12-Month • Journey',
+            type: 'journey',
+            regularPrice: 95,
+            heroPrice: 75,
+            priceNote: 'for your first 12 months',
+            savings: 240,
+            toggleLabel: 'See price journey',
+            isOpen: false,
+            legalNote: '*Promotional pricing. $95/mo. starting month 13. Taxes extra.',
+            downloadSpeed: 1000,
+            uploadSpeed: 50,
+            steps: [
+              { period: 'Months 1-12', price: 75, priceClass: 'discounted', stepClass: 'active', tag: 'Now' },
+              { period: 'Month 13+', price: 95, priceClass: 'regular', stepClass: '', tag: null }
+            ],
+            features: [
+              { text: $sce.trustAsHtml('<strong>Ideal for 20+ devices</strong> online at the same time'), isPlus: false },
+              { text: $sce.trustAsHtml('<strong>Perfect for streaming</strong>, gaming & 4K video'), isPlus: false },
+              { text: $sce.trustAsHtml('<strong>No contracts</strong> — cancel anytime'), isPlus: true }
+            ]
+          }
+        ];
+
+        // Internet filters
+        vm.internetFilters = {
+          plan: 'all',
+          type: 'all'
+        };
+
+        // Set Internet filter
+        vm.setInternetFilter = function(filterName, value) {
+          vm.internetFilters[filterName] = value;
+        };
+
+        // Filter Internet cards
+        vm.filteredInternetCards = function() {
+          return vm.internetCards.filter(function(card) {
+            var matchPlan = vm.internetFilters.plan === 'all' || card.planName.toLowerCase().replace(' ', '') === vm.internetFilters.plan;
+            var matchType = vm.internetFilters.type === 'all' || card.type === vm.internetFilters.type;
+            return matchPlan && matchType;
+          });
+        };
+
+        // Base channel sections (Starter Pack - 23 channels)
+        vm.starterChannelSections = [
+          {
+            title: 'Canadian Networks',
+            isOpen: true,
+            channels: [
+              { name: 'CTV', logo: 'TV Logos/CTV.avif' },
+              { name: 'CBC', logo: 'TV Logos/CBC-TELE.webp' },
+              { name: 'Global', logo: 'TV Logos/GLOBAL.avif' },
+              { name: 'Citytv', logo: 'TV Logos/logo_Citytv.webp' },
+              { name: 'TVA', logo: 'TV Logos/TV packages _ Fibe TV _ Bell Canada_files/logo_TVA.png' },
+              { name: 'OMNI', logo: 'TV Logos/OMNI-1_local.avif' },
+              { name: 'CPAC', logo: 'TV Logos/logo_CPAC.webp' },
+              { name: 'APTN', logo: 'TV Logos/APTN.webp' }
+            ]
+          },
+          {
+            title: 'U.S. Networks',
+            isOpen: false,
+            channels: [
+              { name: 'ABC', logo: 'TV Logos/ABC.webp' },
+              { name: 'NBC', logo: 'TV Logos/NBC.webp' },
+              { name: 'CBS', logo: 'TV Logos/CBS.webp' },
+              { name: 'FOX', logo: 'TV Logos/FOX.webp' },
+              { name: 'PBS', logo: 'TV Logos/PBS.avif' }
+            ]
+          },
+          {
+            title: 'French Networks',
+            isOpen: false,
+            channels: [
+              { name: 'ICI Radio-Canada Télé', logo: 'TV Logos/ICI.webp' },
+              { name: 'ICI RDI', logo: 'TV Logos/logo_dot_ICI_RDI.webp' },
+              { name: 'TV5', logo: 'TV Logos/logo_TV5.avif' },
+              { name: 'TV5 Unis', logo: 'TV Logos/logo_TV5_Unis.avif' }
+            ]
+          },
+          {
+            title: 'Weather & Specialty',
+            isOpen: false,
+            channels: [
+              { name: 'The Weather Network', logo: 'TV Logos/logo_dot_The_Weather_Network.avif' },
+              { name: 'Météo Media', logo: 'TV Logos/MeteoMedia-dot.webp' },
+              { name: 'Uvagut TV', logo: 'TV Logos/logo_Uvagut.avif' }
+            ]
+          },
+          {
+            title: 'Accessibility Channels',
+            isOpen: false,
+            channels: [
+              { name: 'AMI-TV', logo: 'TV Logos/logo_AMI-tv.webp' },
+              { name: 'AMI-télé', logo: 'TV Logos/logo_AMI_tele.webp' },
+              { name: 'AMI-audio', logo: 'TV Logos/logo_AMI_audio_EN.webp' }
+            ]
+          }
+        ];
+
+        // Sports channels section
+        vm.sportsChannelSection = {
+          title: 'Sports Channels',
+          isOpen: false,
+          channels: [
+            { name: 'TSN 1', logo: 'TV Logos/TV packages _ Fibe TV _ Bell Canada_files/logo_TSN.png' },
+            { name: 'TSN 2', logo: 'TV Logos/TV packages _ Fibe TV _ Bell Canada_files/logo_TSN.png' },
+            { name: 'TSN 3', logo: 'TV Logos/TV packages _ Fibe TV _ Bell Canada_files/logo_TSN.png' },
+            { name: 'TSN 4', logo: 'TV Logos/TV packages _ Fibe TV _ Bell Canada_files/logo_TSN.png' },
+            { name: 'TSN 5', logo: 'TV Logos/TV packages _ Fibe TV _ Bell Canada_files/logo_TSN.png' },
+            { name: 'Sportsnet Ontario', logo: 'TV Logos/TV packages _ Fibe TV _ Bell Canada_files/logo_sportsnet.jpg' },
+            { name: 'Sportsnet East', logo: 'TV Logos/TV packages _ Fibe TV _ Bell Canada_files/logo_sportsnet.jpg' },
+            { name: 'Sportsnet West', logo: 'TV Logos/TV packages _ Fibe TV _ Bell Canada_files/logo_sportsnet.jpg' },
+            { name: 'Sportsnet Pacific', logo: 'TV Logos/TV packages _ Fibe TV _ Bell Canada_files/logo_sportsnet.jpg' },
+            { name: 'Sportsnet ONE', logo: 'TV Logos/SPORTSNET_ONE.webp' },
+            { name: 'Sportsnet 360', logo: 'TV Logos/logo_Sportsnet-360.avif' }
+          ]
+        };
+
+        // Movie channels section
+        vm.movieChannelSection = {
+          title: 'Movies+ Channels',
+          isOpen: false,
+          channels: [
+            { name: 'Crave 1', logo: 'TV Logos/crave.jpg' },
+            { name: 'Crave 2', logo: 'TV Logos/crave.jpg' },
+            { name: 'Crave 3', logo: 'TV Logos/crave.jpg' },
+            { name: 'Crave 4', logo: 'TV Logos/crave.jpg' },
+            { name: 'HBO 1', logo: 'TV Logos/HBO.png' },
+            { name: 'HBO 2', logo: 'TV Logos/HBO.png' },
+            { name: 'STARZ 1', logo: 'TV Logos/starz 1.webp' },
+            { name: 'STARZ 2', logo: 'TV Logos/starz 1.webp' }
+          ]
+        };
+
+        // Current modal pack
+        vm.currentModalPack = 'starter';
+
+        // Get channel sections based on pack
+        vm.getChannelSections = function(pack) {
+          var sections = JSON.parse(JSON.stringify(vm.starterChannelSections));
+          if (pack === 'sport') {
+            sections.push(JSON.parse(JSON.stringify(vm.sportsChannelSection)));
+          } else if (pack === 'movie') {
+            sections.push(JSON.parse(JSON.stringify(vm.movieChannelSection)));
+          }
+          return sections;
+        };
+
+        // Current channel sections for modal
+        vm.channelSections = vm.starterChannelSections;
+
+        // Modal state
+        vm.modalOpen = false;
+
+        // Toggle card breakdown
+        vm.toggleBreakdown = function(card) {
+          card.isOpen = !card.isOpen;
+          // Animate timeline progress when opened
+          if (card.isOpen && card.type === 'timeline') {
+            setTimeout(function() {
+              card.progressWidth = 50;
+              $scope.$apply();
+            }, 100);
+          }
+        };
+
+        // Set timeline progress
+        vm.setProgress = function(card, progress) {
+          card.progressWidth = progress;
+        };
+
+        // Toggle channel section
+        vm.toggleSection = function(section) {
+          section.isOpen = !section.isOpen;
+        };
+
+        // Open modal with pack-specific channels
+        vm.openModal = function(pack) {
+          vm.currentModalPack = pack || 'starter';
+          vm.channelSections = vm.getChannelSections(vm.currentModalPack);
+          vm.modalOpen = true;
+          document.body.style.overflow = 'hidden';
+        };
+
+        // Close modal
+        vm.closeModal = function(event) {
+          if (!event || event.target === event.currentTarget) {
+            vm.modalOpen = false;
+            document.body.style.overflow = '';
+          }
+        };
+
+        // Choose plan
+        vm.choosePlan = function(card) {
+          alert('You selected: ' + card.label);
+        };
+
+        // Keyboard handler for modal
+        document.addEventListener('keydown', function(e) {
+          if (e.key === 'Escape' && vm.modalOpen) {
+            vm.closeModal();
+            $scope.$apply();
+          }
+        });
+      }]);
+  </script>
+</body>
+</html>

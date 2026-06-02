@@ -1,0 +1,1865 @@
+<!DOCTYPE html>
+<html lang="en-CA" ng-app="fhiRateCard">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rate Card Builder — FHI</title>
+
+  <!--
+  ================================================================================
+   FHI INTERNET RATE CARD                                         Built on AngularJS 1.8.2
+  ================================================================================
+
+   FILE LAYOUT
+     §1  Dependencies        AngularJS 1.8.2 + ngSanitize 1.8.2 (CDN)
+     §2  Fonts               @font-face declarations (Ambra Sans Text)
+     §3  Styles              Organised in 4 sub-sections:
+                               §3.1  Reset & base
+                               §3.2  Preview-only UI  (NOT for production)
+                               §3.3  Rate Card        (production CSS)
+                               §3.4  Responsive       (≤ 480px overrides)
+     §4  Markup              Two regions:
+                               §4a  Configurator panel (preview-only)
+                               §4b  Rate Card         (production markup)
+     §5  AngularJS module + controller
+
+  ================================================================================
+   FOR FHI DEVELOPERS INTEGRATING THIS COMPONENT INTO PRODUCTION
+  ================================================================================
+   The configurator (§4a) is a development affordance. To ship the rate card,
+   copy ONLY the following pieces:
+
+     1. The two <script> tags in §1 (AngularJS + ngSanitize)
+     2. The @font-face block in §2
+     3. The CSS rules in §3.3 (Rate Card) + §3.4 (Responsive)
+     4. The "Rate Card" markup in §4b
+     5. The AngularJS module + controller in §5
+
+   Then replace the in-controller default model (`defaultPlan()`) with your CMS
+   payload — every field maps 1-to-1 to a CMS-editable property. See the developer
+   docs at /template/instruction.html for the full CMS field map.
+
+  ================================================================================
+   ARCHITECTURE NOTES
+  ================================================================================
+   • Two-way data binding (ng-model) means the configurator edits the SAME object
+     (`vm.plan`) that the rate card reads from. No manual update() functions —
+     Angular's digest cycle propagates every change automatically.
+
+   • The rate card itself uses ng-bind / ng-class / ng-style / ng-if / ng-repeat
+     exclusively. No imperative DOM manipulation.
+
+   • UI state (which configurator section is open, which accordion is expanded)
+     lives on `vm.ui`. This is intentionally separated from `vm.plan` so the
+     production payload stays clean.
+
+   • SVG icons that vary by feature (check / plus / star / shield / wifi) are
+     rendered through ng-bind-html + $sce.trustAsHtml. Static SVGs (price-tag,
+     speed-glyphs, info-circle) are inlined directly in the markup.
+  ================================================================================
+  -->
+
+  <!-- ============================================================
+       §1. DEPENDENCIES
+       ============================================================ -->
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-sanitize.min.js"></script>
+
+  <!-- ============================================================
+       §2. FONTS
+       ============================================================ -->
+  <style>
+    @font-face {
+      font-family: 'Ambra Sans Text';
+      src: url('fonts/Ambra-Sans-Text-Regular.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'Ambra Sans Text Book';
+      src: url('fonts/Ambra-Sans-Text-Book.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+    }
+  </style>
+
+  <!-- ============================================================
+       §3. STYLES
+       ============================================================ -->
+  <style>
+
+    /* ============================================================
+       §3.1  RESET & BASE
+       ============================================================ */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Ambra Sans Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f0f0f0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+
+    /* Utility: hide an element while keeping it in the DOM */
+    .hidden-el { display: none !important; }
+
+
+    /* ============================================================
+       §3.2  PREVIEW-ONLY UI       (NOT REQUIRED IN PRODUCTION)
+       ------------------------------------------------------------
+       Floating dev buttons, configurator side-panel, overlay.
+       Drop this entire block when shipping the rate card alone.
+       ============================================================ */
+
+    /* ── Floating gear button (opens the configurator) ── */
+    .gear-btn {
+      position: fixed; top: 20px; right: 20px;
+      width: 48px; height: 48px;
+      background: #0a1628;
+      border: none; border-radius: 50%;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+      z-index: 200;
+      transition: background 0.2s, transform 0.3s;
+    }
+    .gear-btn:hover { background: #136BA3; }
+    .gear-btn.open  { transform: rotate(60deg); }
+    .gear-btn svg   { width: 22px; height: 22px; fill: #fff; }
+
+    /* ── Docs button (link to developer instructions) ── */
+    .docs-btn {
+      position: fixed; top: 20px; right: 80px;
+      width: 48px; height: 48px;
+      background: #ed6b1f;
+      border: none; border-radius: 50%;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+      z-index: 200;
+      transition: background 0.2s, transform 0.2s;
+      text-decoration: none;
+    }
+    .docs-btn:hover { background: #c95610; transform: translateY(-1px); }
+    .docs-btn svg   { width: 22px; height: 22px; stroke: #fff; fill: none; stroke-width: 2; }
+
+    /* ── Stories button (link to user stories backlog) ── */
+    .stories-btn {
+      position: fixed; top: 20px; right: 140px;
+      width: 48px; height: 48px;
+      background: #136BA3;
+      border: none; border-radius: 50%;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+      z-index: 200;
+      transition: background 0.2s, transform 0.2s;
+      text-decoration: none;
+    }
+    .stories-btn:hover { background: #0d4d7a; transform: translateY(-1px); }
+    .stories-btn svg   { width: 22px; height: 22px; stroke: #fff; fill: none; stroke-width: 2; }
+
+    /* ── Configurator panel shell ── */
+    .config-panel {
+      position: fixed; top: 0; right: -420px;
+      width: 400px; height: 100vh;
+      background: #fff;
+      box-shadow: -4px 0 30px rgba(0,0,0,0.15);
+      z-index: 100;
+      overflow-y: auto;
+      transition: right 0.35s cubic-bezier(0.4,0,0.2,1);
+      display: flex; flex-direction: column;
+    }
+    .config-panel.open { right: 0; }
+
+    .config-header {
+      padding: 20px 24px 16px;
+      border-bottom: 1px solid #eee;
+      background: #0a1628;
+      color: #fff;
+      position: sticky; top: 0; z-index: 10;
+    }
+    .config-header h2 { font-size: 16px; font-weight: 700; }
+    .config-header p  { font-size: 12px; color: rgba(255,255,255,0.6); margin-top: 4px; }
+
+    .config-body { padding: 0 0 40px; flex: 1; }
+
+    /* ── Collapsible section inside the configurator ── */
+    .config-section { border-bottom: 1px solid #f0f0f0; overflow: hidden; }
+    .config-section-title {
+      width: 100%;
+      background: none; border: none;
+      padding: 14px 24px;
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: 12px; font-weight: 700; color: #888;
+      text-transform: uppercase; letter-spacing: 0.8px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .config-section-title:hover { background: #fafafa; }
+    .config-section-title .chevron {
+      width: 14px; height: 14px;
+      border-right: 2px solid #bbb;
+      border-bottom: 2px solid #bbb;
+      transform: rotate(45deg);
+      margin-top: -4px;
+      transition: transform 0.25s;
+    }
+    .config-section-title.collapsed .chevron { transform: rotate(-135deg); margin-top: 4px; }
+    .config-section-content        { padding: 4px 24px 20px; }
+    .config-section-content.hidden { display: none; }
+
+    /* ── Field primitives (used by the configurator forms) ── */
+    .field { margin-bottom: 14px; }
+    .field label {
+      display: block;
+      font-size: 11px; font-weight: 600; color: #555;
+      margin-bottom: 5px;
+      text-transform: uppercase; letter-spacing: 0.4px;
+    }
+    .field input[type="text"],
+    .field input[type="number"],
+    .field textarea {
+      width: 100%; padding: 8px 10px;
+      border: 1.5px solid #e0e0e0; border-radius: 8px;
+      font-size: 13px; font-family: inherit; color: #333;
+      transition: border 0.2s;
+    }
+    .field input:focus,
+    .field textarea:focus { outline: none; border-color: #136BA3; }
+    .field textarea       { resize: vertical; min-height: 60px; }
+
+    .field input[type="color"] {
+      width: 100%; height: 36px; padding: 2px;
+      border: 1.5px solid #e0e0e0; border-radius: 8px; cursor: pointer;
+    }
+    .field input[type="range"] { width: 100%; accent-color: #136BA3; }
+    .field .range-value        { font-size: 11px; color: #888; text-align: right; margin-top: 2px; }
+
+    .field-row        { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .field-row .field { margin-bottom: 0; }
+
+    .field select {
+      width: 100%; padding: 8px 10px;
+      border: 1.5px solid #e0e0e0; border-radius: 8px;
+      font-size: 13px; font-family: inherit; color: #333;
+      background: #fff;
+    }
+    .field select:focus { outline: none; border-color: #136BA3; }
+
+    /* ── Toggle switch (used in configurator only) ── */
+    .toggle-field {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .toggle-field label { font-size: 12px; font-weight: 600; color: #444; }
+    .toggle {
+      width: 38px; height: 22px;
+      background: #ddd; border-radius: 11px;
+      border: none; cursor: pointer;
+      position: relative;
+      transition: background 0.2s;
+    }
+    .toggle::after {
+      content: '';
+      position: absolute;
+      width: 16px; height: 16px;
+      background: #fff;
+      border-radius: 50%;
+      top: 3px; left: 3px;
+      transition: left 0.2s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+    .toggle.on        { background: #136BA3; }
+    .toggle.on::after { left: 19px; }
+
+    /* ── Feature/Step editor card (configurator) ── */
+    .add-feature-btn {
+      width: 100%; padding: 8px;
+      background: #f0f7ff;
+      border: 1.5px dashed #136BA3; border-radius: 8px;
+      color: #136BA3;
+      font-size: 13px; font-weight: 600;
+      cursor: pointer; margin-top: 4px;
+      transition: background 0.2s;
+    }
+    .add-feature-btn:hover { background: #ddeeff; }
+
+    .feature-row {
+      border: 1px solid #eee; border-radius: 8px;
+      padding: 10px; margin-bottom: 8px;
+      background: #fafafa;
+    }
+    .feature-row-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 8px;
+    }
+    .feature-row-label  { font-size: 11px; font-weight: 700; color: #888; text-transform: uppercase; }
+    .remove-feature-btn {
+      background: none; border: none;
+      color: #e55; cursor: pointer;
+      font-size: 20px; line-height: 1; padding: 0 2px;
+    }
+
+    /* ── Data I/O section (export / import / template) ── */
+    .data-io-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .data-io-btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      gap: 6px;
+      padding: 9px 10px;
+      font-family: inherit; font-size: 12.5px; font-weight: 600;
+      border-radius: 8px; border: 1.5px solid #e0e0e0;
+      background: #fff; color: #333;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+    }
+    .data-io-btn:hover { background: #f5f5f5; border-color: #ccc; }
+    .data-io-btn.primary {
+      background: #0a1628; color: #fff; border-color: #0a1628;
+    }
+    .data-io-btn.primary:hover { background: #ed6b1f; border-color: #ed6b1f; }
+    .data-io-btn.full { grid-column: 1 / -1; }
+    .data-io-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .data-io-status {
+      font-size: 12px; line-height: 1.4;
+      padding: 8px 10px;
+      border-radius: 6px;
+      margin-bottom: 10px;
+      border: 1px solid transparent;
+    }
+    .data-io-status.success { background: #ecf8f0; color: #1e6b3a; border-color: #c6e7d2; }
+    .data-io-status.error   { background: #fdecec; color: #a4302a; border-color: #f4c2c0; }
+    .data-io-status.info    { background: #eaf2fb; color: #1f4e8f; border-color: #c7dcf4; }
+
+    .data-io-textarea {
+      width: 100%;
+      min-height: 140px;
+      padding: 10px 12px;
+      font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+      font-size: 11.5px; line-height: 1.5;
+      color: #1a1a1a;
+      background: #fafbfc;
+      border: 1.5px solid #e0e0e0; border-radius: 8px;
+      resize: vertical;
+      box-sizing: border-box;
+    }
+    .data-io-textarea:focus { outline: none; border-color: #ed6b1f; }
+
+    .data-io-copy-row {
+      display: flex; gap: 8px; margin-top: 8px;
+    }
+    .data-io-copy-row .data-io-btn { flex: 1; }
+
+    .data-io-help {
+      font-size: 11.5px; color: #6a737d;
+      line-height: 1.5;
+      margin: 0 0 12px;
+    }
+
+    .data-io-file-input { display: none; }
+
+    /* ── Reset button (bottom of configurator) ── */
+    .reset-btn {
+      margin: 20px 24px 0;
+      width: calc(100% - 48px);
+      padding: 10px;
+      background: #f5f5f5;
+      border: 1.5px solid #e0e0e0; border-radius: 10px;
+      font-size: 13px; font-weight: 600; color: #555;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .reset-btn:hover { background: #eee; }
+
+    /* ── Backdrop behind the open configurator ── */
+    .overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.3);
+      z-index: 90;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.3s;
+    }
+    .overlay.visible { opacity: 1; pointer-events: all; }
+
+
+    /* ============================================================
+       §3.3  RATE CARD STYLES                  (PRODUCTION)
+       ============================================================ */
+
+    /* ── Card frame ────────────────────────────────────────── */
+    .card-stage {
+      display: flex; flex-direction: column;
+      align-items: center; gap: 12px;
+    }
+    .card-label-badge {
+      font-size: 12px; font-weight: 600; color: #555;
+      background: #fff;
+      padding: 6px 16px; border-radius: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .pricing-card {
+      background: #fff;
+      border: 1px solid #CECECE;
+      border-radius: 20px;
+      width: 411px;
+      overflow: hidden;
+    }
+
+    /* ── Header (navy gradient region) ─────────────────────── */
+    .card-header {
+      background: linear-gradient(180deg, #0a1628 0%, #162a4a 100%);
+      color: white;
+      padding: 20px;
+    }
+    .header-top {
+      display: flex; flex-direction: column;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+    .plan-badge {
+      display: inline-block;
+      background: #17599C;
+      color: #fff;
+      padding: 8px 20px; border-radius: 30px;
+      font-size: 14px; font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+    .plan-headline {
+      font-family: 'Ambra Sans Text', sans-serif;
+      font-size: 48px; font-weight: normal;
+      color: #ed6b1f;
+      margin-top: 8px;
+      width: 100%; text-align: left;
+      line-height: 1.1;
+    }
+
+    /* ── Price block (inside header) ───────────────────────── */
+    .price-block { margin-top: 4px; }
+    .original-price {
+      font-size: 14px;
+      color: rgba(255,255,255,0.6);
+      text-decoration: line-through;
+      margin-bottom: 4px;
+    }
+    .hero-price { display: flex; align-items: baseline; gap: 2px; }
+    .currency   { font-size: 32px; font-weight: normal; color: #fff;
+                  align-self: flex-start; line-height: 1; margin-top: -2px; }
+    .amount     { font-size: 64px; font-weight: 800;  color: #fff; line-height: 1; }
+    .period     { font-size: 16px; color: rgba(255,255,255,0.8); font-weight: 500; }
+    .price-note { font-size: 14px; color: rgba(255,255,255,0.7); margin-top: 4px; }
+
+    .savings-label {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(237,107,31,0.9);
+      color: white;
+      padding: 3px 6px; border-radius: 6px;
+      font-size: 14px; font-weight: 600;
+      margin-top: 12px;
+      line-height: 1;
+    }
+    .savings-label svg { width: 16px; height: 16px; }
+
+    /* ── Accordion (shared by Price Journey + What's included) ── */
+    .breakdown-toggle {
+      display: flex; align-items: center; justify-content: space-between;
+      width: 100%; padding: 14px 20px;
+      background: #f5f7fa;
+      border: none; border-bottom: 1px solid #e5e5e5;
+      cursor: pointer;
+      font-size: 16px; color: #333; font-weight: 500;
+      transition: background 0.2s;
+      font-family: inherit;
+    }
+    .breakdown-toggle:hover           { background: #eef1f5; }
+    .breakdown-toggle .arrow {
+      width: 16px; height: 16px;
+      display: inline-flex; align-items: center; justify-content: center;
+      transition: transform 0.6s cubic-bezier(0.65, 0, 0.35, 1);
+    }
+    .breakdown-toggle .arrow::before {
+      content: '';
+      width: 8px; height: 8px;
+      border-right: 2.5px solid #ed6b1f;
+      border-bottom: 2.5px solid #ed6b1f;
+      transform: rotate(45deg);
+      margin-top: -4px;
+    }
+    .breakdown-toggle.active .arrow   { transform: rotate(180deg); }
+
+    .price-breakdown-section {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.7s cubic-bezier(0.65, 0, 0.35, 1);
+      background: #f5f7fa;
+    }
+    .price-breakdown-section.open {
+      max-height: 600px;
+      border-bottom: 1px solid #e5e5e5;
+      transition: max-height 0.85s cubic-bezier(0.65, 0, 0.35, 1);
+    }
+
+    /* ── Price Journey ─────────────────────────────────────── */
+    .price-journey { padding: 24px 16px 20px; }
+    .journey-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 20px;
+    }
+    .journey-title    { font-weight: 600; color: #0a1628; font-size: 14px; }
+    .journey-savings {
+      font-size: 14px; color: #ed6b1f; font-weight: 600;
+      display: inline-flex; align-items: center; gap: 5px;
+    }
+    .journey-savings .savings-icon { width: 16px; height: 16px; flex-shrink: 0; }
+
+    .journey-steps { display: flex; align-items: stretch; gap: 0; }
+    .journey-step {
+      flex: 1;
+      background: #f0f1f3;
+      color: #0a1628;
+      border-radius: 16px;
+      padding: 18px 8px 14px;
+      text-align: center;
+      position: relative;
+      min-width: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+    }
+    .journey-step.active     { background: #136BA3; color: #fff; }
+    .journey-step.discounted { background: #0d4d7a; color: #fff; }
+
+    .step-period {
+      display: block;
+      font-size: 14px; font-weight: 500;
+      opacity: 0.95;
+      margin-bottom: 4px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      max-width: 100%;
+    }
+    .step-price   { display: block; font-size: 26px; font-weight: 800; line-height: 1; }
+    .step-subtext {
+      display: block;
+      font-size: 14px; font-weight: 500;
+      opacity: 0.9; margin-top: 6px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      max-width: 100%;
+    }
+    .step-tag {
+      position: absolute;
+      top: -12px; left: 50%;
+      transform: translateX(-50%);
+      background: #ed6b1f; color: #fff;
+      font-size: 14px; font-weight: 700;
+      padding: 4px 10px; border-radius: 20px;
+      white-space: nowrap;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+    }
+    .journey-chevron {
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; width: 24px;
+      color: #ed6b1f;
+      font-size: 27px; font-weight: 700;
+      line-height: 1;
+    }
+
+    /* ── Journey summary banner (peach, orange border) ─────── */
+    .journey-summary {
+      display: flex; align-items: flex-start; gap: 10px;
+      margin-top: 18px;
+      padding: 12px 14px;
+      background: #fff7f0;
+      border: 1px solid #ed6b1f;
+      border-radius: 8px;
+      font-size: 14px; line-height: 1.45;
+      color: #5d3a1a;
+    }
+    .journey-summary .summary-icon {
+      width: 16px; height: 16px; flex-shrink: 0;
+      color: #ed6b1f;
+      margin-top: 1px;
+    }
+
+    /* ── Internet specs panel ──────────────────────────────── */
+    .internet-specs {
+      padding: 16px 20px;
+      display: flex; flex-direction: column; gap: 12px;
+      border-top: 1px solid #f0f0f0;
+      border-bottom: 1px solid #f0f0f0;
+      background: #fafafa;
+    }
+    .specs-title {
+      font-size: 16px; color: #7c7c7c;
+      text-align: left;
+      margin-bottom: -4px;
+    }
+    .speed-item {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 16px; color: #444;
+    }
+    .speed-item strong { font-weight: normal; color: #111; }
+
+    /* Circular icon container — shared by specs + features list */
+    .check-icon {
+      width: 24px; height: 24px;
+      background: #2E7DC1;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .check-icon svg  { width: 12px; height: 12.75px; color: white; }
+    .check-icon.plus { background: #ed6b1f; }
+
+    /* ── Features (What's included) ────────────────────────── */
+    .card-content { padding: 20px 20px 16px; }
+    .features-list {
+      list-style: none;
+      display: flex; flex-direction: column; gap: 12px;
+      margin-bottom: 20px;
+    }
+    .features-list li {
+      display: flex; align-items: flex-start; gap: 10px;
+      font-size: 16px; color: #444;
+    }
+
+    /* ── CTA + Legal ───────────────────────────────────────── */
+    .cta-button {
+      width: 100%; padding: 18px;
+      background: #ed6b1f;
+      border: none; border-radius: 50px;
+      color: white;
+      font-size: 16px; font-weight: 700;
+      cursor: pointer;
+      position: relative; overflow: hidden;
+      z-index: 1;
+      font-family: inherit;
+      transition: color 0.3s ease;
+    }
+    .cta-button::before {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 0;
+      background: #000;
+      transition: height 0.3s ease;
+      z-index: -1;
+    }
+    .cta-button:hover::before { height: 100%; }
+    .cta-button:hover         { color: #fff; }
+
+    .legal-note {
+      font-size: 14px; color: #999;
+      text-align: center;
+      padding: 12px 20px;
+      background: #fafafa;
+      border-top: 1px solid #f0f0f0;
+    }
+
+
+    /* ============================================================
+       §3.4  RESPONSIVE  (≤ 480px)
+       ============================================================ */
+    @media (max-width: 480px) {
+      .pricing-card  { width: 92vw; }
+      .config-panel  { width: 100vw; right: -100vw; }
+      .legal-note    { font-size: 12px; }
+      .period,
+      .breakdown-toggle,
+      .specs-title,
+      .speed-item,
+      .features-list li,
+      .cta-button       { font-size: 14px; }
+      .savings-label    { font-size: 12px; }
+      .price-note       { font-size: 12px; }
+      .plan-headline    { font-size: 32px !important; }
+      .amount           { font-size: 48px; }
+      .journey-savings  { font-size: 12px; }
+      .journey-summary  { font-size: 12px; }
+      .step-period,
+      .step-subtext,
+      .step-tag         { font-size: 12px; }
+    }
+  </style>
+</head>
+
+<!-- ================================================================
+     §4. MARKUP
+     ================================================================
+     The whole page lives inside a single controller. Configurator
+     edits and rate-card rendering share the same `vm.plan` object
+     via two-way data binding — there's no manual sync code.
+-->
+<body ng-controller="RateCardCtrl as vm">
+
+  <!-- ============================================================
+       §4a. PREVIEW-ONLY UI            (NOT REQUIRED IN PRODUCTION)
+       ------------------------------------------------------------
+       Floating dev buttons, overlay, configurator panel.
+       Drop this entire block when shipping the rate card.
+       ============================================================ -->
+
+  <!-- Stories button → user-stories backlog -->
+  <a class="stories-btn" href="template/user-stories.html"
+     title="Product user stories" aria-label="Open user stories">
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
+         stroke-linecap="round" stroke-linejoin="round">
+      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+      <circle cx="9" cy="7" r="4"/>
+      <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+      <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+    </svg>
+  </a>
+
+  <!-- Docs button → developer instructions -->
+  <a class="docs-btn" href="template/instruction.html"
+     title="Developer instructions" aria-label="Open developer instructions">
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
+         stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+    </svg>
+  </a>
+
+  <!-- Gear button → toggles configurator panel -->
+  <button class="gear-btn"
+          ng-class="{open: vm.ui.panelOpen}"
+          ng-click="vm.togglePanel()"
+          title="Open configurator">
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 15.5A3.5 3.5 0 0 1 8.5 12 3.5 3.5 0 0 1 12 8.5a3.5 3.5 0 0 1 3.5 3.5 3.5 3.5 0 0 1-3.5 3.5m7.43-2.92c.04-.3.07-.62.07-.94s-.03-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.04.3-.07.63-.07.94s.03.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58z"/>
+    </svg>
+  </button>
+
+  <!-- Overlay (click outside the panel to close) -->
+  <div class="overlay"
+       ng-class="{visible: vm.ui.panelOpen}"
+       ng-click="vm.togglePanel()"></div>
+
+  <!-- ─────────────── CONFIGURATOR PANEL ─────────────── -->
+  <div class="config-panel" ng-class="{open: vm.ui.panelOpen}">
+    <div class="config-header">
+      <h2>⚙️ Rate Card Builder</h2>
+      <p>Edit values to see changes in real time</p>
+    </div>
+    <div class="config-body">
+
+      <!-- ─ Section: BADGE & HEADLINE ─ -->
+      <div class="config-section">
+        <button class="config-section-title"
+                ng-class="{collapsed: !vm.ui.sections.badge}"
+                ng-click="vm.toggleSection('badge')">
+          <span>🏷️ Badge &amp; Headline</span><span class="chevron"></span>
+        </button>
+        <div class="config-section-content" ng-class="{hidden: !vm.ui.sections.badge}">
+          <div class="field">
+            <label>Card label</label>
+            <input type="text" ng-model="vm.plan.cardLabel">
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label>Badge text</label>
+              <input type="text" ng-model="vm.plan.badge">
+            </div>
+            <div class="field">
+              <label>Badge background</label>
+              <input type="color" ng-model="vm.plan.badgeBg">
+            </div>
+          </div>
+          <div class="field">
+            <label>Orange headline</label>
+            <input type="text" ng-model="vm.plan.headline">
+          </div>
+          <div class="toggle-field">
+            <label>Show headline</label>
+            <button class="toggle"
+                    ng-class="{on: vm.plan.show.headline}"
+                    ng-click="vm.plan.show.headline = !vm.plan.show.headline"></button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─ Section: PRICING ─ -->
+      <div class="config-section">
+        <button class="config-section-title"
+                ng-class="{collapsed: !vm.ui.sections.pricing}"
+                ng-click="vm.toggleSection('pricing')">
+          <span>💰 Pricing</span><span class="chevron"></span>
+        </button>
+        <div class="config-section-content" ng-class="{hidden: !vm.ui.sections.pricing}">
+          <div class="field-row">
+            <div class="field">
+              <label>Promo price ($)</label>
+              <input type="number" ng-model="vm.plan.currentPrice">
+            </div>
+            <div class="field">
+              <label>Original price ($)</label>
+              <input type="number" ng-model="vm.plan.originalPrice">
+            </div>
+          </div>
+          <div class="field">
+            <label>Period</label>
+            <input type="text" ng-model="vm.plan.period">
+          </div>
+          <div class="field">
+            <label>Price note</label>
+            <input type="text" ng-model="vm.plan.priceNote">
+          </div>
+          <div class="field">
+            <label>Savings text</label>
+            <input type="text" ng-model="vm.plan.savings">
+          </div>
+          <div class="toggle-field">
+            <label>Show savings</label>
+            <button class="toggle"
+                    ng-class="{on: vm.plan.show.savings}"
+                    ng-click="vm.plan.show.savings = !vm.plan.show.savings"></button>
+          </div>
+          <div class="toggle-field">
+            <label>Show original price</label>
+            <button class="toggle"
+                    ng-class="{on: vm.plan.show.originalPrice}"
+                    ng-click="vm.plan.show.originalPrice = !vm.plan.show.originalPrice"></button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─ Section: PRICE JOURNEY ─ -->
+      <div class="config-section">
+        <button class="config-section-title"
+                ng-class="{collapsed: !vm.ui.sections.journey}"
+                ng-click="vm.toggleSection('journey')">
+          <span>📊 Price Journey</span><span class="chevron"></span>
+        </button>
+        <div class="config-section-content" ng-class="{hidden: !vm.ui.sections.journey}">
+          <div class="toggle-field">
+            <label>Show Price Journey</label>
+            <button class="toggle"
+                    ng-class="{on: vm.plan.journey.enabled}"
+                    ng-click="vm.plan.journey.enabled = !vm.plan.journey.enabled"></button>
+          </div>
+          <div class="field">
+            <label>Toggle label</label>
+            <input type="text" ng-model="vm.plan.journey.toggleLabel">
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label>Header title</label>
+              <input type="text" ng-model="vm.plan.journey.title">
+            </div>
+            <div class="field">
+              <label>Savings text</label>
+              <input type="text" ng-model="vm.plan.journey.savingsText">
+            </div>
+          </div>
+
+          <!-- Step editor list -->
+          <div ng-repeat="step in vm.plan.journey.steps track by $index" class="feature-row">
+            <div class="feature-row-header">
+              <span class="feature-row-label">Step {{ $index + 1 }}</span>
+              <button class="remove-feature-btn"
+                      ng-click="vm.removeStep($index)"
+                      title="Remove">×</button>
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <label>Period</label>
+                <input type="text" ng-model="step.period">
+              </div>
+              <div class="field">
+                <label>Price</label>
+                <input type="text" ng-model="step.price">
+              </div>
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <label>Tag (optional)</label>
+                <input type="text" ng-model="step.tag">
+              </div>
+              <div class="field">
+                <label>Sub-text (optional)</label>
+                <input type="text" ng-model="step.subtext">
+              </div>
+            </div>
+            <div class="field">
+              <label>Style</label>
+              <select ng-model="step.style">
+                <option value="active">Active (blue)</option>
+                <option value="discounted">Discounted (dark blue)</option>
+                <option value="regular">Regular (grey)</option>
+              </select>
+            </div>
+          </div>
+          <button class="add-feature-btn" ng-click="vm.addStep()">+ Add step</button>
+
+          <div class="field" style="margin-top:14px;">
+            <label>Summary banner text</label>
+            <input type="text" ng-model="vm.plan.journey.summary.text">
+          </div>
+          <div class="toggle-field">
+            <label>Show summary banner</label>
+            <button class="toggle"
+                    ng-class="{on: vm.plan.journey.summary.enabled}"
+                    ng-click="vm.plan.journey.summary.enabled = !vm.plan.journey.summary.enabled"></button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─ Section: INTERNET SPECS ─ -->
+      <div class="config-section">
+        <button class="config-section-title"
+                ng-class="{collapsed: !vm.ui.sections.specs}"
+                ng-click="vm.toggleSection('specs')">
+          <span>📡 Internet Specs</span><span class="chevron"></span>
+        </button>
+        <div class="config-section-content" ng-class="{hidden: !vm.ui.sections.specs}">
+          <div class="toggle-field">
+            <label>Show section title</label>
+            <button class="toggle"
+                    ng-class="{on: vm.plan.specs.showTitle}"
+                    ng-click="vm.plan.specs.showTitle = !vm.plan.specs.showTitle"></button>
+          </div>
+          <div class="field">
+            <label>Section title text</label>
+            <input type="text" ng-model="vm.plan.specs.title">
+          </div>
+
+          <!-- Download row -->
+          <div class="feature-row">
+            <div class="feature-row-header"><span class="feature-row-label">Download</span></div>
+            <div class="field-row">
+              <div class="field">
+                <label>Value</label>
+                <input type="text" ng-model="vm.plan.specs.download.value">
+              </div>
+              <div class="field">
+                <label>Label</label>
+                <input type="text" ng-model="vm.plan.specs.download.label">
+              </div>
+            </div>
+            <div class="field">
+              <label>Icon color</label>
+              <input type="color" ng-model="vm.plan.specs.download.color">
+            </div>
+          </div>
+
+          <!-- Upload row -->
+          <div class="feature-row">
+            <div class="feature-row-header"><span class="feature-row-label">Upload</span></div>
+            <div class="field-row">
+              <div class="field">
+                <label>Value</label>
+                <input type="text" ng-model="vm.plan.specs.upload.value">
+              </div>
+              <div class="field">
+                <label>Label</label>
+                <input type="text" ng-model="vm.plan.specs.upload.label">
+              </div>
+            </div>
+            <div class="field">
+              <label>Icon color</label>
+              <input type="color" ng-model="vm.plan.specs.upload.color">
+            </div>
+          </div>
+
+          <!-- Usage row -->
+          <div class="feature-row">
+            <div class="feature-row-header"><span class="feature-row-label">Usage</span></div>
+            <div class="field-row">
+              <div class="field">
+                <label>Value</label>
+                <input type="text" ng-model="vm.plan.specs.usage.value">
+              </div>
+              <div class="field">
+                <label>Label</label>
+                <input type="text" ng-model="vm.plan.specs.usage.label">
+              </div>
+            </div>
+            <div class="field">
+              <label>Icon color</label>
+              <input type="color" ng-model="vm.plan.specs.usage.color">
+            </div>
+          </div>
+
+          <div class="toggle-field">
+            <label>Show Internet Specs</label>
+            <button class="toggle"
+                    ng-class="{on: vm.plan.specs.enabled}"
+                    ng-click="vm.plan.specs.enabled = !vm.plan.specs.enabled"></button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─ Section: FEATURES ─ -->
+      <div class="config-section">
+        <button class="config-section-title"
+                ng-class="{collapsed: !vm.ui.sections.features}"
+                ng-click="vm.toggleSection('features')">
+          <span>✅ Features (What's included)</span><span class="chevron"></span>
+        </button>
+        <div class="config-section-content" ng-class="{hidden: !vm.ui.sections.features}">
+          <div ng-repeat="f in vm.plan.features track by $index" class="feature-row">
+            <div class="feature-row-header">
+              <span class="feature-row-label">Feature {{ $index + 1 }}</span>
+              <button class="remove-feature-btn"
+                      ng-click="vm.removeFeature($index)"
+                      title="Remove">×</button>
+            </div>
+            <div class="field">
+              <label>Text</label>
+              <input type="text" ng-model="f.text">
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <label>Icon</label>
+                <select ng-model="f.icon">
+                  <option value="check">✓ Check</option>
+                  <option value="plus">+ Plus</option>
+                  <option value="star">★ Star</option>
+                  <option value="shield">⛨ Shield</option>
+                  <option value="wifi">◈ WiFi</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Color</label>
+                <input type="color" ng-model="f.color">
+              </div>
+            </div>
+          </div>
+          <button class="add-feature-btn" ng-click="vm.addFeature()">+ Add feature</button>
+        </div>
+      </div>
+
+      <!-- ─ Section: CTA & LEGAL ─ -->
+      <div class="config-section">
+        <button class="config-section-title"
+                ng-class="{collapsed: !vm.ui.sections.ctaLegal}"
+                ng-click="vm.toggleSection('ctaLegal')">
+          <span>🎯 CTA &amp; Legal</span><span class="chevron"></span>
+        </button>
+        <div class="config-section-content" ng-class="{hidden: !vm.ui.sections.ctaLegal}">
+          <div class="field">
+            <label>CTA text</label>
+            <input type="text" ng-model="vm.plan.cta.label">
+          </div>
+          <div class="field">
+            <label>Legal note</label>
+            <textarea ng-model="vm.plan.legal"></textarea>
+          </div>
+          <div class="toggle-field">
+            <label>Show legal note</label>
+            <button class="toggle"
+                    ng-class="{on: vm.plan.showLegal}"
+                    ng-click="vm.plan.showLegal = !vm.plan.showLegal"></button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─ Section: GLOBAL COLORS ─ -->
+      <div class="config-section">
+        <button class="config-section-title"
+                ng-class="{collapsed: !vm.ui.sections.colors}"
+                ng-click="vm.toggleSection('colors')">
+          <span>🎨 Global Colors</span><span class="chevron"></span>
+        </button>
+        <div class="config-section-content" ng-class="{hidden: !vm.ui.sections.colors}">
+          <div class="field-row">
+            <div class="field">
+              <label>Header (start)</label>
+              <input type="color" ng-model="vm.plan.headerGradient.top">
+            </div>
+            <div class="field">
+              <label>Header (end)</label>
+              <input type="color" ng-model="vm.plan.headerGradient.bottom">
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label>CTA color</label>
+              <input type="color" ng-model="vm.plan.cta.color">
+            </div>
+            <div class="field">
+              <label>Headline color</label>
+              <input type="color" ng-model="vm.plan.headlineColor">
+            </div>
+          </div>
+          <div class="field">
+            <label>Headline size (px)</label>
+            <input type="range" min="24" max="60" ng-model="vm.plan.headlineSize">
+            <div class="range-value">{{ vm.plan.headlineSize }}px</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─ Section: DATA I/O (export / import / template) ─ -->
+      <div class="config-section">
+        <button class="config-section-title"
+                ng-class="{collapsed: !vm.ui.sections.dataIo}"
+                ng-click="vm.toggleSection('dataIo')">
+          <span>💾 Data I/O</span><span class="chevron"></span>
+        </button>
+        <div class="config-section-content" ng-class="{hidden: !vm.ui.sections.dataIo}">
+
+          <p class="data-io-help">
+            Save the current card as a JSON payload, load an existing JSON file,
+            or grab an empty template (with a field mapping for your dev team).
+          </p>
+
+          <!-- 3 actions: export / import / download template -->
+          <div class="data-io-actions">
+            <button type="button"
+                    class="data-io-btn primary"
+                    ng-click="vm.exportJson()"
+                    title="Serialise vm.plan and download as a .json file">
+              ⬇ Generate JSON
+            </button>
+            <button type="button"
+                    class="data-io-btn"
+                    ng-click="vm.triggerImport()"
+                    title="Load a previously saved card from a .json file">
+              ⬆ Upload JSON
+            </button>
+            <button type="button"
+                    class="data-io-btn full"
+                    ng-click="vm.downloadTemplate()"
+                    title="Download an empty template documenting every field">
+              📄 Download empty template (with field mapping)
+            </button>
+          </div>
+
+          <!-- Hidden file input wired via the fileOnChange directive -->
+          <input id="cfg-import-file"
+                 class="data-io-file-input"
+                 type="file"
+                 accept="application/json,.json"
+                 file-on-change="vm.handleImportFile($files)">
+
+          <!-- Feedback message -->
+          <div class="data-io-status"
+               ng-class="vm.io.statusType"
+               ng-if="vm.io.status">
+            {{ vm.io.status }}
+          </div>
+
+          <!-- Last exported / imported JSON (read-only preview, free to copy) -->
+          <textarea class="data-io-textarea"
+                    ng-model="vm.io.exportText"
+                    placeholder="Click ‘Generate JSON’ to serialise the current card here. You can also paste a payload and use ‘Apply pasted JSON’."
+                    spellcheck="false"></textarea>
+
+          <div class="data-io-copy-row">
+            <button type="button"
+                    class="data-io-btn"
+                    ng-click="vm.copyJson()"
+                    ng-disabled="!vm.io.exportText">
+              📋 Copy JSON
+            </button>
+            <button type="button"
+                    class="data-io-btn"
+                    ng-click="vm.applyPastedJson()"
+                    ng-disabled="!vm.io.exportText"
+                    title="Apply the JSON currently shown in the textarea">
+              ↻ Apply pasted JSON
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <button class="reset-btn" ng-click="vm.resetAll()">↺ Reset to defaults</button>
+    </div>
+  </div>
+
+
+  <!-- ============================================================
+       §4b. RATE CARD                  (PRODUCTION COMPONENT)
+       ------------------------------------------------------------
+       This is the markup FHI devs copy into the production site.
+       Every value is driven by the vm.plan model bound by the
+       controller below. No DOM lookups, no IDs needed.
+       ============================================================ -->
+  <div class="card-stage">
+
+    <!-- (Optional) label above the card — preview convenience -->
+    <div class="card-label-badge">{{ vm.plan.cardLabel }}</div>
+
+    <div class="pricing-card">
+
+      <!-- ── Card header ── -->
+      <div class="card-header" ng-style="vm.headerGradient()">
+        <div class="header-top">
+          <span class="plan-badge" ng-style="{background: vm.plan.badgeBg}">{{ vm.plan.badge }}</span>
+          <div class="plan-headline"
+               ng-class="{'hidden-el': !vm.plan.show.headline}"
+               ng-style="{'font-size': vm.plan.headlineSize + 'px', color: vm.plan.headlineColor}">{{ vm.plan.headline }}</div>
+        </div>
+
+        <div class="price-block">
+          <p class="original-price" ng-class="{'hidden-el': !vm.plan.show.originalPrice}">
+            Reg. Price: ${{ vm.plan.originalPrice }}{{ vm.plan.period }}
+          </p>
+          <div class="hero-price">
+            <span class="currency">$</span>
+            <span class="amount">{{ vm.plan.currentPrice }}</span>
+            <span class="period">{{ vm.plan.period }}</span>
+          </div>
+          <p class="price-note">{{ vm.plan.priceNote }}</p>
+
+          <!-- Savings badge with the price-tag pictogram -->
+          <div class="savings-label" ng-class="{'hidden-el': !vm.plan.show.savings}">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M8 8H8.01M4.56274 2.93726L2.93726 4.56274C2.59136 4.90864 2.4184 5.0816 2.29472 5.28343C2.18506 5.46237 2.10425 5.65746 2.05526 5.86154C2 6.09171 2 6.3363 2 6.82548V9.67452C2 10.1637 2 10.4083 2.05526 10.6385C2.10425 10.8425 2.18506 11.0376 2.29472 11.2166C2.4184 11.4184 2.59135 11.5914 2.93726 11.9373L10.6059 19.6059C11.7939 20.7939 12.388 21.388 13.0729 21.6105C13.6755 21.8063 14.3245 21.8063 14.927 21.6105C15.612 21.388 16.2061 20.7939 17.3941 19.6059L19.6059 17.3941C20.7939 16.2061 21.388 15.612 21.6105 14.927C21.8063 14.3245 21.8063 13.6755 21.6105 13.0729C21.388 12.388 20.7939 11.7939 19.6059 10.6059L11.9373 2.93726C11.5914 2.59136 11.4184 2.4184 11.2166 2.29472C11.0376 2.18506 10.8425 2.10425 10.6385 2.05526C10.4083 2 10.1637 2 9.67452 2H6.82548C6.3363 2 6.09171 2 5.86154 2.05526C5.65746 2.10425 5.46237 2.18506 5.28343 2.29472C5.0816 2.4184 4.90865 2.59135 4.56274 2.93726ZM8.5 8C8.5 8.27614 8.27614 8.5 8 8.5C7.72386 8.5 7.5 8.27614 7.5 8C7.5 7.72386 7.72386 7.5 8 7.5C8.27614 7.5 8.5 7.72386 8.5 8Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span>{{ vm.plan.savings }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Price Journey accordion (hidden by default in production) ── -->
+      <div ng-if="vm.plan.journey.enabled">
+        <button class="breakdown-toggle"
+                ng-class="{active: vm.ui.journeyOpen}"
+                ng-click="vm.ui.journeyOpen = !vm.ui.journeyOpen"
+                ng-attr-aria-expanded="{{ vm.ui.journeyOpen }}">
+          <span>{{ vm.plan.journey.toggleLabel }}</span>
+          <span class="arrow"></span>
+        </button>
+        <div class="price-breakdown-section" ng-class="{open: vm.ui.journeyOpen}">
+          <div class="price-journey">
+
+            <!-- Header: title + savings indicator -->
+            <div class="journey-header">
+              <span class="journey-title">{{ vm.plan.journey.title }}</span>
+              <span class="journey-savings">
+                <svg class="savings-icon" viewBox="0 0 24 24" fill="none"
+                     xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M8 8H8.01M4.56274 2.93726L2.93726 4.56274C2.59136 4.90864 2.4184 5.0816 2.29472 5.28343C2.18506 5.46237 2.10425 5.65746 2.05526 5.86154C2 6.09171 2 6.3363 2 6.82548V9.67452C2 10.1637 2 10.4083 2.05526 10.6385C2.10425 10.8425 2.18506 11.0376 2.29472 11.2166C2.4184 11.4184 2.59135 11.5914 2.93726 11.9373L10.6059 19.6059C11.7939 20.7939 12.388 21.388 13.0729 21.6105C13.6755 21.8063 14.3245 21.8063 14.927 21.6105C15.612 21.388 16.2061 20.7939 17.3941 19.6059L19.6059 17.3941C20.7939 16.2061 21.388 15.612 21.6105 14.927C21.8063 14.3245 21.8063 13.6755 21.6105 13.0729C21.388 12.388 20.7939 11.7939 19.6059 10.6059L11.9373 2.93726C11.5914 2.59136 11.4184 2.4184 11.2166 2.29472C11.0376 2.18506 10.8425 2.10425 10.6385 2.05526C10.4083 2 10.1637 2 9.67452 2H6.82548C6.3363 2 6.09171 2 5.86154 2.05526C5.65746 2.10425 5.46237 2.18506 5.28343 2.29472C5.0816 2.4184 4.90865 2.59135 4.56274 2.93726ZM8.5 8C8.5 8.27614 8.27614 8.5 8 8.5C7.72386 8.5 7.5 8.27614 7.5 8C7.5 7.72386 7.72386 7.5 8 7.5C8.27614 7.5 8.5 7.72386 8.5 8Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span>{{ vm.plan.journey.savingsText }}</span>
+              </span>
+            </div>
+
+            <!-- Steps timeline: chevron + step (chevron skipped for first item) -->
+            <div class="journey-steps">
+              <span ng-repeat-start="step in vm.plan.journey.steps track by $index"
+                    ng-if="$index > 0"
+                    class="journey-chevron"
+                    aria-hidden="true">›</span>
+              <div ng-repeat-end class="journey-step" ng-class="vm.stepClass(step)">
+                <span class="step-tag" ng-if="step.tag">{{ step.tag }}</span>
+                <span class="step-period">{{ step.period }}</span>
+                <span class="step-price">{{ step.price }}</span>
+                <span class="step-subtext" ng-if="step.subtext">{{ step.subtext }}</span>
+              </div>
+            </div>
+
+            <!-- Summary banner (optional) -->
+            <div class="journey-summary"
+                 ng-class="{'hidden-el': !vm.plan.journey.summary.enabled}">
+              <svg class="summary-icon" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2"
+                   stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="16" x2="12" y2="12"/>
+                <line x1="12" y1="8" x2="12.01" y2="8"/>
+              </svg>
+              <span>{{ vm.plan.journey.summary.text }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Internet specs panel ── -->
+      <div class="internet-specs" ng-class="{'hidden-el': !vm.plan.specs.enabled}">
+        <div class="specs-title" ng-class="{'hidden-el': !vm.plan.specs.showTitle}">{{ vm.plan.specs.title }}</div>
+
+        <!-- Download -->
+        <div class="speed-item">
+          <span class="check-icon" ng-style="{background: vm.plan.specs.download.color}">
+            <svg width="12" height="12.75" viewBox="0 0 12 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M0.75001 11.25H11.25C11.6642 11.25 12 11.5858 12 12C12 12.4142 11.6642 12.75 11.25 12.75H0.75001C0.335797 12.75 1.14441e-05 12.4142 1.14441e-05 12C1.14441e-05 11.5858 0.335797 11.25 0.75001 11.25Z" fill="white"/>
+              <path d="M12 10.5V12C12 12.4142 11.6642 12.75 11.25 12.75C10.8358 12.75 10.5 12.4142 10.5 12V10.5C10.5 10.0858 10.8358 9.75 11.25 9.75C11.6642 9.75 12 10.0858 12 10.5Z" fill="white"/>
+              <path d="M1.5 10.5L1.5 12C1.5 12.4142 1.16421 12.75 0.750001 12.75C0.335788 12.75 1.43051e-06 12.4142 1.43051e-06 12L1.43051e-06 10.5C1.43051e-06 10.0858 0.335788 9.75 0.750001 9.75C1.16421 9.75 1.5 10.0858 1.5 10.5Z" fill="white"/>
+              <path d="M5.99992 8.99999C6.15541 9.00117 6.30742 8.954 6.43492 8.86499L9.43492 6.74999C9.59661 6.63529 9.70631 6.46124 9.74004 6.26589C9.77377 6.07054 9.72878 5.86977 9.61492 5.70749C9.55808 5.62638 9.48573 5.55733 9.40206 5.50432C9.31839 5.45132 9.22505 5.41541 9.12743 5.39868C9.0298 5.38194 8.92983 5.38471 8.83329 5.40682C8.73674 5.42893 8.64553 5.46994 8.56492 5.52749C7.03504 6.59662 4.99107 6.56039 3.50004 5.43773L3.44992 5.39999C3.29079 5.28065 3.09077 5.2294 2.89386 5.25753C2.69694 5.28566 2.51927 5.39086 2.39992 5.54999C2.28058 5.70912 2.22933 5.90915 2.25746 6.10606C2.28559 6.30297 2.39079 6.48065 2.54992 6.59999L5.54992 8.84999C5.67974 8.94736 5.83764 8.99999 5.99992 8.99999Z" fill="white"/>
+              <path d="M6 7.49999C6.19891 7.49999 6.38968 7.42098 6.53033 7.28032C6.67098 7.13967 6.75 6.94891 6.75 6.74999V0.749999C6.75 0.551087 6.67098 0.360322 6.53033 0.21967C6.38968 0.0790175 6.19891 0 6 0C5.80109 0 5.61032 0.0790175 5.46967 0.21967C5.32902 0.360322 5.25 0.551087 5.25 0.749999V6.74999C5.25 6.94891 5.32902 7.13967 5.46967 7.28032C5.61032 7.42098 5.80109 7.49999 6 7.49999Z" fill="white"/>
+            </svg>
+          </span>
+          <span><strong>{{ vm.plan.specs.download.value }}</strong> {{ vm.plan.specs.download.label }}</span>
+        </div>
+
+        <!-- Upload -->
+        <div class="speed-item">
+          <span class="check-icon" ng-style="{background: vm.plan.specs.upload.color}">
+            <svg width="12" height="12.75" viewBox="0 0 12 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M0.75001 1.50001H11.25C11.6642 1.50001 12 1.16422 12 0.750008C12 0.335795 11.6642 9.05991e-06 11.25 9.05991e-06H0.75001C0.335797 9.05991e-06 1.14441e-05 0.335795 1.14441e-05 0.750008C1.14441e-05 1.16422 0.335797 1.50001 0.75001 1.50001Z" fill="white"/>
+              <path d="M12 2.25V0.749999C12 0.335786 11.6642 0 11.25 0C10.8358 0 10.5 0.335786 10.5 0.749999V2.25C10.5 2.66421 10.8358 3 11.25 3C11.6642 3 12 2.66421 12 2.25Z" fill="white"/>
+              <path d="M1.5 2.25L1.5 0.749999C1.5 0.335786 1.16421 0 0.750001 0C0.335788 0 1.43051e-06 0.335786 1.43051e-06 0.749999L1.43051e-06 2.25C1.43051e-06 2.66421 0.335788 3 0.750001 3C1.16421 3 1.5 2.66421 1.5 2.25Z" fill="white"/>
+              <path d="M5.99992 3.75001C6.15541 3.74883 6.30742 3.796 6.43492 3.88501L9.43492 6.00001C9.59661 6.11471 9.70631 6.28876 9.74004 6.48411C9.77377 6.67946 9.72878 6.88023 9.61492 7.04251C9.55808 7.12362 9.48573 7.19267 9.40206 7.24568C9.31839 7.29868 9.22505 7.33459 9.12743 7.35132C9.0298 7.36806 8.92983 7.36529 8.83329 7.34318C8.73674 7.32107 8.64553 7.28006 8.56492 7.22251C7.03504 6.15338 4.99107 6.18961 3.50004 7.31227L3.44992 7.35001C3.29079 7.46935 3.09077 7.5206 2.89386 7.49247C2.69694 7.46434 2.51927 7.35914 2.39992 7.20001C2.28058 7.04088 2.22933 6.84085 2.25746 6.64394C2.28559 6.44703 2.39079 6.26935 2.54992 6.15001L5.54992 3.90001C5.67974 3.80264 5.83764 3.75001 5.99992 3.75001Z" fill="white"/>
+              <path d="M6 5.25C6.19891 5.25 6.38968 5.32902 6.53033 5.46967C6.67098 5.61032 6.75 5.80109 6.75 6V12C6.75 12.1989 6.67098 12.3897 6.53033 12.5303C6.38968 12.671 6.19891 12.75 6 12.75C5.80109 12.75 5.61032 12.671 5.46967 12.5303C5.32902 12.3897 5.25 12.1989 5.25 12V6C5.25 5.80109 5.32902 5.61032 5.46967 5.46967C5.61032 5.32902 5.80109 5.25 6 5.25Z" fill="white"/>
+            </svg>
+          </span>
+          <span><strong>{{ vm.plan.specs.upload.value }}</strong> {{ vm.plan.specs.upload.label }}</span>
+        </div>
+
+        <!-- Usage (unlimited glyph) -->
+        <div class="speed-item">
+          <span class="check-icon" ng-style="{background: vm.plan.specs.usage.color}">
+            <svg style="width:16px;height:8px;" width="16" height="8" viewBox="0 0 16 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M5.98652 5.54164L5.77757 5.77757C5.35801 6.19713 4.82346 6.48285 4.24152 6.59861C3.65958 6.71436 3.05638 6.65495 2.5082 6.42789C1.96002 6.20083 1.49149 5.81631 1.16184 5.32296C0.832197 4.82961 0.65625 4.2496 0.65625 3.65625C0.65625 3.06291 0.832197 2.48289 1.16184 1.98954C1.49149 1.49619 1.96002 1.11168 2.5082 0.884613C3.05638 0.65755 3.65958 0.59814 4.24152 0.713895C4.82346 0.829651 5.35801 1.11537 5.77757 1.53493L9.53493 5.77757C9.95449 6.19713 10.489 6.48285 11.071 6.59861C11.6529 6.71436 12.2561 6.65495 12.8043 6.42789C13.3525 6.20083 13.821 5.81631 14.1507 5.32296C14.4803 4.82961 14.6562 4.2496 14.6562 3.65625C14.6562 3.06291 14.4803 2.48289 14.1507 1.98954C13.821 1.49619 13.3525 1.11168 12.8043 0.884613C12.2561 0.65755 11.6529 0.59814 11.071 0.713895C10.489 0.829651 9.95449 1.11537 9.53493 1.53493L9.32598 1.77087" stroke="white" stroke-width="1.3125" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+          <span><strong>{{ vm.plan.specs.usage.value }}</strong> {{ vm.plan.specs.usage.label }}</span>
+        </div>
+      </div>
+
+      <!-- ── Features accordion (What's included) ── -->
+      <button class="breakdown-toggle"
+              ng-class="{active: vm.ui.featuresOpen}"
+              ng-click="vm.ui.featuresOpen = !vm.ui.featuresOpen"
+              ng-attr-aria-expanded="{{ vm.ui.featuresOpen }}">
+        <span>What's included</span>
+        <span class="arrow"></span>
+      </button>
+      <div class="price-breakdown-section"
+           ng-class="{open: vm.ui.featuresOpen}"
+           style="background:#fff;">
+        <div class="card-content" style="padding-bottom:8px;">
+          <ul class="features-list">
+            <li ng-repeat="f in vm.plan.features track by $index">
+              <span class="check-icon"
+                    ng-class="{plus: f.icon === 'plus'}"
+                    ng-style="{background: f.color}"
+                    ng-bind-html="vm.iconSvg(f.icon)"></span>
+              <span>{{ f.text }}</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- ── CTA (always visible) ── -->
+      <div class="card-content" style="padding-top:16px;">
+        <button class="cta-button" ng-style="{background: vm.plan.cta.color}">{{ vm.plan.cta.label }}</button>
+      </div>
+
+      <!-- ── Legal note ── -->
+      <p class="legal-note" ng-class="{'hidden-el': !vm.plan.showLegal}">{{ vm.plan.legal }}</p>
+    </div>
+  </div>
+
+
+  <!-- ============================================================
+       §5. ANGULARJS MODULE + CONTROLLER
+       ------------------------------------------------------------
+       Single module / single controller. The controller exposes:
+         vm.plan   →  CMS-editable model (the only thing FHI ships)
+         vm.ui     →  preview-only UI state (panel open, accordions)
+         vm.*()    →  helper functions used by the markup above
+
+       Two-way binding via ng-model on the configurator inputs means
+       editing a field mutates vm.plan directly — the card re-renders
+       in the same digest. There is no manual update() function.
+       ============================================================ -->
+  <script>
+    (function () {
+      'use strict';
+
+      /* --------------------------------------------------------
+       * SVG icon library for the Features list.
+       * Each value is a raw SVG string, trusted once at boot via
+       * $sce.trustAsHtml to be rendered with ng-bind-html.
+       * -------------------------------------------------------- */
+      var ICON_SVGS = {
+        check:  '<svg style="width:12px;height:9px;" width="12" height="9" viewBox="0 0 12 9" fill="none" xmlns="http://www.w3.org/2000/svg">'
+              +   '<path d="M0.75 4.75L3.75 7.75L10.75 0.75" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>'
+              + '</svg>',
+        plus:   '<svg style="width:10px;height:10px;" width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">'
+              +   '<path d="M0.75 4.75H4.75M8.75 4.75H4.75M4.75 4.75V0.75M4.75 4.75V8.75" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>'
+              + '</svg>',
+        star:   '<svg viewBox="0 0 24 24" fill="currentColor">'
+              +   '<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>'
+              + '</svg>',
+        shield: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">'
+              +   '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>'
+              + '</svg>',
+        wifi:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">'
+              +   '<path d="M5 12.55a11 11 0 0 1 14.08 0"></path>'
+              +   '<path d="M1.42 9a16 16 0 0 1 21.16 0"></path>'
+              +   '<path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>'
+              +   '<line x1="12" y1="20" x2="12.01" y2="20"></line>'
+              + '</svg>'
+      };
+
+
+      /* --------------------------------------------------------
+       * MAPPING_DOC
+       * Human-readable field documentation embedded in the JSON
+       * template the configurator lets devs download. Each entry
+       * is a dot-path on vm.plan -> "<type> · <description>".
+       * Update this whenever you add/rename a plan field.
+       * -------------------------------------------------------- */
+      var MAPPING_DOC = {
+        /* Header */
+        'cardLabel':              'string  · Header label above the card (preview only — safe to drop in production).',
+        'badge':                  'string  · Top-left badge text (e.g. "Internet 1G").',
+        'badgeBg':                'color   · Badge background colour, hex (e.g. "#17599C").',
+        'headline':               'string  · Headline rendered on the header gradient.',
+        'headlineSize':           'number  · Headline font-size in px. Range 24 – 60.',
+        'headlineColor':          'color   · Headline text colour, hex.',
+        'headerGradient.top':     'color   · Header gradient START colour, hex.',
+        'headerGradient.bottom':  'color   · Header gradient END colour, hex.',
+
+        /* Price block */
+        'originalPrice':          'number  · Strike-through reference price (shown when show.originalPrice = true).',
+        'currentPrice':           'number  · Active promo price displayed in large type.',
+        'period':                 'string  · Billing period suffix next to the price (e.g. "/mo.").',
+        'priceNote':              'string  · Small grey caption under the price (e.g. "for your first 12 months").',
+        'savings':                'string  · Orange savings badge text. Hidden when show.savings = false.',
+
+        /* Visibility toggles */
+        'show.headline':          'boolean · Show / hide the headline.',
+        'show.originalPrice':     'boolean · Show / hide the strike-through price.',
+        'show.savings':           'boolean · Show / hide the savings badge.',
+
+        /* Price Journey */
+        'journey.enabled':        'boolean · Render the Price Journey accordion at all.',
+        'journey.toggleLabel':    'string  · Text on the accordion toggle (e.g. "See price journey").',
+        'journey.title':          'string  · Optional title shown inside the accordion (empty = hidden).',
+        'journey.savingsText':    'string  · Optional headline inside the journey (e.g. "Save $240/year").',
+        'journey.steps[].period':  'string  · Period label for a step (e.g. "Months 1-3").',
+        'journey.steps[].price':   'string  · Price label for a step (e.g. "$39/mo" or "Free").',
+        'journey.steps[].tag':     'string  · Optional pill above the step (e.g. "Free trial"). Empty = no pill.',
+        'journey.steps[].subtext': 'string  · Small caption below the step price.',
+        'journey.steps[].style':   'enum    · One of "active" | "discounted" | "regular".',
+        'journey.summary.enabled': 'boolean · Show / hide the recap line at the bottom of the journey.',
+        'journey.summary.text':    'string  · Recap copy (e.g. "Free for 3 months, then $39/mo. ...").',
+
+        /* Internet specs */
+        'specs.enabled':          'boolean · Render the Internet specs block.',
+        'specs.showTitle':        'boolean · Show / hide the section title.',
+        'specs.title':            'string  · Section title (e.g. "Internet specs").',
+        'specs.download.value':   'string  · Download speed value (e.g. "1 Gbps").',
+        'specs.download.label':   'string  · Download speed caption (e.g. "download speed").',
+        'specs.download.color':   'color   · Background colour of the download icon circle.',
+        'specs.upload.value':     'string  · Upload speed value.',
+        'specs.upload.label':     'string  · Upload speed caption.',
+        'specs.upload.color':     'color   · Background colour of the upload icon circle.',
+        'specs.usage.value':      'string  · Monthly usage value (e.g. "Unlimited").',
+        'specs.usage.label':      'string  · Monthly usage caption.',
+        'specs.usage.color':      'color   · Background colour of the usage icon circle.',
+
+        /* Features */
+        'features[].text':        'string  · Feature copy shown in the "What\'s included" list.',
+        'features[].icon':        'enum    · Icon key. One of "check" | "plus" | "star" | "shield" | "wifi".',
+        'features[].color':       'color   · Background colour of the icon circle, hex.',
+
+        /* Footer */
+        'cta.label':              'string  · CTA button label (e.g. "Choose This Plan").',
+        'cta.color':              'color   · CTA background colour, hex.',
+        'legal':                  'string  · Legal disclaimer copy at the bottom of the card.',
+        'showLegal':              'boolean · Show / hide the legal disclaimer.'
+      };
+
+
+      /* --------------------------------------------------------
+       * Factory: returns a brand-new copy of the default plan.
+       * Used at boot AND by the "Reset to defaults" button.
+       * In production, replace this with your CMS payload.
+       * -------------------------------------------------------- */
+      function defaultPlan() {
+        return {
+          /* Header */
+          cardLabel:      '🌐 Internet — Rate Card Model',
+          badge:          'Internet 1G',
+          badgeBg:        '#17599C',
+          headline:       'Internet 1G',
+          headlineSize:   48,
+          headlineColor:  '#ed6b1f',
+          headerGradient: { top: '#0a1628', bottom: '#162a4a' },
+
+          /* Price block */
+          originalPrice:  95,
+          currentPrice:   75,
+          period:         '/mo.',
+          priceNote:      'for your first 12 months',
+          savings:        'Save $240 in your first year',
+
+          /* Visibility toggles */
+          show: {
+            headline:      true,
+            originalPrice: true,
+            savings:       true
+          },
+
+          /* Price Journey (hidden by default in production) */
+          journey: {
+            enabled:     false,
+            toggleLabel: 'See price journey',
+            title:       '',
+            savingsText: 'Save $240/year',
+            steps: [
+              { period: 'Months 1-3',  price: 'Free',   tag: 'Free trial', subtext: '3 months on us', style: 'active' },
+              { period: 'Months 4-12', price: '$39/mo', tag: '',           subtext: '$6 off/mo.',     style: 'active' }
+            ],
+            summary: {
+              enabled: true,
+              text:    'Free for 3 months, then $39/mo. through month 12, then $45/mo. ongoing.'
+            }
+          },
+
+          /* Internet specs panel */
+          specs: {
+            enabled:   true,
+            showTitle: true,
+            title:     'Internet specs',
+            download:  { value: '1 Gbps',    label: 'download speed', color: '#2E7DC1' },
+            upload:    { value: '50 Mbps',   label: 'upload speed',   color: '#2E7DC1' },
+            usage:     { value: 'Unlimited', label: 'monthly usage',  color: '#2E7DC1' }
+          },
+
+          /* What's included */
+          features: [
+            { text: 'Ideal for 20+ devices online at the same time', icon: 'check', color: '#2E7DC1' },
+            { text: 'Perfect for streaming, gaming & 4K video',      icon: 'check', color: '#2E7DC1' },
+            { text: 'No contracts — cancel anytime',                  icon: 'plus',  color: '#ed6b1f' }
+          ],
+
+          /* Footer */
+          cta:       { label: 'Choose This Plan', color: '#ed6b1f' },
+          legal:     '*Promotional pricing. $95/mo. starting month 13. Taxes extra.',
+          showLegal: true
+        };
+      }
+
+
+      /* ========================================================
+       * MODULE
+       * ======================================================== */
+      angular.module('fhiRateCard', ['ngSanitize']);
+
+
+      /* ========================================================
+       * CONTROLLER
+       * Bound to <body> via ng-controller="RateCardCtrl as vm".
+       * ======================================================== */
+      angular
+        .module('fhiRateCard')
+        .controller('RateCardCtrl', ['$sce', '$timeout', function ($sce, $timeout) {
+
+          var vm = this;
+
+          /* ----------------------------------------------------
+           * Data model — what the rate card renders from.
+           * In production, replace defaultPlan() with the
+           * payload your CMS / back-end ships.
+           * ---------------------------------------------------- */
+          vm.plan = defaultPlan();
+
+          /* ----------------------------------------------------
+           * UI state — preview-only. Drop this in production
+           * if you remove the configurator AND keep accordions
+           * closed by default (or move the two booleans up).
+           * ---------------------------------------------------- */
+          vm.ui = {
+            panelOpen:    false,   // configurator side-panel
+            journeyOpen:  false,   // Price Journey accordion
+            featuresOpen: false,   // What's included accordion
+            sections: {            // configurator collapsibles
+              badge:    false,
+              pricing:  false,
+              journey:  false,
+              specs:    false,
+              features: false,
+              ctaLegal: false,
+              colors:   false,
+              dataIo:   false      // Export / Import / Template
+            }
+          };
+
+          /* ----------------------------------------------------
+           * Data I/O state — preview-only.
+           * Holds the latest exported JSON string + a status
+           * message for user feedback (success / error / info).
+           * ---------------------------------------------------- */
+          vm.io = {
+            exportText: '',
+            status:     '',
+            statusType: ''   // '' | 'success' | 'error' | 'info'
+          };
+
+          /* ----------------------------------------------------
+           * Card-side helpers — used in markup bindings only.
+           * ---------------------------------------------------- */
+
+          // Inline-style object for the header navy gradient
+          vm.headerGradient = function () {
+            return {
+              background: 'linear-gradient(180deg, '
+                + vm.plan.headerGradient.top    + ' 0%, '
+                + vm.plan.headerGradient.bottom + ' 100%)'
+            };
+          };
+
+          // CSS class hook for an individual journey step
+          vm.stepClass = function (step) {
+            return (step.style === 'active' || step.style === 'discounted')
+              ? step.style
+              : '';
+          };
+
+          // Trust the SVG library once, then expose a cheap lookup
+          var TRUSTED_ICONS = {};
+          Object.keys(ICON_SVGS).forEach(function (name) {
+            TRUSTED_ICONS[name] = $sce.trustAsHtml(ICON_SVGS[name]);
+          });
+          vm.iconSvg = function (name) { return TRUSTED_ICONS[name]; };
+
+
+          /* ----------------------------------------------------
+           * Configurator actions — preview-only.
+           * Safe to delete in production.
+           * ---------------------------------------------------- */
+
+          vm.togglePanel = function () {
+            vm.ui.panelOpen = !vm.ui.panelOpen;
+          };
+
+          vm.toggleSection = function (name) {
+            vm.ui.sections[name] = !vm.ui.sections[name];
+          };
+
+          vm.addFeature = function () {
+            vm.plan.features.push({ text: 'New feature', icon: 'check', color: '#2E7DC1' });
+          };
+          vm.removeFeature = function (index) {
+            vm.plan.features.splice(index, 1);
+          };
+
+          vm.addStep = function () {
+            vm.plan.journey.steps.push({
+              period:  'New period',
+              price:   '$0/mo',
+              tag:     '',
+              subtext: '',
+              style:   'regular'
+            });
+          };
+          vm.removeStep = function (index) {
+            vm.plan.journey.steps.splice(index, 1);
+          };
+
+          // Restore every editable field — and re-close all UI
+          vm.resetAll = function () {
+            vm.plan = defaultPlan();
+            vm.ui.journeyOpen  = false;
+            vm.ui.featuresOpen = false;
+            setStatus('Plan reset to defaults.', 'info');
+          };
+
+
+          /* ----------------------------------------------------
+           * Data I/O actions — preview-only.
+           *
+           * exportJson()       serialise vm.plan, fill the
+           *                    textarea, AND trigger a download.
+           * copyJson()         copy the serialised JSON to the
+           *                    clipboard.
+           * triggerImport()    programmatically click the hidden
+           *                    <input type="file">.
+           * handleImportFile() called by the fileOnChange
+           *                    directive when the user picks a
+           *                    file. Parses JSON, validates,
+           *                    assigns to vm.plan.
+           * downloadTemplate() generate + download an annotated
+           *                    template (mapping + default plan)
+           *                    devs can fill in offline.
+           *
+           * Safe to delete in production along with the rest of
+           * the configurator.
+           * ---------------------------------------------------- */
+
+          vm.exportJson = function () {
+            try {
+              var json = JSON.stringify(vm.plan, null, 2);
+              vm.io.exportText = json;
+              downloadBlob('fhi-rate-card-' + timestamp() + '.json', json);
+              setStatus('Plan exported. JSON shown below and downloaded as a file.', 'success');
+            } catch (e) {
+              setStatus('Export failed: ' + e.message, 'error');
+            }
+          };
+
+          vm.copyJson = function () {
+            if (!vm.io.exportText) {
+              setStatus('Nothing to copy yet — click "Generate JSON" first.', 'info');
+              return;
+            }
+            var text = vm.io.exportText;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+              navigator.clipboard.writeText(text).then(
+                function () { $timeout(function () { setStatus('JSON copied to clipboard.', 'success'); }); },
+                function ()  { $timeout(function () { setStatus('Clipboard copy blocked by the browser.', 'error'); }); }
+              );
+            } else {
+              setStatus('Clipboard API unavailable — select the text manually.', 'error');
+            }
+          };
+
+          vm.triggerImport = function () {
+            var input = document.getElementById('cfg-import-file');
+            if (input) {
+              input.value = '';   // allow re-selecting the same file
+              input.click();
+            }
+          };
+
+          // Apply whatever JSON is currently in the textarea
+          // (useful when devs paste a payload directly).
+          vm.applyPastedJson = function () {
+            if (!vm.io.exportText) {
+              setStatus('Textarea is empty — paste a JSON payload first.', 'info');
+              return;
+            }
+            try {
+              var raw = JSON.parse(vm.io.exportText);
+              var candidate = (raw && typeof raw === 'object' && raw.plan && typeof raw.plan === 'object')
+                ? raw.plan
+                : raw;
+              if (!isValidPlan(candidate)) {
+                setStatus('Invalid payload: missing required fields (e.g. badge, headline, currentPrice).', 'error');
+                return;
+              }
+              vm.plan = candidate;
+              vm.io.exportText = JSON.stringify(vm.plan, null, 2);
+              setStatus('Pasted JSON applied to the card.', 'success');
+            } catch (err) {
+              setStatus('Invalid JSON: ' + err.message, 'error');
+            }
+          };
+
+          vm.handleImportFile = function (files) {
+            if (!files || !files.length) { return; }
+            var file = files[0];
+            var reader = new FileReader();
+            reader.onerror = function () {
+              $timeout(function () { setStatus('Could not read the file.', 'error'); });
+            };
+            reader.onload = function (e) {
+              $timeout(function () {
+                try {
+                  var raw = JSON.parse(e.target.result);
+                  // Accept either { plan: {...} } (template format) or a raw plan payload.
+                  var candidate = (raw && typeof raw === 'object' && raw.plan && typeof raw.plan === 'object')
+                    ? raw.plan
+                    : raw;
+                  if (!isValidPlan(candidate)) {
+                    setStatus('Invalid file: missing required fields (e.g. badge, headline, currentPrice).', 'error');
+                    return;
+                  }
+                  vm.plan = candidate;
+                  vm.io.exportText = JSON.stringify(vm.plan, null, 2);
+                  setStatus('Plan imported from "' + file.name + '". Card refreshed.', 'success');
+                } catch (err) {
+                  setStatus('Invalid JSON: ' + err.message, 'error');
+                }
+              });
+            };
+            reader.readAsText(file);
+          };
+
+          vm.downloadTemplate = function () {
+            var payload = {
+              _about:   'FHI Rate Card — JSON template. Edit the "plan" object below, then re-upload this file via "Upload JSON" in the configurator. The "_mapping" block above documents every supported field.',
+              _version: '1.0',
+              _mapping: MAPPING_DOC,
+              plan:     defaultPlan()
+            };
+            try {
+              var json = JSON.stringify(payload, null, 2);
+              downloadBlob('fhi-rate-card-template.json', json);
+              setStatus('Empty template downloaded (with field mapping).', 'success');
+            } catch (e) {
+              setStatus('Template download failed: ' + e.message, 'error');
+            }
+          };
+
+          /* ----------------------------------------------------
+           * Data I/O helpers — internal.
+           * ---------------------------------------------------- */
+
+          function setStatus(msg, type) {
+            vm.io.status     = msg;
+            vm.io.statusType = type || 'info';
+          }
+
+          function timestamp() {
+            var d = new Date();
+            function p(n) { return n < 10 ? '0' + n : String(n); }
+            return d.getFullYear()
+              + p(d.getMonth() + 1)
+              + p(d.getDate())
+              + '-'
+              + p(d.getHours())
+              + p(d.getMinutes())
+              + p(d.getSeconds());
+          }
+
+          // Minimal structural check so we don't break the card on bad uploads.
+          function isValidPlan(p) {
+            return p
+              && typeof p === 'object'
+              && typeof p.badge        === 'string'
+              && typeof p.headline     === 'string'
+              && typeof p.currentPrice !== 'undefined'
+              && p.headerGradient && typeof p.headerGradient === 'object'
+              && p.cta && typeof p.cta === 'object'
+              && Array.isArray(p.features);
+          }
+
+          // Trigger a file download from a string (no DOM lookups in
+          // the rate card itself — this is configurator-only).
+          function downloadBlob(filename, text) {
+            var blob = new Blob([text], { type: 'application/json;charset=utf-8' });
+            var url  = URL.createObjectURL(blob);
+            var a    = document.createElement('a');
+            a.href     = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            // Give the browser a tick to start the download before revoking.
+            setTimeout(function () { URL.revokeObjectURL(url); }, 0);
+          }
+
+        }])
+
+        /* ----------------------------------------------------
+         * <input type="file"> doesn't support ng-model out of
+         * the box in AngularJS 1.x. This tiny directive bridges
+         * the gap so the configurator can read a chosen file.
+         *
+         *   <input type="file" file-on-change="vm.handleImportFile($files)">
+         *
+         * Safe to delete in production (configurator-only).
+         * ---------------------------------------------------- */
+        .directive('fileOnChange', function () {
+          return {
+            restrict: 'A',
+            link: function (scope, element, attrs) {
+              element.on('change', function (event) {
+                var files = event.target.files;
+                scope.$apply(function () {
+                  scope.$eval(attrs.fileOnChange, { $files: files });
+                });
+              });
+            }
+          };
+        });
+    })();
+  </script>
+</body>
+</html>

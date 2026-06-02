@@ -1,0 +1,62 @@
+ul.post-qual-conversion-internet{
+    list-style:none;
+    padding:0;
+    margin-top:30px;
+    margin-bottom:0;
+}
+
+ul.post-qual-conversion-internet li{
+    margin-bottom: 27px;
+}
+
+ul.post-qual-conversion-internet > p{
+    font-size: 12px;
+}
+
+ul.post-qual-conversion-internet .icon{
+    color:#00549A;
+    font-size:45px;
+}
+
+ul.post-qual-conversion-internet .description,
+ul.post-qual-conversion-internet .description-title-swap{
+    margin-left:10px;
+}
+
+ul.post-qual-conversion-internet .icon.data-usage {
+    font-size: 27px;
+}
+
+ul.post-qual-conversion-internet .icon.icon-download-flip {
+    transform: rotate(180deg);
+}
+
+ul.post-qual-conversion-internet .description span,
+ul.post-qual-conversion-internet .description-title-swap span{
+    display:block;
+}
+ul.post-qual-conversion-internet .description a.tooltip-interactive,
+ul.post-qual-conversion-internet .description span:first-child,
+ul.post-qual-conversion-internet .description-title-swap span:last-child {
+    font-size: 12px;
+    margin-bottom:5px;
+}
+ul.post-qual-conversion-internet .description a.tooltip-interactive{
+    text-decoration: underline;
+}
+ul.post-qual-conversion-internet .description span:first-child,
+ul.post-qual-conversion-internet .description-title-swap span:last-child{
+    color: #555555;
+}
+
+ul.post-qual-conversion-internet .description span:last-child,
+ul.post-qual-conversion-internet .description-title-swap span:first-child{
+    font-size: 18px;
+    color:#111111;
+    margin-bottom:5px;
+}
+
+ul.post-qual-conversion-internet li{
+    display:flex;
+    align-items: center;
+}

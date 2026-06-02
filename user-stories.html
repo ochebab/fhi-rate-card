@@ -1,0 +1,1538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FHI Rate Card — User Stories</title>
+  <style>
+    @font-face {
+      font-family: 'Ambra Sans Text';
+      src: url('../fonts/Ambra-Sans-Text-Regular.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Ambra Sans Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f5f7fa;
+      color: #1a2332;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    .doc-header {
+      background: linear-gradient(180deg, #0a1628 0%, #162a4a 100%);
+      color: #fff;
+      padding: 48px 32px 64px;
+    }
+    .doc-header-inner { max-width: 1100px; margin: 0 auto; }
+    .doc-header-back {
+      display: inline-flex; align-items: center; gap: 8px;
+      color: rgba(255,255,255,0.75);
+      text-decoration: none; font-size: 14px;
+      margin-bottom: 24px; transition: color 0.2s;
+    }
+    .doc-header-back:hover { color: #fff; }
+    .doc-header h1 {
+      font-size: 40px; font-weight: 700;
+      margin-bottom: 12px; line-height: 1.15;
+    }
+    .doc-header p {
+      font-size: 18px; color: rgba(255,255,255,0.8);
+      max-width: 720px;
+    }
+    .doc-header .stack-pills {
+      margin-top: 24px; display: flex; gap: 8px; flex-wrap: wrap;
+    }
+    .stack-pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.15);
+      color: #fff; padding: 6px 12px; border-radius: 30px;
+      font-size: 13px; font-weight: 500;
+    }
+    .stack-pill strong { color: #ed6b1f; font-weight: 700; }
+
+    /* ── Layout ── */
+    .doc-layout {
+      max-width: 1100px; margin: -32px auto 80px;
+      padding: 0 32px;
+      display: grid; grid-template-columns: 240px 1fr;
+      gap: 32px; align-items: start;
+    }
+
+    /* ── Sidebar ── */
+    .doc-nav {
+      position: sticky; top: 24px;
+      background: #fff; border: 1px solid #e5e9f0;
+      border-radius: 16px; padding: 16px;
+      max-height: calc(100vh - 48px); overflow-y: auto;
+    }
+    .doc-nav h3 {
+      font-size: 11px; text-transform: uppercase;
+      letter-spacing: 1px; color: #6b7280;
+      font-weight: 700; padding: 8px 12px;
+    }
+    .doc-nav ol { list-style: none; counter-reset: nav-counter; }
+    .doc-nav ol li { counter-increment: nav-counter; }
+    .doc-nav ol li a {
+      display: flex; align-items: baseline; gap: 8px;
+      padding: 8px 12px; color: #4a5568;
+      text-decoration: none; font-size: 14px;
+      border-radius: 8px; transition: background 0.15s, color 0.15s;
+    }
+    .doc-nav ol li a::before {
+      content: counter(nav-counter);
+      font-size: 11px; color: #9ca3af; font-weight: 600;
+      min-width: 16px;
+    }
+    .doc-nav ol li a:hover { background: #f5f7fa; color: #0a1628; }
+
+    /* ── Content ── */
+    .doc-content {
+      background: #fff; border: 1px solid #e5e9f0;
+      border-radius: 16px; padding: 40px 48px;
+    }
+    .doc-content section { padding-top: 24px; scroll-margin-top: 20px; }
+    .doc-content section + section {
+      margin-top: 32px; border-top: 1px solid #eef0f4; padding-top: 40px;
+    }
+    .doc-content h2 {
+      font-size: 28px; font-weight: 700; color: #0a1628;
+      margin-bottom: 8px; display: flex; align-items: center; gap: 12px;
+    }
+    .doc-content h2 .num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 32px; height: 32px;
+      background: #ed6b1f; color: #fff;
+      border-radius: 8px; font-size: 16px; font-weight: 700;
+    }
+    .doc-content h3 {
+      font-size: 18px; font-weight: 700; color: #0a1628;
+      margin: 24px 0 12px;
+    }
+    .doc-content h4 {
+      font-size: 15px; font-weight: 700; color: #0a1628;
+      margin: 16px 0 8px;
+    }
+    .doc-content p {
+      color: #4a5568; margin-bottom: 12px; font-size: 15px;
+    }
+    .doc-content ul, .doc-content ol.numbered {
+      padding-left: 20px; margin: 8px 0 16px; color: #4a5568;
+    }
+    .doc-content ul li, .doc-content ol.numbered li {
+      margin-bottom: 6px; font-size: 15px;
+    }
+    code.inline {
+      background: #f0f3f7; color: #c026d3;
+      padding: 2px 6px; border-radius: 4px;
+      font-size: 0.9em;
+      font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, monospace;
+    }
+
+    /* ── Callouts ── */
+    .callout {
+      border-left: 4px solid #ed6b1f; background: #fff7f0;
+      padding: 14px 18px; border-radius: 6px;
+      margin: 16px 0; color: #5d3a1a; font-size: 14px;
+    }
+    .callout.info { border-color: #2E7DC1; background: #f0f6fc; color: #1e3a5f; }
+    .callout strong { display: block; margin-bottom: 4px; }
+
+    /* ── Tables ── */
+    table {
+      width: 100%; border-collapse: collapse;
+      margin: 12px 0 20px; font-size: 14px;
+    }
+    th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid #eef0f4; }
+    th {
+      background: #f5f7fa; color: #0a1628;
+      font-weight: 700; font-size: 13px;
+      text-transform: uppercase; letter-spacing: 0.5px;
+    }
+
+    /* ── Persona Cards ── */
+    .persona-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 16px; margin: 16px 0 8px;
+    }
+    .persona-card {
+      background: #f5f7fa; border: 1px solid #e5e9f0;
+      border-radius: 12px; padding: 20px;
+      transition: border-color 0.15s, transform 0.15s;
+    }
+    .persona-card:hover { border-color: #ed6b1f; transform: translateY(-2px); }
+    .persona-avatar {
+      width: 48px; height: 48px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      background: #136BA3; color: #fff;
+      font-weight: 700; font-size: 16px;
+      margin-bottom: 12px;
+    }
+    .persona-avatar.orange { background: #ed6b1f; }
+    .persona-avatar.green  { background: #2c8a5c; }
+    .persona-avatar.purple { background: #6b46c1; }
+    .persona-avatar.teal   { background: #2E7DC1; }
+    .persona-avatar.gray   { background: #4a5568; }
+    .persona-name {
+      font-size: 16px; font-weight: 700; color: #0a1628; margin-bottom: 2px;
+    }
+    .persona-tag {
+      font-size: 12px; color: #ed6b1f; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;
+    }
+    .persona-card p {
+      font-size: 13px; color: #4a5568; margin-bottom: 8px; line-height: 1.5;
+    }
+    .persona-card p strong {
+      display: block; font-size: 11px;
+      text-transform: uppercase; letter-spacing: 0.5px;
+      color: #6b7280; font-weight: 700;
+      margin-bottom: 2px; margin-top: 6px;
+    }
+
+    /* ── Epic ── */
+    .epic-header {
+      display: flex; align-items: center; gap: 12px;
+      margin: 24px 0 8px; padding: 14px 16px;
+      background: linear-gradient(135deg, #0a1628 0%, #162a4a 100%);
+      border-radius: 10px; color: #fff;
+    }
+    .epic-header .epic-code {
+      background: #ed6b1f; color: #fff;
+      padding: 4px 10px; border-radius: 6px;
+      font-size: 12px; font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+    .epic-header .epic-title {
+      font-size: 16px; font-weight: 700;
+    }
+    .epic-goal {
+      font-size: 14px; color: #4a5568;
+      margin-bottom: 12px; font-style: italic;
+    }
+
+    /* ── Story Card ── */
+    .story {
+      background: #fff; border: 1px solid #e5e9f0;
+      border-radius: 12px; padding: 20px 24px;
+      margin-bottom: 16px;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .story:hover { border-color: #cbd5e0; box-shadow: 0 4px 12px rgba(0,0,0,0.04); }
+
+    .story-head {
+      display: flex; justify-content: space-between;
+      align-items: flex-start; gap: 12px; margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+    .story-id {
+      font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, monospace;
+      font-size: 12px; font-weight: 700;
+      color: #ed6b1f; background: #fff7f0;
+      padding: 3px 8px; border-radius: 5px;
+      letter-spacing: 0.5px;
+    }
+    .story-badges { display: flex; gap: 6px; flex-wrap: wrap; }
+    .badge {
+      font-size: 11px; font-weight: 700;
+      padding: 3px 9px; border-radius: 20px;
+      text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .badge.must { background: #fef0f0; color: #b91c1c; }
+    .badge.should { background: #fff7e0; color: #b45309; }
+    .badge.could { background: #f0f9ff; color: #1e3a8a; }
+    .badge.size-s { background: #e8f5ee; color: #2c8a5c; }
+    .badge.size-m { background: #e8f0fb; color: #1e40af; }
+    .badge.size-l { background: #fce8f3; color: #9d174d; }
+
+    .story-title {
+      font-size: 16px; font-weight: 700;
+      color: #0a1628; margin-bottom: 12px; line-height: 1.4;
+    }
+    .story-narrative {
+      background: #f5f7fa; border-left: 3px solid #ed6b1f;
+      padding: 12px 14px; border-radius: 6px;
+      font-size: 14px; color: #2d3748; line-height: 1.65;
+      margin-bottom: 12px;
+    }
+    .story-narrative em {
+      color: #ed6b1f; font-style: normal; font-weight: 700;
+    }
+
+    .ac-title {
+      font-size: 12px; text-transform: uppercase;
+      letter-spacing: 0.8px; color: #6b7280;
+      font-weight: 700; margin: 12px 0 6px;
+    }
+    .ac-list {
+      list-style: none; padding: 0; margin: 0 0 4px;
+    }
+    .ac-list li {
+      font-size: 13.5px; color: #4a5568;
+      padding: 6px 0 6px 26px; position: relative;
+      line-height: 1.55; border: none;
+    }
+    .ac-list li::before {
+      content: ''; position: absolute;
+      left: 8px; top: 12px;
+      width: 6px; height: 6px;
+      border-radius: 50%; background: #2E7DC1;
+    }
+    .ac-list li strong.gwt {
+      display: inline-block;
+      font-size: 10px; font-weight: 800;
+      text-transform: uppercase; letter-spacing: 0.5px;
+      color: #ed6b1f; min-width: 50px; margin-right: 6px;
+    }
+
+    .story-meta-row {
+      display: flex; flex-wrap: wrap; gap: 16px;
+      font-size: 12px; color: #6b7280;
+      margin-top: 10px; padding-top: 10px;
+      border-top: 1px dashed #eef0f4;
+    }
+    .story-meta-row span strong {
+      color: #0a1628; font-weight: 700; margin-right: 4px;
+    }
+
+    /* ── DoD checklist ── */
+    .dod {
+      background: #fff; border: 1px solid #e5e9f0;
+      border-radius: 12px; padding: 20px 24px; margin: 16px 0;
+    }
+    .dod ul { list-style: none; padding: 0; margin: 0; }
+    .dod ul li {
+      font-size: 14px; padding: 8px 0 8px 28px;
+      position: relative; border-bottom: 1px dashed #eef0f4;
+    }
+    .dod ul li:last-child { border-bottom: none; }
+    .dod ul li::before {
+      content: ''; position: absolute;
+      left: 0; top: 12px;
+      width: 16px; height: 16px;
+      border: 1.5px solid #ed6b1f; border-radius: 4px;
+      background: #fff;
+    }
+
+    /* ── JIRA-ready ── */
+    .export-bar {
+      background: linear-gradient(135deg, #fff7f0 0%, #fff 100%);
+      border: 1px solid #f6c89f;
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin-bottom: 24px;
+      display: flex; flex-wrap: wrap;
+      gap: 14px; align-items: center;
+      justify-content: space-between;
+    }
+    .export-msg p { margin: 0; font-size: 13.5px; color: #5d3a1a; }
+    .export-msg p strong { color: #0a1628; }
+    .export-msg code { font-size: 12px; }
+    .export-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .copy-btn {
+      font-family: inherit; font-size: 12px; font-weight: 700;
+      padding: 7px 14px;
+      background: #0a1628; color: #fff;
+      border: none; border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+      white-space: nowrap;
+      display: inline-flex; align-items: center; gap: 6px;
+    }
+    .copy-btn:hover { background: #ed6b1f; transform: translateY(-1px); }
+    .copy-btn.copied { background: #2c8a5c; }
+    .export-actions .copy-btn { background: #ed6b1f; }
+    .export-actions .copy-btn:hover { background: #0a1628; }
+    .export-actions .copy-btn.copied { background: #2c8a5c; }
+
+    .jira-bar {
+      margin-top: 14px; padding-top: 12px;
+      border-top: 1px dashed #eef0f4;
+      display: flex; flex-wrap: wrap;
+      gap: 10px; align-items: center;
+      justify-content: space-between;
+    }
+    .jira-fields { display: flex; flex-wrap: wrap; gap: 6px; }
+    .jira-fields span {
+      font-size: 11.5px; color: #4a5568;
+      background: #f5f7fa;
+      padding: 4px 9px;
+      border-radius: 5px;
+      border: 1px solid #e5e9f0;
+      white-space: nowrap;
+    }
+    .jira-fields span strong {
+      color: #ed6b1f; font-weight: 700;
+      font-size: 9.5px; text-transform: uppercase;
+      letter-spacing: 0.5px; margin-right: 5px;
+    }
+
+    /* ── Mobile ── */
+    @media (max-width: 900px) {
+      .doc-layout { grid-template-columns: 1fr; }
+      .doc-nav { position: static; max-height: none; }
+      .doc-content { padding: 24px; }
+      .doc-header { padding: 32px 20px 48px; }
+      .doc-header h1 { font-size: 28px; }
+      .doc-header p { font-size: 15px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="doc-header">
+    <div class="doc-header-inner">
+      <a href="../template.html" class="doc-header-back">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+        Back to Rate Card Builder
+      </a>
+      <h1>FHI Rate Card — User Stories</h1>
+      <p>Product backlog for the Internet rate card pricing component. Written in INVEST format with Gherkin (Given / When / Then) acceptance criteria, prioritised with MoSCoW and sized in T-shirt sizes. Use this document to align engineering, design, QA, and content teams on the expected customer experience.</p>
+      <div class="stack-pills">
+        <span class="stack-pill">Format: <strong>INVEST + GWT</strong></span>
+        <span class="stack-pill">Prioritisation: <strong>MoSCoW</strong></span>
+        <span class="stack-pill">Sizing: <strong>S / M / L</strong></span>
+        <span class="stack-pill">Implementation: <strong></strong>AngularJS 1.8.2</strong></span>
+        <span class="stack-pill">Audience: PO · Dev · QA · UX</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Layout -->
+  <div class="doc-layout">
+
+    <!-- Sidebar -->
+    <nav class="doc-nav">
+      <h3>On this page</h3>
+      <ol>
+        <li><a href="#overview">Overview &amp; conventions</a></li>
+        <li><a href="#personas">Personas</a></li>
+        <li><a href="#epics-map">Epics map</a></li>
+        <li><a href="#epic-browse">Epic A · Browse &amp; evaluate</a></li>
+        <li><a href="#epic-transparency">Epic B · Pricing transparency</a></li>
+        <li><a href="#epic-fit">Epic C · Plan fit (specs)</a></li>
+        <li><a href="#epic-features">Epic D · What's included</a></li>
+        <li><a href="#epic-convert">Epic E · Convert</a></li>
+        <li><a href="#epic-a11y">Epic F · Accessibility</a></li>
+        <li><a href="#epic-mobile">Epic G · Mobile experience</a></li>
+        <li><a href="#epic-editor">Epic H · Editor / CMS</a></li>
+        <li><a href="#dod">Definition of Done</a></li>
+        <li><a href="#glossary">Glossary</a></li>
+      </ol>
+    </nav>
+
+    <!-- Content -->
+    <main class="doc-content">
+
+      <!-- JIRA Export Bar -->
+      <div class="export-bar">
+        <div class="export-msg">
+          <p><strong>Ready to ship to JIRA.</strong> Use the <code class="inline">📋 Copy for JIRA</code> button on any story to copy a wiki-markup ticket, or export the whole backlog as a CSV ready for JIRA's importer.</p>
+        </div>
+        <div class="export-actions">
+          <button class="copy-btn" id="btn-copy-csv" type="button">📋 Copy all (CSV)</button>
+          <button class="copy-btn" id="btn-download-csv" type="button">⬇ Download CSV</button>
+        </div>
+      </div>
+
+      <!-- 1. Overview -->
+      <section id="overview">
+        <h2><span class="num">1</span> Overview &amp; conventions</h2>
+        <p>This document is the single source of truth for the customer-facing behaviour of the FHI Internet rate card. It complements the <a href="instruction.html" style="color:#ed6b1f;font-weight:600;">developer documentation</a>: where the dev doc describes <em>how</em> to build, this one captures <em>why</em> and <em>for whom</em>.</p>
+        <p>The reference implementation ships in <code class="inline">template.html</code> as a single-controller <strong>AngularJS 1.8.2</strong> module (<code class="inline">RateCardCtrl as vm</code>, payload bound to <code class="inline">vm.plan</code>). Every “Component” reference inside a story points at a CSS class in that file; every CMS-editable field maps to a single path on <code class="inline">vm.plan</code> documented in the dev guide.</p>
+
+        <h3>How to read a story</h3>
+        <p>Every story follows the canonical Connextra format and is paired with acceptance criteria in Gherkin syntax. Stories are also tagged so the team can plan and slice work.</p>
+
+        <table>
+          <thead>
+            <tr><th>Tag</th><th>Meaning</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><span class="badge must">MUST</span></td><td>Required for first launch — non-negotiable for the MVP.</td></tr>
+            <tr><td><span class="badge should">SHOULD</span></td><td>High value, ship soon after MUST. Skipping must be justified.</td></tr>
+            <tr><td><span class="badge could">COULD</span></td><td>Nice to have, ship if capacity allows.</td></tr>
+            <tr><td><span class="badge size-s">S</span></td><td>Small — &lt; 1 dev-day, single file.</td></tr>
+            <tr><td><span class="badge size-m">M</span></td><td>Medium — 1 to 3 dev-days, spans 2–3 files.</td></tr>
+            <tr><td><span class="badge size-l">L</span></td><td>Large — 3+ dev-days, may cross domains (CMS + front).</td></tr>
+          </tbody>
+        </table>
+
+        <div class="callout info">
+          <strong>Source of truth</strong>
+          When a story conflicts with the live preview, the story wins. Update the implementation and notify the PO. When acceptance criteria conflict with the developer documentation, raise the issue in refinement before coding.
+        </div>
+
+        <h3>Story ID schema</h3>
+        <p>Every story has a stable ID like <code class="inline">RC-A-01</code>:</p>
+        <ul>
+          <li><code class="inline">RC</code> — Rate Card product area.</li>
+          <li><code class="inline">A…H</code> — Epic letter (see <a href="#epics-map" style="color:#ed6b1f;">Epics map</a>).</li>
+          <li><code class="inline">01…</code> — Sequential number within the epic.</li>
+        </ul>
+        <p>IDs are stable across versions. If a story is rewritten, keep the ID and bump the title.</p>
+      </section>
+
+      <!-- 2. Personas -->
+      <section id="personas">
+        <h2><span class="num">2</span> Personas</h2>
+        <p>Six personas drive the backlog. They are composite, not real customers, but each maps to a real segment we can measure (analytics cohorts, support tickets, A11y audits, CMS editor logs).</p>
+
+        <div class="persona-grid">
+
+          <div class="persona-card">
+            <div class="persona-avatar orange">SH</div>
+            <div class="persona-name">Sarah, "The Shopper"</div>
+            <div class="persona-tag">Comparison cohort · 38% of visits</div>
+            <p>34, busy parent, comparing 2–3 ISP plans across tabs. Visits the page from a Google search.</p>
+            <p><strong>Goals</strong>Find the cheapest plan that covers her family's streaming.</p>
+            <p><strong>Frustrations</strong>Hidden long-term costs, marketing fluff, slow pages.</p>
+          </div>
+
+          <div class="persona-card">
+            <div class="persona-avatar">MK</div>
+            <div class="persona-name">Marc, "The Skeptic"</div>
+            <div class="persona-tag">Price-sensitive · 22% of visits</div>
+            <p>52, mistrusts promo pricing. Will scroll for fine print before clicking any CTA.</p>
+            <p><strong>Goals</strong>See the full price evolution and total cost over 24 months.</p>
+            <p><strong>Frustrations</strong>"Starting at" prices, asterisks without context.</p>
+          </div>
+
+          <div class="persona-card">
+            <div class="persona-avatar green">LE</div>
+            <div class="persona-name">Léa, "The Power User"</div>
+            <div class="persona-tag">Spec-driven · 14% of visits</div>
+            <p>28, gamer / streamer. Knows what Gbps, latency, and "unlimited" actually mean.</p>
+            <p><strong>Goals</strong>Confirm bandwidth and data allowance match her usage.</p>
+            <p><strong>Frustrations</strong>Vague speeds, soft data caps disguised as unlimited.</p>
+          </div>
+
+          <div class="persona-card">
+            <div class="persona-avatar gray">JP</div>
+            <div class="persona-name">Jean-Pierre, "The Senior"</div>
+            <div class="persona-tag">Low digital literacy · 9% of visits</div>
+            <p>67, retired. Sometimes uses a magnifier or 200% zoom. Calls support after browsing.</p>
+            <p><strong>Goals</strong>Read a clear single price and a phone number / clear CTA.</p>
+            <p><strong>Frustrations</strong>Small text, jargon, cluttered layouts.</p>
+          </div>
+
+          <div class="persona-card">
+            <div class="persona-avatar purple">AI</div>
+            <div class="persona-name">Aïcha, "The Screen-Reader User"</div>
+            <div class="persona-tag">Assistive tech · 4% of visits</div>
+            <p>41, blind, uses VoiceOver on iOS and NVDA on Windows. Shops independently.</p>
+            <p><strong>Goals</strong>Hear plan, price, and CTA announced in logical reading order.</p>
+            <p><strong>Frustrations</strong>Decorative SVGs without alt, toggles that don't announce state.</p>
+          </div>
+
+          <div class="persona-card">
+            <div class="persona-avatar teal">PA</div>
+            <div class="persona-name">Pat, "The Editor"</div>
+            <div class="persona-tag">Internal CMS user · 100% of edits</div>
+            <p>Telus content manager. Updates promo data weekly across multiple cards.</p>
+            <p><strong>Goals</strong>Change prices, badges, features, and visibility without involving dev.</p>
+            <p><strong>Frustrations</strong>Hard-coded copy, missing toggles, breaking the layout on save.</p>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- 3. Epics map -->
+      <section id="epics-map">
+        <h2><span class="num">3</span> Epics map</h2>
+        <p>The backlog is organised into eight epics. Each epic groups stories that share a single customer outcome.</p>
+
+        <table>
+          <thead>
+            <tr><th>Epic</th><th>Outcome</th><th>Primary persona</th><th>Stories</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>A — Browse &amp; evaluate</strong></td><td>Recognise the plan and its core price in &lt; 3 seconds.</td><td>Sarah</td><td>3</td></tr>
+            <tr><td><strong>B — Pricing transparency</strong></td><td>Understand the full price evolution before clicking.</td><td>Marc</td><td>4</td></tr>
+            <tr><td><strong>C — Plan fit (specs)</strong></td><td>Confirm the plan matches technical needs.</td><td>Léa</td><td>2</td></tr>
+            <tr><td><strong>D — What's included</strong></td><td>Scan benefits and reassure the decision.</td><td>Sarah</td><td>2</td></tr>
+            <tr><td><strong>E — Convert</strong></td><td>Move from interest to action without friction.</td><td>Sarah / Marc</td><td>3</td></tr>
+            <tr><td><strong>F — Accessibility</strong></td><td>Use the card without sight or mouse.</td><td>Aïcha / Jean-Pierre</td><td>4</td></tr>
+            <tr><td><strong>G — Mobile experience</strong></td><td>Read and act on a phone-sized screen.</td><td>Sarah</td><td>3</td></tr>
+            <tr><td><strong>H — Editor / CMS</strong></td><td>Configure the card without code.</td><td>Pat</td><td>4</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- 4. Epic A · Browse & evaluate -->
+      <section id="epic-browse">
+        <h2><span class="num">4</span> Epic A · Browse &amp; evaluate</h2>
+        <p class="epic-goal">Outcome — A shopper recognises the plan name and current promo price within 3 seconds of the card entering the viewport.</p>
+
+        <!-- A-01 -->
+        <article class="story">
+          <div class="story-head">
+            <span class="story-id">RC-A-01</span>
+            <div class="story-badges">
+              <span class="badge must">MUST</span>
+              <span class="badge size-s">S</span>
+            </div>
+          </div>
+          <div class="story-title">Identify the plan at a glance</div>
+          <div class="story-narrative">
+            <em>As</em> a comparison shopper (Sarah),<br>
+            <em>I want</em> the plan badge and headline to be the first elements I see,<br>
+            <em>so that</em> I can confirm I'm looking at the right product in under one second.
+          </div>
+          <div class="ac-title">Acceptance criteria</div>
+          <ul class="ac-list">
+            <li><strong class="gwt">Given</strong> the rate card is rendered with a configured badge and headline,</li>
+            <li><strong class="gwt">When</strong> the card enters the viewport,</li>
+            <li><strong class="gwt">Then</strong> the badge pill is visible at the top of the card with background <code class="inline">#17599C</code> and white text.</li>
+            <li><strong class="gwt">And</strong> the headline is rendered below the badge in brand orange <code class="inline">#ed6b1f</code> using the Ambra Sans Text font at 40px (desktop) / 32px (mobile).</li>
+            <li><strong class="gwt">And</strong> both are above the fold on a 375×667 viewport.</li>
+          </ul>
+          <div class="story-meta-row">
+            <span><strong>Component:</strong> <code class="inline">.plan-badge</code>, <code class="inline">.plan-headline</code></span>
+            <span><strong>Persona:</strong> Sarah</span>
+            <span><strong>KPI:</strong> Time-to-recognition &lt; 3s</span>
+          </div>
+        </article>
+
+        <!-- A-02 -->
+        <article class="story">
+          <div class="story-head">
+            <span class="story-id">RC-A-02</span>
+            <div class="story-badges">
+              <span class="badge must">MUST</span>
+              <span class="badge size-s">S</span>
+            </div>
+          </div>
+          <div class="story-title">Understand the price at a glance</div>
+          <div class="story-narrative">
+            <em>As</em> a comparison shopper,<br>
+            <em>I want</em> the discounted price to dominate the card,<br>
+            <em>so that</em> I can compare it against competitors without reading the surrounding copy.
+          </div>
+          <div class="ac-title">Acceptance criteria</div>
+          <ul class="ac-list">
+            <li><strong class="gwt">Given</strong> a plan with a current price and a regular price,</li>
+            <li><strong class="gwt">Then</strong> the current amount is the largest text in the card (64px desktop / 48px mobile, weight 800).</li>
+            <li><strong class="gwt">And</strong> the "$" sign sits to the left at 32px, top-aligned with a 2px gap.</li>
+            <li><strong class="gwt">And</strong> the period suffix (<code class="inline">/mo.</code>) is shown to the right at 16px.</li>
+            <li><strong class="gwt">And</strong> the regular price is rendered above with a strikethrough.</li>
+          </ul>
+          <div class="story-meta-row">
+            <span><strong>Component:</strong> <code class="inline">.hero-price</code></span>
+            <span><strong>Persona:</strong> Sarah</span>
+            <span><strong>KPI:</strong> Price visibility on heatmap</span>
+          </div>
+        </article>
+
+        <!-- A-03 -->
+        <article class="story">
+          <div class="story-head">
+            <span class="story-id">RC-A-03</span>
+            <div class="story-badges">
+              <span class="badge should">SHOULD</span>
+              <span class="badge size-s">S</span>
+            </div>
+          </div>
+          <div class="story-title">See total promo savings up front</div>
+          <div class="story-narrative">
+            <em>As</em> a price-sensitive shopper,<br>
+            <em>I want</em> a "Save $X in your first year" badge near the price,<br>
+            <em>so that</em> I understand the value of the promo without scrolling.
+          </div>
+          <div class="ac-title">Acceptance criteria</div>
+          <ul class="ac-list">
+            <li><strong class="gwt">Given</strong> a savings label is configured,</li>
+            <li><strong class="gwt">Then</strong> the savings pill is rendered under the price block with an orange background <code class="inline">#ed6b1f</code> and white text.</li>
+            <li><strong class="gwt">And</strong> the pill contains a piggy-bank pictogram (18×24.75) on the left.</li>
+            <li><strong class="gwt">And</strong> the pill is hidden when the editor leaves the field empty.</li>
+          </ul>
+          <div class="story-meta-row">
+            <span><strong>Component:</strong> <code class="inline">.savings-label</code></span>
+            <span><strong>Persona:</strong> Marc</span>
+          </div>
+        </article>
+      </section>
+
+      <!-- 5. Epic B · Pricing transparency -->
+      <section id="epic-transparency">
+        <h2><span class="num">5</span> Epic B · Pricing transparency</h2>
+        <p class="epic-goal">Outcome — A skeptical shopper trusts the promo because they can preview every price step before signing up.</p>
+
+        <!-- B-01 -->
+        <article class="story">
+          <div class="story-head">
+            <span class="story-id">RC-B-01</span>
+            <div class="story-badges">
+              <span class="badge must">MUST</span>
+              <span class="badge size-m">M</span>
+            </div>
+          </div>
+          <div class="story-title">Reveal the Price Journey on demand</div>
+          <div class="story-narrative">
+            <em>As</em> Marc the skeptic,<br>
+            <em>I want</em> to expand a "See price journey" panel,<br>
+            <em>so that</em> I can review every price step from month 1 to the end of the promo without leaving the card.
+          </div>
+          <div class="ac-title">Acceptance criteria</div>
+          <ul class="ac-list">
+            <li><strong class="gwt">Given</strong> the editor has enabled "Show Price Journey" in the CMS,</li>
+            <li><strong class="gwt">When</strong> a user taps or clicks the toggle bar,</li>
+            <li><strong class="gwt">Then</strong> the journey panel expands with a 0.3s max-height transition.</li>
+            <li><strong class="gwt">And</strong> the toggle's <code class="inline">aria-expanded</code> flips to <code class="inline">true</code>.</li>
+            <li><strong class="gwt">And</strong> the orange chevron arrow rotates 180°.</li>
+            <li><strong class="gwt">And</strong> the panel is closed by default on first render.</li>
+          </ul>
+          <div class="story-meta-row">
+            <span><strong>Component:</strong> <code class="inline">.breakdown-toggle</code> + <code class="inline">.price-journey</code></span>
+            <span><strong>Persona:</strong> Marc</span>
+          </div>
+        </article>
+
+        <!-- B-02 -->
+        <article class="story">
+          <div class="story-head">
+            <span class="story-id">RC-B-02</span>
+            <div class="story-badges">
+              <span class="badge must">MUST</span>
+              <span class="badge size-m">M</span>
+            </div>
+          </div>
+          <div class="story-title">Visualise each pricing period as a step</div>
+          <div class="story-narrative">
+            <em>As</em> a budget-planner,<br>
+            <em>I want</em> each pricing period rendered as a stand-alone card with period, price, optional tag, and optional sub-text,<br>
+            <em>so that</em> I can compare them side by side.
+          </div>
+          <div class="ac-title">Acceptance criteria</div>
+          <ul class="ac-list">
+            <li><strong class="gwt">Given</strong> N journey steps are configured,</li>
+            <li><strong class="gwt">Then</strong> each step is rendered as a rounded card (radius 16px) inside <code class="inline">.journey-steps</code>.</li>
+            <li><strong class="gwt">And</strong> active / discounted steps use a blue fill (<code class="inline">#136BA3</code> / <code class="inline">#0d4d7a</code>) with white text.</li>
+            <li><strong class="gwt">And</strong> regular steps use a grey fill (<code class="inline">#f0f1f3</code>) with dark text.</li>
+            <li><strong class="gwt">And</strong> each step displays a period (13px, weight 500), a price (26px, weight 800), and optional sub-text (13px).</li>
+            <li><strong class="gwt">And</strong> each non-first step is preceded by an orange chevron <code class="inline">›</code> (27px, <code class="inline">#ed6b1f</code>).</li>
+          </ul>
+          <div class="story-meta-row">
+            <span><strong>Component:</strong> <code class="inline">.journey-step</code> + <code class="inline">.journey-chevron</code></span>
+            <span><strong>Persona:</strong> Marc, Sarah</span>
+          </div>
+        </article>
+
+        <!-- B-03 -->
+        <article class="story">
+          <div class="story-head">
+            <span class="story-id">RC-B-03</span>
+            <div class="story-badges">
+              <span class="badge should">SHOULD</span>
+              <span class="badge size-s">S</span>
+            </div>
+          </div>
+          <div class="story-title">Highlight the current step with a tag</div>
+          <div class="story-narrative">
+            <em>As</em> a curious shopper,<br>
+            <em>I want</em> a floating pill tag on one of the steps (e.g. "Free trial", "NOW"),<br>
+            <em>so that</em> I instantly map the displayed price to a moment in time.
+          </div>
+          <div class="ac-title">Acceptance criteria</div>
+          <ul class="ac-list">
+            <li><strong class="gwt">Given</strong> a step has a tag value,</li>
+            <li><strong class="gwt">Then</strong> the tag is rendered as an orange pill (<code class="inline">#ed6b1f</code>) floating <code class="inline">-12px</code> above the step.</li>
+            <li><strong class="gwt">And</strong> the tag text is 13px / weight 700 / white, with padding <code class="inline">4px 10px</code>.</li>
+            <li><strong class="gwt">And</strong> a step without a tag value renders without any pill.</li>
+          </ul>
+          <div class="story-meta-row">
+            <span><strong>Component:</strong> <code class="inline">.step-tag</code></span>
+            <span><strong>Persona:</strong> Sarah, Marc</span>
+          </div>
+        </article>
+
+        <!-- B-04 -->
+        <article class="story">
+          <div class="story-head">
+            <span class="story-id">RC-B-04</span>
+            <div class="story-badges">
+              <span class="badge should">SHOULD</span>
+              <span class="badge size-s">S</span>
+            </div>
+          </div>
+          <div class="story-title">Summarise yearly savings inside the journey header</div>
+          <div class="story-narrative">
+            <em>As</em> Marc,<br>
+            <em>I want</em> a "Save $X/year" summary inside the Price Journey header,<br>
+            <em>so that</em> I can quickly grasp the cumulative promo value while reading the breakdown.
+          </div>
+          <div class="ac-title">Acceptance criteria</div>
+          <ul class="ac-list">
+            <li><strong class="gwt">Given</strong> a yearly savings value is configured,</li>
+            <li><strong class="gwt">Then</strong> the journey header renders the savings line on the right with an orange dollar pictogram and the text "Save $X/year".</li>
+            <li><strong class="gwt">And</strong> the savings text is 13px, weight 600, colour <code class="inline">#ed6b1f</code>.</li>
+            <li><strong class="gwt">And</strong> when the value is empty the line is hidden but the journey is still rendered.</li>
+          </ul>
+          <div class="story-meta-row">
+            <span><strong>Component:</strong> <code class="inline">.journey-header</code> + <code class="inline">.journey-savings</code></span>
+            <span><strong>Persona:</strong> Marc</span>
+          </div>
+        </article>
+      </section>
+
+      <!-- 6. Epic C · Plan fit -->
+      <section id="epic-fit">
+        <h2><span class="num">6</span> Epic C · Plan fit (specs)</h2>
+        <p class="epic-goal">Outcome — A power user verifies the technical specs match their household needs.</p>
+
+        <!-- C-01 -->
+        <article class="story">
+          <div class="story-head">
+            <span class="story-id">RC-C-01</span>
+            <div class="story-badges">
+              <span class="badge must">MUST</span>
+              <span class="badge size-s">S</span>
+            </div>
+          </div>
+          <div class="story-title">Read internet speeds with a clear value/label split</div>
+          <div class="story-narrative">
+            <em>As</em> Léa the power user,<br>
+            <em>I want</em> download / upload / usage rendered as <strong>bold value + plain label</strong> rows,<br>
+            <em>so that</em> I can scan the figures in one glance.
+          </div>
+          <div class="ac-title">Acceptance criteria</div>
+          <ul class="ac-list">
+            <li><strong class="gwt">Given</strong> internet specs are configured for a plan,</li>
+            <li><strong class="gwt">Then</strong> three rows render: download, upload, monthly usage.</li>
+            <li><strong class="gwt">And</strong> each row has a 24×24 circular icon (background <code class="inline">#2E7DC1</code>) on the left.</li>
+            <li><strong class="gwt">And</strong> the value is bold (weight 900) and the descriptive label is regular weight on the same line.</li>
+            <li><strong class="gwt">And</strong> rows are spaced 12px apart vertically.</li>
+            <li><strong class="gwt">And</strong> font size is 16px desktop / 14px mobile.</li>
+          </ul>
+          <div class="story-meta-row">
+            <span><strong>Component:</strong> <code class="inline">.internet-specs</code> + <code class="inline">.speed-item</code></span>
+            <span><strong>Persona:</strong> Léa</span>
+          </div>
+        </article>
+
+        <!-- C-02 -->
+        <article class="story">
+          <div class="story-head">
+            <span class="story-id">RC-C-02</span>
+            <div class="story-badges">
+              <span class="badge should">SHOULD</span>
+              <span class="badge size-s">S</span>
+            </div>
+          </div>
+          <div class="story-title">Verify the data allowance is unlimited</div>
+          <div class="story-narrative">
+            <em>As</em> a streaming household,<br>
+            <em>I want</em> to see explicitly that monthly usage is <em>Unlimited</em>,<br>
+            <em>so that</em> I avoid surprise overage fees.
+          </div>
+          <div class="ac-title">Acceptance criteria</div>
+          <ul class="ac-list">
+            <li><strong class="gwt">Given</strong> the usage value is "Unlimited",</li>
+            <li><strong class="gwt">Then</strong> the usage row renders the infinity pictogram (16×8) inside the blue circle.</li>
+            <li><strong class="gwt">And</strong> the value "Unlimited" is bold and the label "monthly usage" stays regular.</li>
+          </ul>
+          <div class="story-meta-row">
+            <span><strong>Component:</strong> <code class="inline">.speed-item.usage</code></span>
+            <span><strong>Persona:</strong> Léa, Sarah</span>
+          </div>
+        </article>
+      </section>
+
+      <!-- 7. Epic D · Features -->
+      <section id="epic-features">
+        <h2><span class="num">7</span> Epic D · What's included</h2>
+        <p class="epic-goal">Outcome — A shopper validates the plan covers their non-technical expectations (no contracts, streaming-ready, etc.).</p>
+
+        <!-- D-01 -->
+        <article class="story">
+          <div class="story-head">
+            <span class="story-id">RC-D-01</span>
+            <div class="story-badges">
+              <span class="badge must">MUST</span>
+              <span class="badge size-m">M</span>
+            </div>
+          </div>
+          <div class="story-title">Scan the benefits list inside a collapsible panel</div>
+          <div class="story-narrative">
+            <em>As</em> a returning visitor,<br>
+            <em>I want</em> a "What's included" panel that I can open on demand,<br>
+            <em>so that</em> the card stays short on first glance but I can dig in when needed.
+          </div>
+          <div class="ac-title">Acceptance criteria</div>
+          <ul class="ac-list">
+            <li><strong class="gwt">Given</strong> features are configured,</li>
+            <li><strong class="gwt">Then</strong> the panel is closed by default.</li>
+            <li><strong class="gwt">When</strong> the user activates the toggle bar,</li>
+            <li><strong class="gwt">Then</strong> the panel expands with the same 0.3s transition as Price Journey.</li>
+            <li><strong class="gwt">And</strong> each feature renders with its configured icon (check / plus / star / shield / wifi) and colour.</li>
+            <li><strong class="gwt">And</strong> rows are spaced 12px apart vertically with 16px font (14px on mobile).</li>
+          </ul>
+          <div class="story-meta-row">
+            <span><strong>Component:</strong> <code class="inline">.breakdown-toggle</code> + <code class="inline">.features-list</code></span>
+            <span><strong>Model:</strong> <code class="inline">vm.plan.features[]</code> + <code class="inline">vm.ui.featuresOpen</code></span>
+            <span><strong>Persona:</strong> Sarah</span>
+          </div>
+        </article>
+
+        <!-- D-02 -->
+        <article class="story">
+          <div class="story-head">
+            <span class="story-id">RC-D-02</span>
+            <div class="story-badges">
+              <span class="badge should">SHOULD</span>
+              <span class="badge size-s">S</span>
+            </div>
+          </div>
+          <div class="story-title">Emphasise no-strings-attached lines visually</div>
+          <div class="story-narrative">
+            <em>As</em> a hesitant customer,<br>
+            <em>I want</em> "No contracts — cancel anytime" to stand out from the rest of the list,<br>
+            <em>so that</em> I feel safe trying the plan.
+          </div>
+          <div class="ac-title">Acceptance criteria</div>
+          <ul class="ac-list">
+            <li><strong class="gwt">Given</strong> a feature is marked with the plus icon,</li>
+            <li><strong class="gwt">Then</strong> its icon pill is rendered with the brand orange background <code class="inline">#ed6b1f</code>.</li>
+            <li><strong class="gwt">And</strong> default check items keep the blue pill <code class="inline">#2E7DC1</code>.</li>
+          </ul>
+          <div class="story-meta-row">
+            <span><strong>Component:</strong> <code class="inline">.check-icon</code></span>
+            <span><strong>Persona:</strong> Sarah, Jean-Pierre</span>
+          </div>
+        </article>
+      </section>
+
+      <!-- 8. Epic E · Convert -->
+      <section id="epic-convert">
+        <h2><span class="num">8</span> Epic E · Convert</h2>
+        <p class="epic-goal">Outcome — A decided shopper completes the primary action (sign up / call) without confusion or hidden costs.</p>
+
+        <!-- E-01 -->
+        <article class="story">
+          <div class="story-head">
+            <span class="story-id">RC-E-01</span>
+            <div class="story-badges">
+              <span class="badge must">MUST</span>
+              <span class="badge size-s">S</span>
+            </div>
+          </div>
+          <div class="story-title">Subscribe with one tap on a primary CTA</div>
+          <div class="story-narrative">
+            <em>As</em> a decided shopper,<br>
+            <em>I want</em> an unmistakable primary action button at the bottom of the card,<br>
+            <em>so that</em> I can sign up without scanning for a link.
+          </div>
+          <div class="ac-title">Acceptance criteria</div>
+          <ul class="ac-list">
+            <li><strong class="gwt">Given</strong> the CTA copy is configured,</li>
+            <li><strong class="gwt">Then</strong> the CTA renders below the features panel as a rounded orange button (<code class="inline">#ed6b1f</code>, radius 30px).</li>
+            <li><strong class="gwt">And</strong> the label is 16px desktop / 14px mobile, weight 700, colour white.</li>
+            <li><strong class="gwt">And</strong> on hover the button fills with black (<code class="inline">#000</code>) and the label stays white, with a 0.3s transition.</li>
+            <li><strong class="gwt">And</strong> the button is always visible even when other sections are collapsed.</li>
+          </ul>
+          <div class="story-meta-row">
+            <span><strong>Component:</strong> <code class="inline">.cta-button</code></span>
+            <span><strong>Persona:</strong> Sarah, Marc</span>
+            <span><strong>KPI:</strong> CTA CTR</span>
+          </div>
+        </article>
+
+        <!-- E-02 -->
+        <article class="story">
+          <div class="story-head">
+            <span class="story-id">RC-E-02</span>
+            <div class="story-badges">
+              <span class="badge must">MUST</span>
+              <span class="badge size-s">S</span>
+            </div>
+          </div>
+          <div class="story-title">Read the legal fine print before committing</div>
+          <div class="story-narrative">
+            <em>As</em> a careful shopper,<br>
+            <em>I want</em> a concise legal note immediately below the CTA,<br>
+            <em>so that</em> I know the post-promo price and any taxes before I act.
+          </div>
+          <div class="ac-title">Acceptance criteria</div>
+          <ul class="ac-list">
+            <li><strong class="gwt">Given</strong> a legal note is configured,</li>
+            <li><strong class="gwt">Then</strong> it renders directly under the CTA in colour <code class="inline">#999</code>.</li>
+            <li><strong class="gwt">And</strong> font size is 14px desktop / 12px mobile.</li>
+            <li><strong class="gwt">And</strong> when the editor leaves the field empty, the note is removed entirely without leaving a gap.</li>
+          </ul>
+          <div class="story-meta-row">
+            <span><strong>Component:</strong> <code class="inline">.legal-note</code></span>
+            <span><strong>Persona:</strong> Marc, Jean-Pierre</span>
+          </div>
+        </article>
+
+        <!-- E-03 -->
+        <article class="story">
+          <div class="story-head">
+            <span class="story-id">RC-E-03</span>
+            <div class="story-badges">
+              <span class="badge could">COULD</span>
+              <span class="badge size-s">S</span>
+            </div>
+          </div>
+          <div class="story-title">Reassure with a subtle hover state on CTA</div>
+          <div class="story-narrative">
+            <em>As</em> a desktop shopper,<br>
+            <em>I want</em> the CTA to react clearly when I hover it,<br>
+            <em>so that</em> I get visual confirmation the button is clickable.
+          </div>
+          <div class="ac-title">Acceptance criteria</div>
+          <ul class="ac-list">
+            <li><strong class="gwt">Given</strong> a pointer device,</li>
+            <li><strong class="gwt">When</strong> the user hovers the CTA,</li>
+            <li><strong class="gwt">Then</strong> the background transitions from <code class="inline">#ed6b1f</code> to <code class="inline">#000</code> in 0.3s.</li>
+            <li><strong class="gwt">And</strong> the label stays white (no flicker).</li>
+            <li><strong class="gwt">And</strong> users with <code class="inline">prefers-reduced-motion: reduce</code> see an instant colour swap.</li>
+          </ul>
+          <div class="story-meta-row">
+            <span><strong>Component:</strong> <code class="inline">.cta-button:hover</code></span>
+            <span><strong>Persona:</strong> Sarah</span>
+          </div>
+        </article>
+      </section>
+
+      <!-- 9. Epic F · A11y -->
+      <section id="epic-a11y">
+        <h2><span class="num">9</span> Epic F · Accessibility</h2>
+        <p class="epic-goal">Outcome — Users with assistive technologies or motor / visual impairments can complete the same tasks as sighted mouse users.</p>
+
+        <!-- F-01 -->
+        <article class="story">
+          <div class="story-head">
+            <span class="story-id">RC-F-01</span>
+            <div class="story-badges">
+              <span class="badge must">MUST</span>
+              <span class="badge size-m">M</span>
+            </div>
+          </div>
+          <div class="story-title">Navigate the entire card with the keyboard</div>
+          <div class="story-narrative">
+            <em>As</em> a keyboard-only user,<br>
+            <em>I want</em> to reach every toggle and the CTA using <code class="inline">Tab</code>,<br>
+            <em>so that</em> I can interact without a mouse.
+          </div>
+          <div class="ac-title">Acceptance criteria</div>
+          <ul class="ac-list">
+            <li><strong class="gwt">Given</strong> a keyboard,</li>
+            <li><strong class="gwt">Then</strong> tabbing visits the breakdown toggle, the features toggle, and the CTA in DOM order.</li>
+            <li><strong class="gwt">And</strong> each focused element shows a visible focus ring of ≥ 2px with contrast ratio ≥ 3:1 against the background.</li>
+            <li><strong class="gwt">And</strong> pressing <code class="inline">Enter</code> or <code class="inline">Space</code> on a toggle expands / collapses its panel.</li>
+          </ul>
+          <div class="story-meta-row">
+            <span><strong>Standard:</strong> WCAG 2.1 — 2.1.1, 2.4.7</span>
+            <span><strong>Persona:</strong> Aïcha, Jean-Pierre</span>
+          </div>
+        </article>
+
+        <!-- F-02 -->
+        <article class="story">
+          <div class="story-head">
+            <span class="story-id">RC-F-02</span>
+            <div class="story-badges">
+              <span class="badge must">MUST</span>
+              <span class="badge size-m">M</span>
+            </div>
+          </div>
+          <div class="story-title">Hear the card with a screen reader</div>
+          <div class="story-narrative">
+            <em>As</em> Aïcha,<br>
+            <em>I want</em> every meaningful element announced in logical reading order,<br>
+            <em>so that</em> I can shop independently.
+          </div>
+          <div class="ac-title">Acceptance criteria</div>
+          <ul class="ac-list">
+            <li><strong class="gwt">Given</strong> VoiceOver / NVDA / TalkBack is active,</li>
+            <li><strong class="gwt">Then</strong> reading order is: badge → headline → original price → current price → savings → toggles → specs → features → CTA → legal.</li>
+            <li><strong class="gwt">And</strong> decorative SVGs declare <code class="inline">aria-hidden="true"</code> (chevron, sparkles, etc.).</li>
+            <li><strong class="gwt">And</strong> toggles announce <em>"collapsed" / "expanded"</em> via <code class="inline">aria-expanded</code>.</li>
+            <li><strong class="gwt">And</strong> the CTA's accessible name matches its visible label.</li>
+          </ul>
+          <div class="story-meta-row">
+            <span><strong>Standard:</strong> WCAG 2.1 — 1.3.1, 4.1.2</span>
+            <span><strong>Persona:</strong> Aïcha</span>
+          </div>
+        </article>
+
+        <!-- F-03 -->
+        <article class="story">
+          <div class="story-head">
+            <span class="story-id">RC-F-03</span>
+            <div class="story-badges">
+              <span class="badge should">SHOULD</span>
+              <span class="badge size-s">S</span>
+            </div>
+          </div>
+          <div class="story-title">Respect reduced-motion preference</div>
+          <div class="story-narrative">
+            <em>As</em> a motion-sensitive user,<br>
+            <em>I want</em> panel expansions and CTA hover transitions disabled when I request reduced motion,<br>
+            <em>so that</em> I avoid vestibular discomfort.
+          </div>
+          <div class="ac-title">Acceptance criteria</div>
+          <ul class="ac-list">
+            <li><strong class="gwt">Given</strong> the OS sets <code class="inline">prefers-reduced-motion: reduce</code>,</li>
+            <li><strong class="gwt">Then</strong> the collapsible <code class="inline">max-height</code> and <code class="inline">background</code> transitions are removed.</li>
+            <li><strong class="gwt">And</strong> the CTA hover is an instant colour swap.</li>
+          </ul>
+          <div class="story-meta-row">
+            <span><strong>Standard:</strong> WCAG 2.1 — 2.3.3</span>
+            <span><strong>Persona:</strong> Aïcha, Jean-Pierre</span>
+          </div>
+        </article>
+
+        <!-- F-04 -->
+        <article class="story">
+          <div class="story-head">
+            <span class="story-id">RC-F-04</span>
+            <div class="story-badges">
+              <span class="badge must">MUST</span>
+              <span class="badge size-s">S</span>
+            </div>
+          </div>
+          <div class="story-title">Reach minimum colour contrast on every text</div>
+          <div class="story-narrative">
+            <em>As</em> any user with low vision,<br>
+            <em>I want</em> body and price text to keep a contrast ratio of at least 4.5:1 against the background,<br>
+            <em>so that</em> I can read the card under poor lighting or with cataract.
+          </div>
+          <div class="ac-title">Acceptance criteria</div>
+          <ul class="ac-list">
+            <li><strong class="gwt">Given</strong> the rendered card,</li>
+            <li><strong class="gwt">Then</strong> all text passes 4.5:1 contrast (3:1 for ≥ 18.66px bold).</li>
+            <li><strong class="gwt">And</strong> the legal note (#999 on #fafafa) is the only documented exception → editor warning in the CMS.</li>
+          </ul>
+          <div class="story-meta-row">
+            <span><strong>Standard:</strong> WCAG 2.1 — 1.4.3</span>
+            <span><strong>Persona:</strong> Jean-Pierre</span>
+          </div>
+        </article>
+      </section>
+
+      <!-- 10. Epic G · Mobile -->
+      <section id="epic-mobile">
+        <h2><span class="num">10</span> Epic G · Mobile experience</h2>
+        <p class="epic-goal">Outcome — A shopper on a 375×667 phone can browse, evaluate, and convert with one hand.</p>
+
+        <!-- G-01 -->
+        <article class="story">
+          <div class="story-head">
+            <span class="story-id">RC-G-01</span>
+            <div class="story-badges">
+              <span class="badge must">MUST</span>
+              <span class="badge size-s">S</span>
+            </div>
+          </div>
+          <div class="story-title">Fit the card on a 375 px screen without horizontal scrolling</div>
+          <div class="story-narrative">
+            <em>As</em> a mobile shopper,<br>
+            <em>I want</em> the card to fit the viewport width minus a small safe margin,<br>
+            <em>so that</em> I never need to swipe sideways.
+          </div>
+          <div class="ac-title">Acceptance criteria</div>
+          <ul class="ac-list">
+            <li><strong class="gwt">Given</strong> a viewport ≤ 480px wide,</li>
+            <li><strong class="gwt">Then</strong> the card width is clamped to <code class="inline">92vw</code>.</li>
+            <li><strong class="gwt">And</strong> no element overflows the card (verified with <code class="inline">overflow-x: hidden</code> on body).</li>
+          </ul>
+          <div class="story-meta-row">
+            <span><strong>Component:</strong> <code class="inline">.pricing-card</code></span>
+            <span><strong>Persona:</strong> Sarah</span>
+          </div>
+        </article>
+
+        <!-- G-02 -->
+        <article class="story">
+          <div class="story-head">
+            <span class="story-id">RC-G-02</span>
+            <div class="story-badges">
+              <span class="badge must">MUST</span>
+              <span class="badge size-s">S</span>
+            </div>
+          </div>
+          <div class="story-title">Provide 44 × 44 tap targets</div>
+          <div class="story-narrative">
+            <em>As</em> a thumb-only user,<br>
+            <em>I want</em> every interactive element to be at least 44×44 pixels,<br>
+            <em>so that</em> I don't mistap toggles or the CTA.
+          </div>
+          <div class="ac-title">Acceptance criteria</div>
+          <ul class="ac-list">
+            <li><strong class="gwt">Given</strong> a touch viewport,</li>
+            <li><strong class="gwt">Then</strong> toggle bars are ≥ 44px tall.</li>
+            <li><strong class="gwt">And</strong> the CTA button is ≥ 44px tall and full-width within the card body.</li>
+          </ul>
+          <div class="story-meta-row">
+            <span><strong>Standard:</strong> WCAG 2.1 — 2.5.5</span>
+            <span><strong>Persona:</strong> Sarah, Jean-Pierre</span>
+          </div>
+        </article>
+
+        <!-- G-03 -->
+        <article class="story">
+          <div class="story-head">
+            <span class="story-id">RC-G-03</span>
+            <div class="story-badges">
+              <span class="badge should">SHOULD</span>
+              <span class="badge size-s">S</span>
+            </div>
+          </div>
+          <div class="story-title">Scale typography down without losing hierarchy</div>
+          <div class="story-narrative">
+            <em>As</em> a mobile shopper,<br>
+            <em>I want</em> text smaller than desktop but still hierarchically clear,<br>
+            <em>so that</em> the card stays readable and short.
+          </div>
+          <div class="ac-title">Acceptance criteria</div>
+          <ul class="ac-list">
+            <li><strong class="gwt">Given</strong> viewport ≤ 480px,</li>
+            <li><strong class="gwt">Then</strong> headline scales to 32px, hero amount to 48px.</li>
+            <li><strong class="gwt">And</strong> all 16px body text scales to 14px, including specs, features, CTA, and savings label.</li>
+            <li><strong class="gwt">And</strong> the legal note scales from 14px → 12px.</li>
+          </ul>
+          <div class="story-meta-row">
+            <span><strong>Component:</strong> media query <code class="inline">@media (max-width: 480px)</code></span>
+            <span><strong>Persona:</strong> Sarah</span>
+          </div>
+        </article>
+      </section>
+
+      <!-- 11. Epic H · Editor / CMS -->
+      <section id="epic-editor">
+        <h2><span class="num">11</span> Epic H · Editor / CMS</h2>
+        <p class="epic-goal">Outcome — A content manager configures the entire card from the CMS admin panel, without involving a developer.</p>
+
+        <div class="callout info">
+          <strong>Configurator = CMS admin panel</strong>
+          Every field visible in the live <a href="../template.html" style="color:#1e3a5f;font-weight:700;">Rate Card Builder</a> right-side panel should ship as a corresponding field in the CMS form. Field names, default values, and visibility toggles map 1:1.
+        </div>
+
+        <!-- H-01 -->
+        <article class="story">
+          <div class="story-head">
+            <span class="story-id">RC-H-01</span>
+            <div class="story-badges">
+              <span class="badge must">MUST</span>
+              <span class="badge size-l">L</span>
+            </div>
+          </div>
+          <div class="story-title">Edit every piece of copy from the admin panel</div>
+          <div class="story-narrative">
+            <em>As</em> Pat the editor,<br>
+            <em>I want</em> form fields for every text on the card,<br>
+            <em>so that</em> I can update promo copy without touching code.
+          </div>
+          <div class="ac-title">Acceptance criteria</div>
+          <ul class="ac-list">
+            <li><strong class="gwt">Given</strong> the CMS form,</li>
+            <li><strong class="gwt">Then</strong> editable fields exist for: badge, headline, regular price, current price, period, price note, savings label, journey label, journey title, savings-per-year, specs values + labels, CTA copy, legal note.</li>
+            <li><strong class="gwt">And</strong> each field maps 1:1 to a stable path on the <code class="inline">vm.plan</code> model (full field map in the dev doc §12.7).</li>
+            <li><strong class="gwt">And</strong> empty fields hide their associated element via the <code class="inline">.hidden-el</code> utility rather than rendering a blank.</li>
+          </ul>
+          <div class="story-meta-row">
+            <span><strong>Persona:</strong> Pat</span>
+          </div>
+        </article>
+
+        <!-- H-02 -->
+        <article class="story">
+          <div class="story-head">
+            <span class="story-id">RC-H-02</span>
+            <div class="story-badges">
+              <span class="badge must">MUST</span>
+              <span class="badge size-m">M</span>
+            </div>
+          </div>
+          <div class="story-title">Add / remove journey steps and features at will</div>
+          <div class="story-narrative">
+            <em>As</em> Pat,<br>
+            <em>I want</em> repeater controls for journey steps and "What's included" features,<br>
+            <em>so that</em> I can run any promo shape without involving dev.
+          </div>
+          <div class="ac-title">Acceptance criteria</div>
+          <ul class="ac-list">
+            <li><strong class="gwt">Given</strong> the CMS form,</li>
+            <li><strong class="gwt">When</strong> Pat clicks "+ Add step" / "+ Add feature",</li>
+            <li><strong class="gwt">Then</strong> a new editable row is appended with empty defaults.</li>
+            <li><strong class="gwt">And</strong> a "remove" control (×) deletes an existing row.</li>
+            <li><strong class="gwt">And</strong> for each step, Pat can edit: period, price, optional tag, optional sub-text, and a style (active / discounted / regular).</li>
+            <li><strong class="gwt">And</strong> for each feature, Pat can edit: text, icon (check / plus / star / shield / wifi), colour.</li>
+          </ul>
+          <div class="story-meta-row">
+            <span><strong>Persona:</strong> Pat</span>
+          </div>
+        </article>
+
+        <!-- H-03 -->
+        <article class="story">
+          <div class="story-head">
+            <span class="story-id">RC-H-03</span>
+            <div class="story-badges">
+              <span class="badge must">MUST</span>
+              <span class="badge size-s">S</span>
+            </div>
+          </div>
+          <div class="story-title">Toggle the visibility of every optional section</div>
+          <div class="story-narrative">
+            <em>As</em> Pat,<br>
+            <em>I want</em> on/off switches for every optional section,<br>
+            <em>so that</em> I can publish a minimal or maximal card per campaign.
+          </div>
+          <div class="ac-title">Acceptance criteria</div>
+          <ul class="ac-list">
+            <li><strong class="gwt">Given</strong> the CMS form,</li>
+            <li><strong class="gwt">Then</strong> toggles exist for: savings label, regular price, headline, internet specs (whole panel + specs title), legal note, and the entire Price Journey block.</li>
+            <li><strong class="gwt">And</strong> the Price Journey toggle defaults to <strong>OFF</strong> in production.</li>
+            <li><strong class="gwt">And</strong> turning a toggle off removes the element from the DOM (no empty space left).</li>
+          </ul>
+          <div class="story-meta-row">
+            <span><strong>Persona:</strong> Pat</span>
+          </div>
+        </article>
+
+        <!-- H-04 -->
+        <article class="story">
+          <div class="story-head">
+            <span class="story-id">RC-H-04</span>
+            <div class="story-badges">
+              <span class="badge should">SHOULD</span>
+              <span class="badge size-s">S</span>
+            </div>
+          </div>
+          <div class="story-title">Override brand colours per card</div>
+          <div class="story-narrative">
+            <em>As</em> Pat,<br>
+            <em>I want</em> colour pickers for the plan badge background and each internet-spec icon,<br>
+            <em>so that</em> I can theme a card for a specific brand event without leaving the CMS.
+          </div>
+          <div class="ac-title">Acceptance criteria</div>
+          <ul class="ac-list">
+            <li><strong class="gwt">Given</strong> the CMS form,</li>
+            <li><strong class="gwt">Then</strong> a colour picker is available for: plan badge background, download icon, upload icon, usage icon, and each feature pill.</li>
+            <li><strong class="gwt">And</strong> defaults follow the design tokens (badge <code class="inline">#17599C</code>, icons <code class="inline">#2E7DC1</code>, plus pill <code class="inline">#ed6b1f</code>).</li>
+          </ul>
+          <div class="story-meta-row">
+            <span><strong>Persona:</strong> Pat</span>
+          </div>
+        </article>
+      </section>
+
+      <!-- 12. Definition of Done -->
+      <section id="dod">
+        <h2><span class="num">12</span> Definition of Done</h2>
+        <p>A story is "done" only when every box below can be ticked. The PO refuses delivery if any item is unchecked without a written waiver.</p>
+
+        <h3>Story-level DoD</h3>
+        <div class="dod">
+          <ul>
+            <li>All acceptance criteria pass on Chrome, Safari, Firefox, Edge (latest two majors).</li>
+            <li>Tested on iOS Safari 16+ and Android Chrome 110+ on a real 375×667 device.</li>
+            <li>Tested with VoiceOver (iOS / macOS) and NVDA (Windows).</li>
+            <li>Keyboard-only walkthrough completed by a non-author.</li>
+            <li>Lighthouse Accessibility score ≥ 95 on the page hosting the card.</li>
+            <li>Visual diff approved by design (Figma frame referenced).</li>
+            <li>Content reviewed by a copywriter (no placeholder text shipped).</li>
+            <li>Telemetry events fired for CTA click, toggle open/close, and Price Journey reveal.</li>
+            <li>Story updated with the actual delivered behaviour if scope changed.</li>
+          </ul>
+        </div>
+
+        <h3>Release-level DoD</h3>
+        <div class="dod">
+          <ul>
+            <li>All MUST stories of all epics shipped and verified.</li>
+            <li>CMS form fields match the <code class="inline">vm.plan</code> model paths in <code class="inline">template.html</code> (cross-checked against the dev doc §12.7 field map).</li>
+            <li>Default state in production matches story RC-H-03 (Price Journey OFF, features panel closed).</li>
+            <li>Performance budget: card renders &lt; 100 ms on a 4G mid-range device.</li>
+            <li>Bundle: no third-party JS added beyond AngularJS 1.8.2 + angular-sanitize 1.8.2.</li>
+            <li>Documentation pages (this one + developer doc) updated.</li>
+            <li>Release notes published in the internal newsroom channel.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 13. Glossary -->
+      <section id="glossary">
+        <h2><span class="num">13</span> Glossary</h2>
+        <table>
+          <thead>
+            <tr><th>Term</th><th>Definition</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Rate card</strong></td><td>The pricing component that advertises a subscription plan (Internet, TV, Phone) with badge, price, specs, features, CTA, and legal note.</td></tr>
+            <tr><td><strong>Price Journey</strong></td><td>The collapsible breakdown of how the price evolves over time, rendered as side-by-side step cards separated by orange chevrons.</td></tr>
+            <tr><td><strong>Step</strong></td><td>A single pricing period inside the Price Journey, with period label, price, optional tag, optional sub-text, and a style (active / discounted / regular).</td></tr>
+            <tr><td><strong>Tag</strong></td><td>The floating pill highlight on a step (e.g. "Free trial", "NOW"). Orange background, white text.</td></tr>
+            <tr><td><strong>Savings label</strong></td><td>The orange pill under the hero price ("Save $X in your first year") that summarises the promo value.</td></tr>
+            <tr><td><strong>What's included</strong></td><td>The collapsible bullet list of plan benefits, each row with a configurable icon and colour.</td></tr>
+            <tr><td><strong>CTA</strong></td><td>The primary call-to-action button at the bottom of the card.</td></tr>
+            <tr><td><strong>Configurator</strong></td><td>The live preview admin panel on <code class="inline">/template.html</code>. Stands in for the production CMS admin form. Powered by AngularJS 1.8.2 two-way binding (<code class="inline">ng-model</code>) against <code class="inline">vm.plan</code>, so every edit re-renders the card instantly.</td></tr>
+            <tr><td><strong><code class="inline">vm.plan</code></strong></td><td>The single payload object the rate card reads from. Every CMS-editable field is a path on this object (e.g. <code class="inline">vm.plan.badge</code>, <code class="inline">vm.plan.journey.steps[]</code>). Full schema in the dev doc §12.2.</td></tr>
+            <tr><td><strong>INVEST</strong></td><td>Story quality acronym: Independent, Negotiable, Valuable, Estimable, Small, Testable.</td></tr>
+            <tr><td><strong>GWT</strong></td><td>"Given / When / Then" — the Gherkin format used for acceptance criteria.</td></tr>
+            <tr><td><strong>MoSCoW</strong></td><td>Prioritisation acronym: Must / Should / Could / Won't (this release).</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+    </main>
+  </div>
+
+  <script>
+  (function () {
+    const JIRA_META = {
+      'RC-A-01': { points: 2, priority: 'Highest', labels: 'rate-card,browse,persona-sarah',         components: 'Plan Badge,Headline',     epic: 'A' },
+      'RC-A-02': { points: 2, priority: 'Highest', labels: 'rate-card,browse,pricing',               components: 'Hero Price',              epic: 'A' },
+      'RC-A-03': { points: 1, priority: 'High',    labels: 'rate-card,savings,persona-marc',         components: 'Savings Label',           epic: 'A' },
+      'RC-B-01': { points: 3, priority: 'Highest', labels: 'rate-card,journey,collapse,persona-marc',components: 'Price Journey',           epic: 'B' },
+      'RC-B-02': { points: 5, priority: 'Highest', labels: 'rate-card,journey,steps',                components: 'Journey Step',            epic: 'B' },
+      'RC-B-03': { points: 2, priority: 'High',    labels: 'rate-card,journey,tag',                  components: 'Step Tag',                epic: 'B' },
+      'RC-B-04': { points: 2, priority: 'High',    labels: 'rate-card,journey,savings',              components: 'Journey Header',          epic: 'B' },
+      'RC-C-01': { points: 3, priority: 'Highest', labels: 'rate-card,specs,persona-lea',            components: 'Internet Specs',          epic: 'C' },
+      'RC-C-02': { points: 1, priority: 'High',    labels: 'rate-card,specs,unlimited',              components: 'Internet Specs',          epic: 'C' },
+      'RC-D-01': { points: 3, priority: 'Highest', labels: 'rate-card,features,collapse',            components: "What's Included",         epic: 'D' },
+      'RC-D-02': { points: 1, priority: 'High',    labels: 'rate-card,features,icon',                components: 'Feature Pill',            epic: 'D' },
+      'RC-E-01': { points: 2, priority: 'Highest', labels: 'rate-card,cta,conversion',               components: 'CTA Button',              epic: 'E' },
+      'RC-E-02': { points: 1, priority: 'Highest', labels: 'rate-card,legal',                        components: 'Legal Note',              epic: 'E' },
+      'RC-E-03': { points: 1, priority: 'Low',     labels: 'rate-card,cta,hover',                    components: 'CTA Button',              epic: 'E' },
+      'RC-F-01': { points: 3, priority: 'Highest', labels: 'rate-card,a11y,keyboard,wcag-2.1.1',     components: 'Toggle,CTA',              epic: 'F' },
+      'RC-F-02': { points: 3, priority: 'Highest', labels: 'rate-card,a11y,screen-reader,wcag-1.3.1',components: 'All Sections',            epic: 'F' },
+      'RC-F-03': { points: 1, priority: 'High',    labels: 'rate-card,a11y,reduced-motion,wcag-2.3.3',components:'Toggle,CTA',              epic: 'F' },
+      'RC-F-04': { points: 2, priority: 'Highest', labels: 'rate-card,a11y,contrast,wcag-1.4.3',     components: 'Typography',              epic: 'F' },
+      'RC-G-01': { points: 1, priority: 'Highest', labels: 'rate-card,mobile,responsive',            components: 'Pricing Card',            epic: 'G' },
+      'RC-G-02': { points: 1, priority: 'Highest', labels: 'rate-card,mobile,tap-target,wcag-2.5.5', components: 'Toggle,CTA',              epic: 'G' },
+      'RC-G-03': { points: 2, priority: 'High',    labels: 'rate-card,mobile,typography',            components: 'Typography',              epic: 'G' },
+      'RC-H-01': { points: 8, priority: 'Highest', labels: 'rate-card,cms,editor,persona-pat',       components: 'CMS Form',                epic: 'H' },
+      'RC-H-02': { points: 5, priority: 'Highest', labels: 'rate-card,cms,repeater',                 components: 'CMS Form',                epic: 'H' },
+      'RC-H-03': { points: 3, priority: 'Highest', labels: 'rate-card,cms,visibility',               components: 'CMS Form',                epic: 'H' },
+      'RC-H-04': { points: 2, priority: 'High',    labels: 'rate-card,cms,colors',                   components: 'CMS Form',                epic: 'H' }
+    };
+
+    function extract(article) {
+      const id = (article.querySelector('.story-id') || {}).textContent || '';
+      const title = (article.querySelector('.story-title') || {}).textContent || '';
+      const narrative = (article.querySelector('.story-narrative') || {}).innerText || '';
+      const ac = Array.from(article.querySelectorAll('.ac-list li'))
+        .map(li => li.innerText.replace(/\s+/g, ' ').trim());
+      return { id: id.trim(), title: title.trim(), narrative: narrative.trim(), ac: ac };
+    }
+
+    function toWikiMarkup(s, m) {
+      const ac = s.ac.map(a => '* ' + a).join('\n');
+      return 'h2. [' + s.id + '] ' + s.title + '\n\n'
+           + '*Description*\n' + s.narrative + '\n\n'
+           + '*Acceptance Criteria*\n' + ac + '\n\n'
+           + '*Story Points:* ' + m.points + '\n'
+           + '*Priority:* ' + m.priority + '\n'
+           + '*Labels:* ' + m.labels + '\n'
+           + '*Components:* ' + m.components + '\n'
+           + '*Epic Link:* RC-EPIC-' + m.epic;
+    }
+
+    function csvEsc(v) { return '"' + String(v).replace(/"/g, '""') + '"'; }
+
+    function toCsvRow(s, m) {
+      const summary = '[' + s.id + '] ' + s.title;
+      const desc = s.narrative + '\n\nAcceptance Criteria:\n' + s.ac.map(a => '- ' + a).join('\n');
+      return [
+        csvEsc('Story'),
+        csvEsc(summary),
+        csvEsc(desc),
+        csvEsc(m.priority),
+        csvEsc(m.points),
+        csvEsc(m.labels),
+        csvEsc(m.components),
+        csvEsc('RC-EPIC-' + m.epic)
+      ].join(',');
+    }
+
+    function buildCsv() {
+      const header = ['Issue Type','Summary','Description','Priority','Story Points','Labels','Components','Epic Link']
+        .map(csvEsc).join(',');
+      const rows = [];
+      document.querySelectorAll('.story').forEach(function (a) {
+        const s = extract(a);
+        const m = JIRA_META[s.id];
+        if (m) rows.push(toCsvRow(s, m));
+      });
+      return [header].concat(rows).join('\n');
+    }
+
+    function feedback(btn, originalHtml) {
+      btn.innerHTML = '✓ Copied!';
+      btn.classList.add('copied');
+      setTimeout(function () {
+        btn.innerHTML = originalHtml;
+        btn.classList.remove('copied');
+      }, 1800);
+    }
+
+    function copy(text, btn, originalHtml) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function () { feedback(btn, originalHtml); });
+      } else {
+        const ta = document.createElement('textarea');
+        ta.value = text; document.body.appendChild(ta);
+        ta.select(); document.execCommand('copy');
+        document.body.removeChild(ta);
+        feedback(btn, originalHtml);
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+      document.querySelectorAll('.story').forEach(function (article) {
+        const s = extract(article);
+        const m = JIRA_META[s.id];
+        if (!m) return;
+        const bar = document.createElement('div');
+        bar.className = 'jira-bar';
+        bar.innerHTML =
+          '<div class="jira-fields">'
+          + '<span><strong>Points</strong>' + m.points + '</span>'
+          + '<span><strong>Priority</strong>' + m.priority + '</span>'
+          + '<span><strong>Epic</strong>RC-EPIC-' + m.epic + '</span>'
+          + '<span><strong>Labels</strong>' + m.labels + '</span>'
+          + '<span><strong>Components</strong>' + m.components + '</span>'
+          + '</div>'
+          + '<button class="copy-btn" type="button" data-action="copy-jira">📋 Copy for JIRA</button>';
+        article.appendChild(bar);
+        bar.querySelector('[data-action="copy-jira"]').addEventListener('click', function (e) {
+          const btn = e.currentTarget;
+          copy(toWikiMarkup(s, m), btn, '📋 Copy for JIRA');
+        });
+      });
+
+      const btnCopy = document.getElementById('btn-copy-csv');
+      if (btnCopy) btnCopy.addEventListener('click', function (e) {
+        copy(buildCsv(), e.currentTarget, '📋 Copy all (CSV)');
+      });
+
+      const btnDl = document.getElementById('btn-download-csv');
+      if (btnDl) btnDl.addEventListener('click', function () {
+        const csv = buildCsv();
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = 'rate-card-user-stories.csv';
+        document.body.appendChild(a); a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      });
+    });
+  })();
+  </script>
+
+</body>
+</html>

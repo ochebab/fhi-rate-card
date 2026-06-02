@@ -1,0 +1,135 @@
+
+
+@font-face {
+    font-family: 'katsumi-icons';
+    src: url('../fonts/katsumi.eot');
+    src: url('../fonts/katsumi.eot?#iefix') format('embedded-opentype'), url('../fonts/katsumi.woff2') format('woff2'), url('../fonts/katsumi.ttf') format('truetype'), url('../fonts/katsumi.svg') format('svg');
+    font-stretch: normal;
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+.icon-katsumi,
+.icon.icon-katsumi {
+    font-family: 'katsumi-icons';
+    font-weight: normal;
+    font-style: normal;
+    position: relative;
+  
+}
+
+.icon-katsumi.icon-subscription:before {
+    content: "\e900";
+}
+
+.icon-bill-redesign.icon-subscription:before {
+    content: "\e900";
+    font-family: 'katsumi-icons' !important;
+}
+
+.icon-bill-redesign.icon-subscription-circled:before {
+    content: "\e901";
+    font-family: 'katsumi-icons' !important;
+}
+
+.gn-icon .gn-icon_subscription {
+    content: "\e900";
+    font-family: 'katsumi-icons' !important;
+}
+
+.icon-o.icon-katsumi.icon-subscription:before {
+    font-family: 'katsumi-icons' !important;
+}
+
+
+.gn-icon.gn-icon-katsumi.icon-subscription:before{
+    font-family: 'katsumi-icons' !important;
+    content: "\e900";
+    font-size:32px;
+    top:-10px
+}
+
+.icon-katsumi.icon-LOB_subscription:before {
+    content: "\e902";
+}
+
+.icon-bill-redesign.icon-LOB_subscription:before {
+    content: "\e902";
+    font-family: 'katsumi-icons' !important;
+}
+
+.icon-bill-redesign.icon-LOB_subscription-circled:before {
+    content: "\e903";
+    font-family: 'katsumi-icons' !important;
+}
+
+.gn-icon .gn-.icon-LOB_subscription {
+    content: "\e902";
+    font-family: 'katsumi-icons' !important;
+}
+
+.icon-o.icon-katsumi.icon-LOB_subscription:before {
+    font-family: 'katsumi-icons' !important;
+}
+
+
+.gn-icon.gn-icon-katsumi.icon-LOB_subscription:before{
+    font-family: 'katsumi-icons' !important;
+    content: "\e902";
+    font-size:32px;
+    top:-10px
+}
+
+/*Katsumi shop icons*/
+.icon-katsumi.icon-tv-lob:before {
+    content: "\e904";
+}
+
+.icon-katsumi.icon-HomePhone-lob:before {
+  content: "\e905";
+}
+
+.icon-katsumi.icon-Internet-lob:before {
+  content: "\e906";
+}
+
+.icon-katsumi.icon-Mobility-lob:before {
+  content: "\e907";
+}
+
+.icon-katsumi.icon-SmartHome-lob:before {
+  content: "\e908";
+}
+
+.icon-katsumi.icon-Streaming-lob:before {
+  content: "\e909";
+}
+
+
+.icon.icon-katsumi.icon-collapse-minus:before {
+  font-family: 'katsumi-icons' !important;
+  content: "\e90a";
+}
+
+.icon-katsumi.icon-arrow-right-link:before {
+   content: "\e90b";
+}
+
+.icon.icon-katsumi.icon-expand-plus:before {
+  font-family: 'katsumi-icons' !important;
+  content: "\e90c";
+}
+
+.icon-katsumi.icon-slider-left-arrow-rotating:before {
+  content: "\e90e";
+}
+
+.icon-katsumi.icon-slider-right-arrow-rotating:before {
+  content: "\e90d";
+}
+
+.icon-katsumi.icon-right-carat-small-slider:before {
+  content: "\e90f";
+  font-family: 'katsumi-icons' !important;
+}

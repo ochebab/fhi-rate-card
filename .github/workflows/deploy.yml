@@ -1,0 +1,86 @@
+# ════════════════════════════════════════════════════════════════════
+# Auto-deploy the FHI rate card to ftp.oualid.fun
+# ────────────────────────────────────────────────────────────────────
+# Triggered:
+#   • Every push to `main`
+#   • Manually from the Actions tab (workflow_dispatch)
+#
+# What it does:
+#   1. Checks out the repo
+#   2. Builds a `_deploy/` folder that mirrors the desired FTP layout
+#      (one source file -> multiple FTP destinations, renamed where needed)
+#   3. Syncs `_deploy/` to `/public_html/fhi/` via FTP
+#
+# Credentials live in GitHub Secrets (Settings → Secrets → Actions):
+#   • FTP_SERVER    : ftp.oualid.fun
+#   • FTP_USERNAME  : <ftp account>
+#   • FTP_PASSWORD  : <ftp password>
+#
+# Safety:
+#   • `dangerous-clean-slate: false` — files on the server that are NOT
+#     in _deploy/ are LEFT ALONE (so the `freedom-site/` folder, TV
+#     assets, etc. are preserved). Only files we manage are overwritten.
+# ════════════════════════════════════════════════════════════════════
+
+name: Deploy to oualid.fun
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Build deploy tree (mirror final FTP layout)
+        run: |
+          set -e
+          mkdir -p _deploy/template
+          # ── /public_html/fhi/ ───────────────────────────────────
+          cp template.html              _deploy/template.html
+          # ── /public_html/fhi/template/ ──────────────────────────
+          cp template.html              _deploy/template/index.html
+          cp instructions.html          _deploy/template/instruction.html
+          cp user-stories.html          _deploy/template/user-stories.html
+          echo ""
+          echo "── _deploy/ contents ────────────────────────────"
+          find _deploy -type f -exec ls -lh {} \;
+
+      - name: FTP sync to /public_html/fhi/
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server:        ${{ secrets.FTP_SERVER }}
+          username:      ${{ secrets.FTP_USERNAME }}
+          password:      ${{ secrets.FTP_PASSWORD }}
+          protocol:      ftp
+          port:          21
+          server-dir:    /public_html/fhi/
+          local-dir:     ./_deploy/
+          dangerous-clean-slate: false   # never delete unmanaged files
+          log-level:     standard
+          # Belt-and-suspenders: even though only _deploy/ is uploaded,
+          # explicitly exclude anything that should never leave the runner.
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/.DS_Store
+            **/node_modules/**
+            **/*.bak*
+            **/FTP.txt
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "Deployed files:"
+          find _deploy -type f | sed 's|^_deploy/|  /public_html/fhi/|'
+          echo ""
+          echo "Live URLs:"
+          echo "  https://oualid.fun/fhi/template.html"
+          echo "  https://oualid.fun/fhi/template/"
+          echo "  https://oualid.fun/fhi/template/instruction.html"
+          echo "  https://oualid.fun/fhi/template/user-stories.html"

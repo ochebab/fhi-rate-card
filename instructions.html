@@ -1,0 +1,1684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FHI Rate Card — Developer Documentation</title>
+  <style>
+    @font-face {
+      font-family: 'Ambra Sans Text';
+      src: url('../fonts/Ambra-Sans-Text-Regular.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Ambra Sans Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f5f7fa;
+      color: #1a2332;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    .doc-header {
+      background: linear-gradient(180deg, #0a1628 0%, #162a4a 100%);
+      color: #fff;
+      padding: 48px 32px 64px;
+    }
+    .doc-header-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .doc-header-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: rgba(255,255,255,0.75);
+      text-decoration: none;
+      font-size: 14px;
+      margin-bottom: 24px;
+      transition: color 0.2s;
+    }
+    .doc-header-back:hover { color: #fff; }
+    .doc-header h1 {
+      font-size: 40px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      line-height: 1.15;
+    }
+    .doc-header p {
+      font-size: 18px;
+      color: rgba(255,255,255,0.8);
+      max-width: 720px;
+    }
+    .doc-header .stack-pills {
+      margin-top: 24px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .stack-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.15);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 30px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+    .stack-pill strong { color: #ed6b1f; font-weight: 700; }
+
+    /* ── Layout ── */
+    .doc-layout {
+      max-width: 1100px;
+      margin: -32px auto 80px;
+      padding: 0 32px;
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      gap: 32px;
+      align-items: start;
+    }
+
+    /* ── Sidebar ── */
+    .doc-nav {
+      position: sticky;
+      top: 24px;
+      background: #fff;
+      border: 1px solid #e5e9f0;
+      border-radius: 16px;
+      padding: 16px;
+      max-height: calc(100vh - 48px);
+      overflow-y: auto;
+    }
+    .doc-nav h3 {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #6b7280;
+      font-weight: 700;
+      padding: 8px 12px;
+    }
+    .doc-nav ol {
+      list-style: none;
+      counter-reset: nav-counter;
+    }
+    .doc-nav ol li { counter-increment: nav-counter; }
+    .doc-nav ol li a {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      padding: 8px 12px;
+      color: #4a5568;
+      text-decoration: none;
+      font-size: 14px;
+      border-radius: 8px;
+      transition: background 0.15s, color 0.15s;
+    }
+    .doc-nav ol li a::before {
+      content: counter(nav-counter);
+      font-size: 11px;
+      color: #9ca3af;
+      font-weight: 600;
+      min-width: 16px;
+    }
+    .doc-nav ol li a:hover { background: #f5f7fa; color: #0a1628; }
+
+    /* ── Content ── */
+    .doc-content {
+      background: #fff;
+      border: 1px solid #e5e9f0;
+      border-radius: 16px;
+      padding: 40px 48px;
+    }
+    .doc-content section {
+      padding-top: 24px;
+      scroll-margin-top: 20px;
+    }
+    .doc-content section + section {
+      margin-top: 32px;
+      border-top: 1px solid #eef0f4;
+      padding-top: 40px;
+    }
+    .doc-content h2 {
+      font-size: 28px;
+      font-weight: 700;
+      color: #0a1628;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .doc-content h2 .num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      background: #ed6b1f;
+      color: #fff;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 700;
+    }
+    .doc-content h3 {
+      font-size: 18px;
+      font-weight: 700;
+      color: #0a1628;
+      margin: 24px 0 12px;
+    }
+    .doc-content p {
+      color: #4a5568;
+      margin-bottom: 12px;
+      font-size: 15px;
+    }
+    .doc-content ul, .doc-content ol.numbered {
+      padding-left: 20px;
+      margin: 8px 0 16px;
+      color: #4a5568;
+    }
+    .doc-content ul li, .doc-content ol.numbered li {
+      margin-bottom: 6px;
+      font-size: 15px;
+    }
+
+    /* ── Code blocks ── */
+    pre {
+      background: #0a1628;
+      color: #e5e9f0;
+      padding: 16px 20px;
+      border-radius: 10px;
+      overflow-x: auto;
+      margin: 12px 0;
+      font-size: 13px;
+      line-height: 1.6;
+      font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, monospace;
+    }
+    pre code { display: block; white-space: pre; }
+    code.inline {
+      background: #f0f3f7;
+      color: #c026d3;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.9em;
+      font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, monospace;
+    }
+    .lang-tag {
+      display: inline-block;
+      background: rgba(255,255,255,0.1);
+      color: #ed6b1f;
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      margin-bottom: 6px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, monospace;
+    }
+
+    /* ── Tables ── */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0 20px;
+      font-size: 14px;
+    }
+    th, td {
+      text-align: left;
+      padding: 10px 14px;
+      border-bottom: 1px solid #eef0f4;
+    }
+    th {
+      background: #f5f7fa;
+      color: #0a1628;
+      font-weight: 700;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    td code.inline { font-size: 13px; }
+    .color-swatch {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border-radius: 4px;
+      border: 1px solid rgba(0,0,0,0.1);
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+
+    /* ── Callouts ── */
+    .callout {
+      border-left: 4px solid #ed6b1f;
+      background: #fff7f0;
+      padding: 14px 18px;
+      border-radius: 6px;
+      margin: 16px 0;
+      color: #5d3a1a;
+      font-size: 14px;
+    }
+    .callout.info {
+      border-color: #2E7DC1;
+      background: #f0f6fc;
+      color: #1e3a5f;
+    }
+    .callout strong { display: block; margin-bottom: 4px; }
+
+    /* ── Responsive diagram ── */
+    .responsive-diagram {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin: 16px 0;
+    }
+    .device-card {
+      background: #f5f7fa;
+      border: 1px solid #e5e9f0;
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+    }
+    .device-card .device-label {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #6b7280;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .device-card .device-size {
+      font-size: 24px;
+      font-weight: 700;
+      color: #ed6b1f;
+      margin-bottom: 8px;
+    }
+    .device-card .device-meta {
+      font-size: 13px;
+      color: #4a5568;
+    }
+
+    /* ── Icon grid ── */
+    .icon-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 12px;
+      margin: 16px 0;
+    }
+    .icon-card {
+      background: #f5f7fa;
+      border: 1px solid #e5e9f0;
+      border-radius: 10px;
+      padding: 16px;
+      text-align: center;
+    }
+    .icon-card .icon-bg {
+      width: 48px;
+      height: 48px;
+      background: #2E7DC1;
+      border-radius: 50%;
+      margin: 0 auto 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .icon-card .icon-bg.orange { background: #ed6b1f; }
+    .icon-card .icon-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: #0a1628;
+      margin-bottom: 2px;
+    }
+    .icon-card .icon-size {
+      font-size: 12px;
+      color: #6b7280;
+    }
+
+    /* ── Mobile ── */
+    @media (max-width: 900px) {
+      .doc-layout {
+        grid-template-columns: 1fr;
+      }
+      .doc-nav {
+        position: static;
+        max-height: none;
+      }
+      .doc-content { padding: 24px; }
+      .doc-header { padding: 32px 20px 48px; }
+      .doc-header h1 { font-size: 28px; }
+      .doc-header p { font-size: 15px; }
+      .responsive-diagram { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="doc-header">
+    <div class="doc-header-inner">
+      <a href="../template.html" class="doc-header-back">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+        Back to Rate Card Builder
+      </a>
+      <h1>FHI Rate Card — Developer Documentation</h1>
+      <p>Complete implementation guide to reproduce the rate card pricing component in your application. Includes structure, design tokens, responsive behavior, pictograms, accessibility, and AngularJS 1.8.2 integration.</p>
+      <div class="stack-pills">
+        <span class="stack-pill">Target stack: <strong>AngularJS 1.8.2</strong></span>
+        <span class="stack-pill">HTML5</span>
+        <span class="stack-pill">CSS3</span>
+        <span class="stack-pill">Vanilla SVG</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Layout -->
+  <div class="doc-layout">
+
+    <!-- Sidebar -->
+    <nav class="doc-nav">
+      <h3>On this page</h3>
+      <ol>
+        <li><a href="#overview">Overview</a></li>
+        <li><a href="#quickstart">Quick start</a></li>
+        <li><a href="#anatomy">Component anatomy</a></li>
+        <li><a href="#price-journey">Price Journey</a></li>
+        <li><a href="#tokens">Design tokens</a></li>
+        <li><a href="#typography">Typography</a></li>
+        <li><a href="#responsive">Responsive behavior</a></li>
+        <li><a href="#motion">Motion &amp; transitions</a></li>
+        <li><a href="#html">HTML structure</a></li>
+        <li><a href="#pictograms">SVG pictograms</a></li>
+        <li><a href="#states">Interactive states</a></li>
+        <li><a href="#angularjs">AngularJS integration</a></li>
+        <li><a href="#data-io">Data I/O (configurator)</a></li>
+        <li><a href="#a11y">Accessibility</a></li>
+        <li><a href="#checklist">QA checklist</a></li>
+      </ol>
+    </nav>
+
+    <!-- Content -->
+    <main class="doc-content">
+
+      <!-- 1. Overview -->
+      <section id="overview">
+        <h2><span class="num">1</span> Overview</h2>
+        <p>The FHI Rate Card is a self-contained pricing component used to advertise Internet / TV / Phone subscription plans. It is fully configurable (badge, headline, prices, specs, features, CTA, colours) and behaves consistently between desktop and mobile breakpoints.</p>
+        <p>This document captures every visual and behavioural decision the component relies on. It assumes the target codebase uses <strong>AngularJS 1.8.2</strong>, but the markup and styles are framework-agnostic.</p>
+
+        <div class="callout">
+          <strong>Important — read first</strong>
+          The right-side configurator panel on the live page is not part of the production component. It demonstrates which fields the <em>CMS admin panel</em> should expose for editors (text content, colours, prices, features, visibility toggles, etc.). When integrating into the CMS, every input shown in that panel should become a corresponding field in the component's admin form.
+        </div>
+
+        <div class="callout info">
+          <strong>Default visibility of “See price journey”</strong>
+          In production, the <em>See price journey</em> toggle bar should be <strong>hidden by default</strong>. It is only shown when an editor explicitly enables it from the admin panel. The on-by-default state in the live preview exists for design review only. See dedicated <a href="#price-journey" style="color:#ed6b1f;font-weight:600;">Price Journey</a> section below.
+        </div>
+
+        <h3>Key characteristics</h3>
+        <ul>
+          <li>Single column, fixed width <code class="inline">411px</code> on desktop, fluid <code class="inline">92vw</code> on mobile.</li>
+          <li>Two collapsible sections: <em>Price Journey</em> (hidden by default in production — opens when enabled by the editor; contains an optional summary banner) and <em>what's included</em> (always rendered, closed by default).</li>
+          <li>One static panel: <em>internet specs</em> — always visible, never collapsible.</li>
+          <li>One primary action: the orange CTA button with full-fill black hover.</li>
+          <li>One legal footer at the very bottom.</li>
+        </ul>
+
+        <h3>Reading order for this guide</h3>
+        <p>Sections are ordered to onboard a developer in the same order they will need information:</p>
+        <ol class="numbered">
+          <li><strong>Anatomy</strong> — what the card is made of, visually.</li>
+          <li><strong>Price Journey</strong> — the most complex region, isolated up front so it doesn't get lost.</li>
+          <li><strong>Tokens → Typography → Responsive → Motion</strong> — the design system underneath every region.</li>
+          <li><strong>HTML structure → Pictograms → States</strong> — how those tokens compose into actual markup.</li>
+          <li><strong>AngularJS integration</strong> — the complete wiring (model, controller, template, CMS map, gotchas).</li>
+          <li><strong>Accessibility &amp; QA</strong> — the gates before merging.</li>
+        </ol>
+      </section>
+
+      <!-- 2. Quick start -->
+      <section id="quickstart">
+        <h2><span class="num">2</span> Quick start</h2>
+        <p>Drop the component into any AngularJS 1.8.2 view. Three prerequisites: load AngularJS + <code class="inline">angular-sanitize</code>, include the custom font, and wrap the markup in an <code class="inline">ng-app</code> + <code class="inline">RateCardCtrl as vm</code> controller. The complete canonical model is documented in <a href="#angularjs" style="color:#ed6b1f;font-weight:600;">§12.2</a>; the snippet below shows only the minimal shape.</p>
+
+        <h3>1. Load the dependencies</h3>
+        <span class="lang-tag">html</span>
+<pre><code>&lt;script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"&gt;&lt;/script&gt;
+&lt;script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-sanitize.min.js"&gt;&lt;/script&gt;</code></pre>
+        <div class="callout">
+          <strong><code class="inline">ngSanitize</code> is mandatory</strong>
+          The feature pills (check / plus / star / shield / wifi) inject inline SVG via <code class="inline">ng-bind-html</code>, which requires <code class="inline">$sce.trustAsHtml</code> + <code class="inline">angular-sanitize</code>. Do <em>not</em> add <code class="inline">angular-animate</code> — accordion motion is pure CSS.
+        </div>
+
+        <h3>2. Add the font face</h3>
+        <span class="lang-tag">css</span>
+<pre><code>@font-face {
+  font-family: 'Ambra Sans Text';
+  src: url('/assets/fonts/Ambra-Sans-Text-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}</code></pre>
+
+        <h3>3. Bootstrap the module + controller (controllerAs <code class="inline">vm</code>)</h3>
+        <span class="lang-tag">javascript</span>
+<pre><code>angular
+  .module('fhiRateCard', ['ngSanitize'])
+  .controller('RateCardCtrl', ['$sce', function ($sce) {
+    var vm = this;
+
+    // Replace with the payload your CMS / back-end ships.
+    vm.plan = {
+      badge:         'Internet 1G',
+      badgeBg:       '#17599C',
+      headline:      'Internet 1G',
+      currentPrice:  75,
+      originalPrice: 95,
+      period:        '/mo.',
+      priceNote:     'for your first 12 months',
+      savings:       'Save $240 in your first year',
+      specs: {
+        enabled: true, showTitle: true, title: 'Internet specs',
+        download: { value: '1 Gbps',    label: 'download speed', color: '#2E7DC1' },
+        upload:   { value: '50 Mbps',   label: 'upload speed',   color: '#2E7DC1' },
+        usage:    { value: 'Unlimited', label: 'monthly usage',  color: '#2E7DC1' }
+      },
+      features: [
+        { text: 'Ideal for 20+ devices online at the same time', icon: 'check', color: '#2E7DC1' },
+        { text: 'Perfect for streaming, gaming &amp; 4K video',  icon: 'check', color: '#2E7DC1' },
+        { text: 'No contracts — cancel anytime',                  icon: 'plus',  color: '#ed6b1f' }
+      ],
+      cta:       { label: 'Choose This Plan', color: '#ed6b1f' },
+      legal:     '*Promotional pricing. $95/mo. starting month 13. Taxes extra.',
+      showLegal: true
+    };
+
+    // Accordion UI state (preview-only — see §12.3 for full controller).
+    vm.ui = { journeyOpen: false, featuresOpen: false };
+  }]);</code></pre>
+
+        <h3>4. Mount the view</h3>
+        <span class="lang-tag">html</span>
+<pre><code>&lt;html ng-app="fhiRateCard"&gt;
+  &lt;body ng-controller="RateCardCtrl as vm"&gt;
+    &lt;!-- Rate card markup goes here — every binding reads vm.plan --&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+      </section>
+
+      <!-- 3. Anatomy -->
+      <section id="anatomy">
+        <h2><span class="num">3</span> Component anatomy</h2>
+        <p>The card is composed of five vertically stacked regions inside a single <code class="inline">.pricing-card</code> container.</p>
+        <ol class="numbered">
+          <li><strong>Card header</strong> — dark navy gradient. Contains the plan badge, the orange headline (48px desktop / 32px mobile), the price block (original price, hero price at 64/48px, period, price note, savings badge with the price-tag pictogram).</li>
+          <li><strong>Price Journey toggle + body</strong> — collapsible horizontal timeline of pricing steps with an optional summary banner underneath (hidden by default in production). See the dedicated <a href="#price-journey" style="color:#ed6b1f;font-weight:600;">Price Journey</a> section.</li>
+          <li><strong>Internet specs panel</strong> — three rows with circular icons (download / upload / unlimited).</li>
+          <li><strong>What's included toggle + body</strong> — collapsible list of selling points with check or plus icons (closed by default).</li>
+          <li><strong>Footer</strong> — CTA button + legal note.</li>
+        </ol>
+        <div class="callout">
+          <strong>Container constraints</strong>
+          The whole card sits inside a <code class="inline">.card-stage</code> wrapper centered on the viewport. The card itself has <code class="inline">overflow: hidden</code> so child sections never bleed past the 20px border-radius.
+        </div>
+      </section>
+
+      <!-- 4. Price Journey -->
+      <section id="price-journey">
+        <h2><span class="num">4</span> Price Journey</h2>
+        <p>The Price Journey is a collapsible horizontal timeline that shows how the plan price evolves over time. It replaces the legacy “price breakdown” table. Each pricing period is a rounded card, separated by an orange chevron <code class="inline">›</code>. An optional summary banner sits underneath. Editors compose everything from the CMS.</p>
+
+        <div class="callout info">
+          <strong>Production default</strong>
+          The Price Journey is wrapped by a toggle button (<em>“See price journey”</em>) and is <strong>hidden by default</strong>. Surface it only when an editor enables it from the admin panel.
+        </div>
+
+        <h3>4.1 HTML structure</h3>
+        <span class="lang-tag">html</span>
+<pre><code>&lt;button class="breakdown-toggle" aria-expanded="false"&gt;
+  &lt;span&gt;See price journey&lt;/span&gt;
+  &lt;span class="arrow"&gt;&lt;/span&gt;
+&lt;/button&gt;
+
+&lt;div class="price-breakdown-section"&gt;
+  &lt;div class="price-journey"&gt;
+
+    &lt;!-- 1) Header: optional title + free-text savings line --&gt;
+    &lt;div class="journey-header"&gt;
+      &lt;span class="journey-title"&gt;&lt;/span&gt; &lt;!-- empty by default --&gt;
+      &lt;span class="journey-savings"&gt;
+        &lt;svg class="savings-icon" viewBox="0 0 24 24"&gt;…&lt;/svg&gt;
+        &lt;span&gt;Save $240/year&lt;/span&gt;
+      &lt;/span&gt;
+    &lt;/div&gt;
+
+    &lt;!-- 2) Steps: flexbox row, chevrons inserted by the renderer --&gt;
+    &lt;div class="journey-steps"&gt;
+      &lt;div class="journey-step active"&gt;
+        &lt;span class="step-tag"&gt;Free trial&lt;/span&gt;
+        &lt;span class="step-period"&gt;Months 1-3&lt;/span&gt;
+        &lt;span class="step-price"&gt;Free&lt;/span&gt;
+        &lt;span class="step-subtext"&gt;3 months on us&lt;/span&gt;
+      &lt;/div&gt;
+      &lt;span class="journey-chevron" aria-hidden="true"&gt;›&lt;/span&gt;
+      &lt;div class="journey-step active"&gt;
+        &lt;span class="step-period"&gt;Months 4-12&lt;/span&gt;
+        &lt;span class="step-price"&gt;$39/mo&lt;/span&gt;
+        &lt;span class="step-subtext"&gt;$6 off/mo.&lt;/span&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;!-- 3) Optional summary banner under the steps --&gt;
+    &lt;div class="journey-summary"&gt;
+      &lt;svg class="summary-icon" viewBox="0 0 24 24"&gt;…&lt;/svg&gt;
+      &lt;span&gt;Free for 3 months, then $39/mo. through month 12, then $45/mo. ongoing.&lt;/span&gt;
+    &lt;/div&gt;
+
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+
+        <h3>4.2 Step model</h3>
+        <p>Every step carries five editable fields. The chevron between steps is rendered automatically by the front-end — do not author it manually.</p>
+        <table>
+          <thead>
+            <tr><th>Field</th><th>Type</th><th>Required</th><th>Behaviour</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code class="inline">period</code></td><td>String</td><td>Yes</td><td>Time-range label (e.g. <em>“Months 1-3”</em>). Rendered <strong>14px desktop / 12px mobile</strong>, weight 500.</td></tr>
+            <tr><td><code class="inline">price</code></td><td>String</td><td>Yes</td><td>Price label (e.g. <em>“$39/mo”</em>, <em>“Free”</em>). Rendered <strong>26px / weight 800</strong>. Hero of the step.</td></tr>
+            <tr><td><code class="inline">tag</code></td><td>String</td><td>No</td><td>Floating pill above the step (e.g. <em>“Free trial”</em>, <em>“NOW”</em>). Orange <code class="inline">#ed6b1f</code> background, white text, <code class="inline">top: -12px</code>. <strong>14px desktop / 12px mobile</strong>. Hidden when empty.</td></tr>
+            <tr><td><code class="inline">subtext</code></td><td>String</td><td>No</td><td>Secondary line below the price (e.g. <em>“3 months on us”</em>). <strong>14px desktop / 12px mobile</strong>, weight 500, opacity 0.9. Hidden when empty.</td></tr>
+            <tr><td><code class="inline">style</code></td><td>Enum</td><td>Yes</td><td><code class="inline">active</code> (blue <code class="inline">#136BA3</code> + white text) · <code class="inline">discounted</code> (dark blue <code class="inline">#0d4d7a</code> + white text) · <code class="inline">regular</code> (grey <code class="inline">#f0f1f3</code> + dark text).</td></tr>
+          </tbody>
+        </table>
+
+        <h3>4.3 Summary banner</h3>
+        <p>An optional info banner sits directly below the steps. It is the place to consolidate the full timeline into a one-line marketing message. The banner is wrapped in <code class="inline">.journey-summary</code> and toggles via the <code class="inline">.hidden-el</code> utility (<code class="inline">display: none !important</code>).</p>
+        <table>
+          <thead>
+            <tr><th>Token</th><th>Value</th><th>Notes</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Background</td><td><code class="inline">#fff7f0</code></td><td>Light peach.</td></tr>
+            <tr><td>Border</td><td><code class="inline">1px solid #ed6b1f</code></td><td>Brand orange.</td></tr>
+            <tr><td>Radius</td><td><code class="inline">8px</code></td><td></td></tr>
+            <tr><td>Padding</td><td><code class="inline">12px 14px</code></td><td></td></tr>
+            <tr><td>Margin-top</td><td><code class="inline">18px</code></td><td>From the row of steps above.</td></tr>
+            <tr><td>Text colour</td><td><code class="inline">#5d3a1a</code></td><td>Warm dark brown for AA contrast on peach.</td></tr>
+            <tr><td>Font</td><td><code class="inline">14px desktop / 12px mobile</code></td><td>Line-height <code class="inline">1.45</code>.</td></tr>
+            <tr><td>Icon</td><td><code class="inline">16 × 16</code></td><td>Info circle (stroke <code class="inline">currentColor → #ed6b1f</code>), flex-shrink 0, margin-top 1px for optical alignment.</td></tr>
+            <tr><td>Layout</td><td><code class="inline">flex / align-items: flex-start / gap 10px</code></td><td>Icon on the left, text wraps freely.</td></tr>
+          </tbody>
+        </table>
+
+        <h3>4.4 Visual tokens (steps + header)</h3>
+        <table>
+          <thead>
+            <tr><th>Element</th><th>Value</th><th>Notes</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Section padding</td><td><code class="inline">24px 16px 20px</code></td><td>Wraps the entire <code class="inline">.price-journey</code>.</td></tr>
+            <tr><td>Header margin-bottom</td><td><code class="inline">20px</code></td><td>Between header row and steps.</td></tr>
+            <tr><td>Step radius</td><td><code class="inline">16px</code></td><td>Applied to each <code class="inline">.journey-step</code>.</td></tr>
+            <tr><td>Step padding</td><td><code class="inline">18px 8px 14px</code></td><td>Top extra room reserved for the floating tag.</td></tr>
+            <tr><td>Step layout</td><td><code class="inline">flex: 1 / column / center</code></td><td>Each step grows equally; <code class="inline">.journey-steps</code> is <code class="inline">display: flex; gap: 0</code>.</td></tr>
+            <tr><td>Chevron</td><td><code class="inline">27px / weight 700 / colour #ed6b1f</code></td><td>Renders inside a 24px-wide column between steps.</td></tr>
+            <tr><td>Tag pill</td><td><code class="inline">font 14/12px · padding 4px 10px · radius 20px</code></td><td>Orange background, white text, shadow <code class="inline">0 1px 3px rgba(0,0,0,0.15)</code>, floats <code class="inline">top: -12px</code>.</td></tr>
+            <tr><td>Header title</td><td><code class="inline">font 14px / weight 600 / colour #0a1628</code></td><td><strong>Empty by default</strong>. Renders only when editor populates it.</td></tr>
+            <tr><td>Savings line</td><td><code class="inline">font 14/12px · weight 600 · colour #ed6b1f</code></td><td>Free-text string (e.g. <em>“Save $240/year”</em>). The <strong>entire string is editable</strong>, not just the number.</td></tr>
+            <tr><td>Savings icon</td><td><code class="inline">16 × 16</code></td><td>Price-tag pictogram, <code class="inline">stroke: currentColor</code> → inherits the orange.</td></tr>
+          </tbody>
+        </table>
+
+        <h3>4.5 Interaction model</h3>
+        <ul>
+          <li>The accordion uses a <code class="inline">max-height</code> transition (see <a href="#motion" style="color:#ed6b1f;font-weight:600;">§Motion</a>) — <strong>0.85s open / 0.7s close</strong>, easing <code class="inline">cubic-bezier(0.65, 0, 0.35, 1)</code>.</li>
+          <li><code class="inline">aria-expanded</code> flips on the toggle button; the arrow pictogram rotates 180° over 0.6s.</li>
+          <li>Repeater controls (<code class="inline">+ Add step</code> / <code class="inline">×</code>) are CMS-only and never rendered in production.</li>
+          <li>Adding or removing steps must not break the layout — the row uses <code class="inline">display: flex</code> with <code class="inline">flex: 1</code> per step.</li>
+          <li>The summary banner is independent of the step list — editors can hide it without removing any step.</li>
+        </ul>
+
+        <h3>4.6 CMS fields to expose</h3>
+        <ol class="numbered">
+          <li><strong>Show Price Journey</strong> — boolean, default <strong>OFF</strong>.</li>
+          <li><strong>Toggle label</strong> — string, default <em>“See price journey”</em>.</li>
+          <li><strong>Header title</strong> — string, default <strong>empty</strong>.</li>
+          <li><strong>Savings text</strong> — free-text string (the entire phrase, not just the number), default <em>“Save $240/year”</em>.</li>
+          <li><strong>Steps</strong> — repeater of <code class="inline">{ period, price, tag, subtext, style }</code> objects.</li>
+          <li><strong>Show summary banner</strong> — boolean, default <strong>ON</strong>.</li>
+          <li><strong>Summary banner text</strong> — string, default <em>“Free for 3 months, then $39/mo. through month 12, then $45/mo. ongoing.”</em></li>
+        </ol>
+      </section>
+
+      <!-- 5. Tokens -->
+      <section id="tokens">
+        <h2><span class="num">5</span> Design tokens</h2>
+        <p>Use these values exactly. They are the canonical brand colours and dimensions for the rate card.</p>
+        <h3>Colours</h3>
+        <table>
+          <thead>
+            <tr><th>Token</th><th>Value</th><th>Usage</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Brand orange</td><td><span class="color-swatch" style="background:#ed6b1f"></span><code class="inline">#ed6b1f</code></td><td>Headline, CTA background, breakdown arrow, savings badge, plus pill, journey chevron, summary banner border &amp; icon, journey tag pills</td></tr>
+            <tr><td>Plan badge</td><td><span class="color-swatch" style="background:#17599C"></span><code class="inline">#17599C</code></td><td>Plan badge background (pill above headline)</td></tr>
+            <tr><td>Specs icon</td><td><span class="color-swatch" style="background:#2E7DC1"></span><code class="inline">#2E7DC1</code></td><td>Internet specs circular icons + check pill</td></tr>
+            <tr><td>Journey active</td><td><span class="color-swatch" style="background:#136BA3"></span><code class="inline">#136BA3</code></td><td>Active step background in the price journey timeline</td></tr>
+            <tr><td>Journey discounted</td><td><span class="color-swatch" style="background:#0d4d7a"></span><code class="inline">#0d4d7a</code></td><td>Discounted step background (darker variant)</td></tr>
+            <tr><td>Journey regular</td><td><span class="color-swatch" style="background:#f0f1f3"></span><code class="inline">#f0f1f3</code></td><td>Default step background (neutral grey)</td></tr>
+            <tr><td>Header start</td><td><span class="color-swatch" style="background:#0a1628"></span><code class="inline">#0a1628</code></td><td>Top of header gradient</td></tr>
+            <tr><td>Header end</td><td><span class="color-swatch" style="background:#162a4a"></span><code class="inline">#162a4a</code></td><td>Bottom of header gradient</td></tr>
+            <tr><td>Card border</td><td><span class="color-swatch" style="background:#CECECE"></span><code class="inline">#CECECE</code></td><td>1px outline on the entire card</td></tr>
+            <tr><td>Breakdown bg</td><td><span class="color-swatch" style="background:#f5f7fa"></span><code class="inline">#f5f7fa</code></td><td>Breakdown toggle bar + open body (journey + features)</td></tr>
+            <tr><td>Summary bg</td><td><span class="color-swatch" style="background:#fff7f0"></span><code class="inline">#fff7f0</code></td><td>Journey summary banner background (peach)</td></tr>
+            <tr><td>Summary text</td><td><span class="color-swatch" style="background:#5d3a1a"></span><code class="inline">#5d3a1a</code></td><td>Journey summary banner text colour</td></tr>
+            <tr><td>Specs bg</td><td><span class="color-swatch" style="background:#fafafa"></span><code class="inline">#fafafa</code></td><td>Internet specs panel + legal footer</td></tr>
+            <tr><td>Legal text</td><td><span class="color-swatch" style="background:#999"></span><code class="inline">#999</code></td><td>Legal note (footer)</td></tr>
+          </tbody>
+        </table>
+
+        <h3>Spacing &amp; radii</h3>
+        <table>
+          <thead><tr><th>Element</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td>Card border-radius</td><td><code class="inline">20px</code></td></tr>
+            <tr><td>Card header padding</td><td><code class="inline">20px</code> (all sides)</td></tr>
+            <tr><td>Card content padding</td><td><code class="inline">20px 20px 16px</code></td></tr>
+            <tr><td>Breakdown toggle padding</td><td><code class="inline">14px 20px</code></td></tr>
+            <tr><td>Plan badge padding</td><td><code class="inline">8px 20px</code></td></tr>
+            <tr><td>Savings badge padding</td><td><code class="inline">3px 6px</code> + <code class="inline">line-height: 1</code></td></tr>
+            <tr><td>Journey section padding</td><td><code class="inline">24px 16px 20px</code></td></tr>
+            <tr><td>Journey step radius</td><td><code class="inline">16px</code></td></tr>
+            <tr><td>Journey step padding</td><td><code class="inline">18px 8px 14px</code></td></tr>
+            <tr><td>Journey tag radius</td><td><code class="inline">20px</code> (pill)</td></tr>
+            <tr><td>Summary banner radius</td><td><code class="inline">8px</code></td></tr>
+            <tr><td>Summary banner padding</td><td><code class="inline">12px 14px</code></td></tr>
+            <tr><td>CTA padding</td><td><code class="inline">18px</code></td></tr>
+            <tr><td>Features list gap</td><td><code class="inline">12px</code></td></tr>
+          </tbody>
+        </table>
+
+        <h3>Pictogram sizes</h3>
+        <table>
+          <thead><tr><th>Icon</th><th>Size</th><th>Stroke</th></tr></thead>
+          <tbody>
+            <tr><td>Specs download / upload</td><td><code class="inline">12 × 12.75</code></td><td>—</td></tr>
+            <tr><td>Specs unlimited</td><td><code class="inline">16 × 8</code></td><td>1.3125</td></tr>
+            <tr><td>Header savings (price-tag)</td><td><code class="inline">16 × 16</code></td><td>1.5</td></tr>
+            <tr><td>Journey header savings (price-tag)</td><td><code class="inline">16 × 16</code></td><td>1.5</td></tr>
+            <tr><td>Journey summary (info circle)</td><td><code class="inline">16 × 16</code></td><td>2</td></tr>
+            <tr><td>Feature row check / plus</td><td><code class="inline">12 × 9</code> / <code class="inline">10 × 10</code></td><td>1.5</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- 6. Typography -->
+      <section id="typography">
+        <h2><span class="num">6</span> Typography</h2>
+        <p>The card uses <strong>Ambra Sans Text Regular</strong> as its primary face. Weights 500, 600, 700 and 800 are used selectively (see table). The orange headline must stay <em>regular</em> weight (font-family <code class="inline">Ambra Sans Text</code>) to match brand guidelines.</p>
+
+        <h3>6.1 Header region</h3>
+        <table>
+          <thead><tr><th>Element</th><th>Desktop</th><th>Mobile (&lt;480px)</th><th>Weight</th></tr></thead>
+          <tbody>
+            <tr><td>Plan badge</td><td><code class="inline">14px</code></td><td><code class="inline">14px</code></td><td>700</td></tr>
+            <tr><td>Plan headline (orange)</td><td><code class="inline">48px</code></td><td><code class="inline">32px</code></td><td>normal</td></tr>
+            <tr><td>Original price (strike)</td><td><code class="inline">14px</code></td><td><code class="inline">14px</code></td><td>normal</td></tr>
+            <tr><td>Currency sign ($)</td><td><code class="inline">32px</code></td><td><code class="inline">32px</code></td><td>normal</td></tr>
+            <tr><td>Promo amount</td><td><code class="inline">64px</code></td><td><code class="inline">48px</code></td><td>800</td></tr>
+            <tr><td>Period (/mo.)</td><td><code class="inline">16px</code></td><td><code class="inline">14px</code></td><td>500</td></tr>
+            <tr><td>Price note</td><td><code class="inline">14px</code></td><td><code class="inline">12px</code></td><td>normal</td></tr>
+            <tr><td>Header savings badge</td><td><code class="inline">14px</code></td><td><code class="inline">12px</code></td><td>600</td></tr>
+          </tbody>
+        </table>
+
+        <h3>6.2 Price Journey</h3>
+        <table>
+          <thead><tr><th>Element</th><th>Desktop</th><th>Mobile (&lt;480px)</th><th>Weight</th></tr></thead>
+          <tbody>
+            <tr><td>Toggle label</td><td><code class="inline">16px</code></td><td><code class="inline">14px</code></td><td>500</td></tr>
+            <tr><td>Journey title (optional)</td><td><code class="inline">14px</code></td><td><code class="inline">14px</code></td><td>600</td></tr>
+            <tr><td>Journey savings</td><td><code class="inline">14px</code></td><td><code class="inline">12px</code></td><td>600</td></tr>
+            <tr><td>Step tag (pill)</td><td><code class="inline">14px</code></td><td><code class="inline">12px</code></td><td>700</td></tr>
+            <tr><td>Step period</td><td><code class="inline">14px</code></td><td><code class="inline">12px</code></td><td>500</td></tr>
+            <tr><td>Step price</td><td><code class="inline">26px</code></td><td><code class="inline">26px</code></td><td>800</td></tr>
+            <tr><td>Step subtext</td><td><code class="inline">14px</code></td><td><code class="inline">12px</code></td><td>500</td></tr>
+            <tr><td>Summary banner</td><td><code class="inline">14px</code></td><td><code class="inline">12px</code></td><td>normal</td></tr>
+          </tbody>
+        </table>
+
+        <h3>6.3 Specs, features, footer</h3>
+        <table>
+          <thead><tr><th>Element</th><th>Desktop</th><th>Mobile (&lt;480px)</th><th>Weight</th></tr></thead>
+          <tbody>
+            <tr><td>Specs title</td><td><code class="inline">16px</code></td><td><code class="inline">14px</code></td><td>normal</td></tr>
+            <tr><td>Speed item</td><td><code class="inline">16px</code></td><td><code class="inline">14px</code></td><td>normal</td></tr>
+            <tr><td>Features list item</td><td><code class="inline">16px</code></td><td><code class="inline">14px</code></td><td>normal</td></tr>
+            <tr><td>CTA button</td><td><code class="inline">16px</code></td><td><code class="inline">14px</code></td><td>700</td></tr>
+            <tr><td>Legal note</td><td><code class="inline">14px</code></td><td><code class="inline">12px</code></td><td>normal</td></tr>
+          </tbody>
+        </table>
+
+        <div class="callout info">
+          <strong>Currency sign positioning</strong>
+          The <code class="inline">$</code> is aligned to <code class="inline">align-self: flex-start</code> with <code class="inline">margin-top: -2px</code> and a 2px <code class="inline">gap</code> from the amount, so it sits slightly above the digit baseline.
+        </div>
+        <div class="callout">
+          <strong>Headline size override</strong>
+          The plan headline accepts a per-instance size from the CMS (range 24–60px desktop, default 48). On mobile this is forced to 32px via <code class="inline">font-size: 32px !important</code> to keep marketing balance intact.
+        </div>
+      </section>
+
+      <!-- 7. Responsive -->
+      <section id="responsive">
+        <h2><span class="num">7</span> Responsive behavior</h2>
+        <p>The component has <strong>one breakpoint</strong>: <code class="inline">480px</code>. Below this width, the card switches to fluid width and several font sizes shrink. Layout, vertical rhythm and section order do <em>not</em> change between breakpoints.</p>
+        <div class="responsive-diagram">
+          <div class="device-card">
+            <div class="device-label">Desktop</div>
+            <div class="device-size">411px</div>
+            <div class="device-meta">Fixed width<br>Headline 48px · Amount 64px<br>Most body text 14–16px</div>
+          </div>
+          <div class="device-card">
+            <div class="device-label">Mobile (&lt; 480px)</div>
+            <div class="device-size">92vw</div>
+            <div class="device-meta">Fluid width<br>Headline 32px · Amount 48px<br>Most body text 12–14px</div>
+          </div>
+        </div>
+        <h3>Mobile-only overrides</h3>
+        <span class="lang-tag">css</span>
+<pre><code>@media (max-width: 480px) {
+  .pricing-card { width: 92vw; }
+  .legal-note { font-size: 12px; }
+
+  /* Body text shrinks to 14px */
+  .period,
+  .breakdown-toggle,
+  .specs-title,
+  .speed-item,
+  .features-list li,
+  .cta-button { font-size: 14px; }
+
+  /* Tighter elements shrink to 12px */
+  .savings-label,
+  .price-note,
+  .journey-savings,
+  .journey-summary { font-size: 12px; }
+
+  .step-period,
+  .step-subtext,
+  .step-tag { font-size: 12px; }
+
+  /* Marketing hero overrides */
+  .plan-headline { font-size: 32px !important; }
+  .amount { font-size: 48px; }
+}</code></pre>
+        <div class="callout">
+          <strong>Why <code class="inline">!important</code> on <code class="inline">.plan-headline</code>?</strong>
+          The headline size is set inline (<code class="inline">style="font-size: 48px"</code>) by the CMS slider, which would normally beat any CSS rule. The <code class="inline">!important</code> at the mobile breakpoint guarantees 32px on phones regardless of the editor's desktop choice.
+        </div>
+      </section>
+
+      <!-- 8. Motion & transitions -->
+      <section id="motion">
+        <h2><span class="num">8</span> Motion &amp; transitions</h2>
+        <p>Motion in the card is intentionally restrained. Only the accordions (Price Journey, What's included), the CTA hover, the chevron rotation and a handful of UI states animate. Everything else is static.</p>
+
+        <h3>8.1 Accordion (Price Journey + What's included)</h3>
+        <p>Both accordions share the same CSS class <code class="inline">.price-breakdown-section</code> and animate by transitioning <code class="inline">max-height</code> between <code class="inline">0</code> and <code class="inline">600px</code>. The closed/open states use <strong>different</strong> durations on purpose — opening reads as “unfolding”, closing reads as “tidying up” and feels faster.</p>
+        <table>
+          <thead><tr><th>State</th><th>Property</th><th>Duration</th><th>Easing</th></tr></thead>
+          <tbody>
+            <tr><td>Closing</td><td><code class="inline">max-height</code></td><td><code class="inline">0.7s</code></td><td><code class="inline">cubic-bezier(0.65, 0, 0.35, 1)</code></td></tr>
+            <tr><td>Opening</td><td><code class="inline">max-height</code></td><td><code class="inline">0.85s</code></td><td><code class="inline">cubic-bezier(0.65, 0, 0.35, 1)</code></td></tr>
+            <tr><td>Arrow rotation</td><td><code class="inline">transform</code></td><td><code class="inline">0.6s</code></td><td><code class="inline">cubic-bezier(0.65, 0, 0.35, 1)</code></td></tr>
+          </tbody>
+        </table>
+        <span class="lang-tag">css</span>
+<pre><code>.price-breakdown-section {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.7s cubic-bezier(0.65, 0, 0.35, 1);
+}
+.price-breakdown-section.open {
+  max-height: 600px;
+  border-bottom: 1px solid #e5e5e5;
+  transition: max-height 0.85s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.breakdown-toggle .arrow {
+  transition: transform 0.6s cubic-bezier(0.65, 0, 0.35, 1);
+}
+.breakdown-toggle.active .arrow { transform: rotate(180deg); }</code></pre>
+        <div class="callout info">
+          <strong>Why this curve?</strong>
+          <code class="inline">cubic-bezier(0.65, 0, 0.35, 1)</code> is an easeInOutCubic — the motion starts softly, accelerates through the middle, and decelerates smoothly to a stop. It avoids the “snap-open / snap-close” feel of <code class="inline">ease-out</code> on a max-height transition.
+        </div>
+
+        <h3>8.2 CTA button hover</h3>
+        <p>The CTA fills with solid black from the bottom up using a pseudo-element animating <code class="inline">height</code> from <code class="inline">0%</code> to <code class="inline">100%</code>. Text colour cross-fades to white at the same time.</p>
+        <table>
+          <thead><tr><th>Property</th><th>Duration</th><th>Easing</th></tr></thead>
+          <tbody>
+            <tr><td>Fill <code class="inline">height</code></td><td><code class="inline">0.3s</code></td><td><code class="inline">ease</code></td></tr>
+            <tr><td>Text <code class="inline">color</code></td><td><code class="inline">0.3s</code></td><td><code class="inline">ease</code></td></tr>
+          </tbody>
+        </table>
+
+        <h3>8.3 Floating UI controls</h3>
+        <table>
+          <thead><tr><th>Element</th><th>Property</th><th>Duration</th><th>Easing</th></tr></thead>
+          <tbody>
+            <tr><td>Gear button hover / rotate</td><td><code class="inline">background, transform</code></td><td><code class="inline">0.2s / 0.3s</code></td><td><code class="inline">linear</code></td></tr>
+            <tr><td>Docs button hover</td><td><code class="inline">background, transform</code></td><td><code class="inline">0.2s</code></td><td><code class="inline">linear</code></td></tr>
+            <tr><td>Stories button hover</td><td><code class="inline">background, transform</code></td><td><code class="inline">0.2s</code></td><td><code class="inline">linear</code></td></tr>
+            <tr><td>Configurator slide</td><td><code class="inline">right</code></td><td><code class="inline">0.35s</code></td><td><code class="inline">cubic-bezier(0.4, 0, 0.2, 1)</code></td></tr>
+            <tr><td>Overlay fade</td><td><code class="inline">opacity</code></td><td><code class="inline">0.3s</code></td><td><code class="inline">linear</code></td></tr>
+          </tbody>
+        </table>
+
+        <h3>8.4 Reduced motion</h3>
+        <p>If the user has expressed a preference for reduced motion, all transitions should be neutralised. Add this at the bottom of the stylesheet:</p>
+        <span class="lang-tag">css</span>
+<pre><code>@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+}</code></pre>
+        <div class="callout">
+          <strong>Do NOT animate</strong>
+          Layout-affecting properties other than <code class="inline">max-height</code> on the accordions, fonts, or anything that triggers a full reflow. Stick to <code class="inline">opacity</code>, <code class="inline">transform</code>, <code class="inline">color</code>, <code class="inline">background</code> and the specifically listed <code class="inline">max-height</code> / <code class="inline">height</code> animations above.
+        </div>
+      </section>
+
+      <!-- 9. HTML structure -->
+      <section id="html">
+        <h2><span class="num">9</span> HTML structure</h2>
+        <p>The full markup of the production component is shown below. Static text shown here will be replaced by AngularJS expressions in the integration step (see <a href="#angularjs" style="color:#ed6b1f;font-weight:600;">§12 AngularJS integration</a>).</p>
+        <span class="lang-tag">html</span>
+<pre><code>&lt;div class="pricing-card"&gt;
+
+  &lt;!-- HEADER --&gt;
+  &lt;div class="card-header"&gt;
+    &lt;div class="header-top"&gt;
+      &lt;span class="plan-badge"&gt;Internet 1G&lt;/span&gt;
+      &lt;div class="plan-headline" style="font-size: 48px;"&gt;Internet 1G&lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div class="price-block"&gt;
+      &lt;p class="original-price"&gt;Reg. Price: $&lt;span&gt;95&lt;/span&gt;/mo.&lt;/p&gt;
+      &lt;div class="hero-price"&gt;
+        &lt;span class="currency"&gt;$&lt;/span&gt;
+        &lt;span class="amount"&gt;75&lt;/span&gt;
+        &lt;span class="period"&gt;/mo.&lt;/span&gt;
+      &lt;/div&gt;
+      &lt;p class="price-note"&gt;for your first 12 months&lt;/p&gt;
+
+      &lt;div class="savings-label"&gt;
+        &lt;svg viewBox="0 0 24 24"&gt;&lt;!-- price-tag pictogram --&gt;&lt;/svg&gt;
+        &lt;span&gt;Save $240 in your first year&lt;/span&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;!-- PRICE JOURNEY (hidden by default in production) --&gt;
+  &lt;div class="hidden-el"&gt;&lt;!-- wrapper toggled by editor --&gt;
+    &lt;button class="breakdown-toggle" aria-expanded="false"&gt;
+      &lt;span&gt;See price journey&lt;/span&gt;
+      &lt;span class="arrow"&gt;&lt;/span&gt;
+    &lt;/button&gt;
+    &lt;div class="price-breakdown-section"&gt;
+      &lt;div class="price-journey"&gt;
+        &lt;div class="journey-header"&gt;
+          &lt;span class="journey-title"&gt;&lt;/span&gt;
+          &lt;span class="journey-savings"&gt;
+            &lt;svg class="savings-icon" viewBox="0 0 24 24"&gt;&lt;!-- price-tag --&gt;&lt;/svg&gt;
+            &lt;span&gt;Save $240/year&lt;/span&gt;
+          &lt;/span&gt;
+        &lt;/div&gt;
+        &lt;div class="journey-steps"&gt;
+          &lt;div class="journey-step active"&gt;
+            &lt;span class="step-tag"&gt;Free trial&lt;/span&gt;
+            &lt;span class="step-period"&gt;Months 1-3&lt;/span&gt;
+            &lt;span class="step-price"&gt;Free&lt;/span&gt;
+            &lt;span class="step-subtext"&gt;3 months on us&lt;/span&gt;
+          &lt;/div&gt;
+          &lt;span class="journey-chevron" aria-hidden="true"&gt;›&lt;/span&gt;
+          &lt;div class="journey-step active"&gt;
+            &lt;span class="step-period"&gt;Months 4-12&lt;/span&gt;
+            &lt;span class="step-price"&gt;$39/mo&lt;/span&gt;
+            &lt;span class="step-subtext"&gt;$6 off/mo.&lt;/span&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class="journey-summary"&gt;
+          &lt;svg class="summary-icon" viewBox="0 0 24 24"&gt;&lt;!-- info circle --&gt;&lt;/svg&gt;
+          &lt;span&gt;Free for 3 months, then $39/mo. through month 12, then $45/mo. ongoing.&lt;/span&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;!-- INTERNET SPECS (always visible) --&gt;
+  &lt;div class="internet-specs"&gt;
+    &lt;div class="specs-title"&gt;Internet specs&lt;/div&gt;
+    &lt;div class="speed-item"&gt;
+      &lt;span class="check-icon" style="background:#2E7DC1;"&gt;&lt;svg&gt;&lt;!-- DL --&gt;&lt;/svg&gt;&lt;/span&gt;
+      &lt;span&gt;&lt;strong&gt;1 Gbps&lt;/strong&gt; download speed&lt;/span&gt;
+    &lt;/div&gt;
+    &lt;div class="speed-item"&gt;&lt;!-- upload --&gt;&lt;/div&gt;
+    &lt;div class="speed-item"&gt;&lt;!-- usage --&gt;&lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;!-- WHAT'S INCLUDED (always rendered, closed by default) --&gt;
+  &lt;button class="breakdown-toggle" aria-expanded="false"&gt;
+    &lt;span&gt;What's included&lt;/span&gt;
+    &lt;span class="arrow"&gt;&lt;/span&gt;
+  &lt;/button&gt;
+  &lt;div class="price-breakdown-section"&gt;
+    &lt;div class="card-content"&gt;
+      &lt;ul class="features-list"&gt;
+        &lt;li&gt;
+          &lt;span class="check-icon" style="background:#2E7DC1;"&gt;&lt;svg&gt;&lt;!-- check --&gt;&lt;/svg&gt;&lt;/span&gt;
+          &lt;span&gt;Ideal for 20+ devices online at the same time&lt;/span&gt;
+        &lt;/li&gt;
+      &lt;/ul&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;!-- CTA --&gt;
+  &lt;div class="card-content"&gt;
+    &lt;button class="cta-button"&gt;Choose This Plan&lt;/button&gt;
+  &lt;/div&gt;
+
+  &lt;!-- LEGAL --&gt;
+  &lt;p class="legal-note"&gt;*Promotional pricing. $95/mo. starting month 13. Taxes extra.&lt;/p&gt;
+
+&lt;/div&gt;</code></pre>
+        <div class="callout info">
+          <strong>Visibility primitives</strong>
+          Every editor-controlled toggle is implemented with a single utility class <code class="inline">.hidden-el</code> applying <code class="inline">display: none !important</code>. This keeps the markup stable while letting the CMS show/hide regions on demand without conditional rendering.
+        </div>
+      </section>
+
+      <!-- 10. Pictograms -->
+      <section id="pictograms">
+        <h2><span class="num">10</span> SVG pictograms</h2>
+        <p>All pictograms are vanilla inline SVG. They render <strong>white</strong> on top of a coloured 24×24 circular background (Internet Specs) or directly inline with <code class="inline">stroke: currentColor</code> so the icon adopts the local text colour (savings badges, summary banner). Never use a font-icon set.</p>
+        <div class="icon-grid">
+          <div class="icon-card">
+            <div class="icon-bg">
+              <svg width="12" height="12.75" viewBox="0 0 12 13" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0.75001 11.25H11.25C11.6642 11.25 12 11.5858 12 12C12 12.4142 11.6642 12.75 11.25 12.75H0.75001C0.335797 12.75 1.14441e-05 12.4142 1.14441e-05 12C1.14441e-05 11.5858 0.335797 11.25 0.75001 11.25Z" fill="white"/><path d="M12 10.5V12C12 12.4142 11.6642 12.75 11.25 12.75C10.8358 12.75 10.5 12.4142 10.5 12V10.5C10.5 10.0858 10.8358 9.75 11.25 9.75C11.6642 9.75 12 10.0858 12 10.5Z" fill="white"/><path d="M1.5 10.5L1.5 12C1.5 12.4142 1.16421 12.75 0.750001 12.75C0.335788 12.75 1.43051e-06 12.4142 1.43051e-06 12L1.43051e-06 10.5C1.43051e-06 10.0858 0.335788 9.75 0.750001 9.75C1.16421 9.75 1.5 10.0858 1.5 10.5Z" fill="white"/><path d="M5.99992 8.99999C6.15541 9.00117 6.30742 8.954 6.43492 8.86499L9.43492 6.74999C9.59661 6.63529 9.70631 6.46124 9.74004 6.26589C9.77377 6.07054 9.72878 5.86977 9.61492 5.70749C9.55808 5.62638 9.48573 5.55733 9.40206 5.50432C9.31839 5.45132 9.22505 5.41541 9.12743 5.39868C9.0298 5.38194 8.92983 5.38471 8.83329 5.40682C8.73674 5.42893 8.64553 5.46994 8.56492 5.52749C7.03504 6.59662 4.99107 6.56039 3.50004 5.43773L3.44992 5.39999C3.29079 5.28065 3.09077 5.2294 2.89386 5.25753C2.69694 5.28566 2.51927 5.39086 2.39992 5.54999C2.28058 5.70912 2.22933 5.90915 2.25746 6.10606C2.28559 6.30297 2.39079 6.48065 2.54992 6.59999L5.54992 8.84999C5.67974 8.94736 5.83764 8.99999 5.99992 8.99999Z" fill="white"/><path d="M6 7.49999C6.19891 7.49999 6.38968 7.42098 6.53033 7.28032C6.67098 7.13967 6.75 6.94891 6.75 6.74999V0.749999C6.75 0.551087 6.67098 0.360322 6.53033 0.21967C6.38968 0.0790175 6.19891 0 6 0C5.80109 0 5.61032 0.0790175 5.46967 0.21967C5.32902 0.360322 5.25 0.551087 5.25 0.749999V6.74999C5.25 6.94891 5.32902 7.13967 5.46967 7.28032C5.61032 7.42098 5.80109 7.49999 6 7.49999Z" fill="white"/></svg>
+            </div>
+            <div class="icon-name">Download</div>
+            <div class="icon-size">12 × 12.75px</div>
+          </div>
+          <div class="icon-card">
+            <div class="icon-bg">
+              <svg width="12" height="12.75" viewBox="0 0 12 13" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0.75001 1.50001H11.25C11.6642 1.50001 12 1.16422 12 0.750008C12 0.335795 11.6642 9.05991e-06 11.25 9.05991e-06H0.75001C0.335797 9.05991e-06 1.14441e-05 0.335795 1.14441e-05 0.750008C1.14441e-05 1.16422 0.335797 1.50001 0.75001 1.50001Z" fill="white"/><path d="M12 2.25V0.749999C12 0.335786 11.6642 0 11.25 0C10.8358 0 10.5 0.335786 10.5 0.749999V2.25C10.5 2.66421 10.8358 3 11.25 3C11.6642 3 12 2.66421 12 2.25Z" fill="white"/><path d="M1.5 2.25L1.5 0.749999C1.5 0.335786 1.16421 0 0.750001 0C0.335788 0 1.43051e-06 0.335786 1.43051e-06 0.749999L1.43051e-06 2.25C1.43051e-06 2.66421 0.335788 3 0.750001 3C1.16421 3 1.5 2.66421 1.5 2.25Z" fill="white"/><path d="M5.99992 3.75001C6.15541 3.74883 6.30742 3.796 6.43492 3.88501L9.43492 6.00001C9.59661 6.11471 9.70631 6.28876 9.74004 6.48411C9.77377 6.67946 9.72878 6.88023 9.61492 7.04251C9.55808 7.12362 9.48573 7.19267 9.40206 7.24568C9.31839 7.29868 9.22505 7.33459 9.12743 7.35132C9.0298 7.36806 8.92983 7.36529 8.83329 7.34318C8.73674 7.32107 8.64553 7.28006 8.56492 7.22251C7.03504 6.15338 4.99107 6.18961 3.50004 7.31227L3.44992 7.35001C3.29079 7.46935 3.09077 7.5206 2.89386 7.49247C2.69694 7.46434 2.51927 7.35914 2.39992 7.20001C2.28058 7.04088 2.22933 6.84085 2.25746 6.64394C2.28559 6.44703 2.39079 6.26935 2.54992 6.15001L5.54992 3.90001C5.67974 3.80264 5.83764 3.75001 5.99992 3.75001Z" fill="white"/><path d="M6 5.25C6.19891 5.25 6.38968 5.32902 6.53033 5.46967C6.67098 5.61032 6.75 5.80109 6.75 6V12C6.75 12.1989 6.67098 12.3897 6.53033 12.5303C6.38968 12.671 6.19891 12.75 6 12.75C5.80109 12.75 5.61032 12.671 5.46967 12.5303C5.32902 12.3897 5.25 12.1989 5.25 12V6C5.25 5.80109 5.32902 5.61032 5.46967 5.46967C5.61032 5.32902 5.80109 5.25 6 5.25Z" fill="white"/></svg>
+            </div>
+            <div class="icon-name">Upload</div>
+            <div class="icon-size">12 × 12.75px</div>
+          </div>
+          <div class="icon-card">
+            <div class="icon-bg">
+              <svg style="width:16px;height:8px;" width="16" height="8" viewBox="0 0 16 8" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5.98652 5.54164L5.77757 5.77757C5.35801 6.19713 4.82346 6.48285 4.24152 6.59861C3.65958 6.71436 3.05638 6.65495 2.5082 6.42789C1.96002 6.20083 1.49149 5.81631 1.16184 5.32296C0.832197 4.82961 0.65625 4.2496 0.65625 3.65625C0.65625 3.06291 0.832197 2.48289 1.16184 1.98954C1.49149 1.49619 1.96002 1.11168 2.5082 0.884613C3.05638 0.65755 3.65958 0.59814 4.24152 0.713895C4.82346 0.829651 5.35801 1.11537 5.77757 1.53493L9.53493 5.77757C9.95449 6.19713 10.489 6.48285 11.071 6.59861C11.6529 6.71436 12.2561 6.65495 12.8043 6.42789C13.3525 6.20083 13.821 5.81631 14.1507 5.32296C14.4803 4.82961 14.6562 4.2496 14.6562 3.65625C14.6562 3.06291 14.4803 2.48289 14.1507 1.98954C13.821 1.49619 13.3525 1.11168 12.8043 0.884613C12.2561 0.65755 11.6529 0.59814 11.071 0.713895C10.489 0.829651 9.95449 1.11537 9.53493 1.53493L9.32598 1.77087" stroke="white" stroke-width="1.3125" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="icon-name">Unlimited</div>
+            <div class="icon-size">16 × 8px</div>
+          </div>
+          <div class="icon-card">
+            <div class="icon-bg orange">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 8H8.01M4.56274 2.93726L2.93726 4.56274C2.59136 4.90864 2.4184 5.0816 2.29472 5.28343C2.18506 5.46237 2.10425 5.65746 2.05526 5.86154C2 6.09171 2 6.3363 2 6.82548V9.67452C2 10.1637 2 10.4083 2.05526 10.6385C2.10425 10.8425 2.18506 11.0376 2.29472 11.2166C2.4184 11.4184 2.59135 11.5914 2.93726 11.9373L10.6059 19.6059C11.7939 20.7939 12.388 21.388 13.0729 21.6105C13.6755 21.8063 14.3245 21.8063 14.927 21.6105C15.612 21.388 16.2061 20.7939 17.3941 19.6059L19.6059 17.3941C20.7939 16.2061 21.388 15.612 21.6105 14.927C21.8063 14.3245 21.8063 13.6755 21.6105 13.0729C21.388 12.388 20.7939 11.7939 19.6059 10.6059L11.9373 2.93726C11.5914 2.59136 11.4184 2.4184 11.2166 2.29472C11.0376 2.18506 10.8425 2.10425 10.6385 2.05526C10.4083 2 10.1637 2 9.67452 2H6.82548C6.3363 2 6.09171 2 5.86154 2.05526C5.65746 2.10425 5.46237 2.18506 5.28343 2.29472C5.0816 2.4184 4.90865 2.59135 4.56274 2.93726ZM8.5 8C8.5 8.27614 8.27614 8.5 8 8.5C7.72386 8.5 7.5 8.27614 7.5 8C7.5 7.72386 7.72386 7.5 8 7.5C8.27614 7.5 8.5 7.72386 8.5 8Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="icon-name">Savings (price-tag)</div>
+            <div class="icon-size">16 × 16px</div>
+          </div>
+          <div class="icon-card">
+            <div class="icon-bg orange">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="12" y1="16" x2="12" y2="12" stroke="white" stroke-width="2" stroke-linecap="round"/><line x1="12" y1="8" x2="12.01" y2="8" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>
+            </div>
+            <div class="icon-name">Summary info</div>
+            <div class="icon-size">16 × 16px</div>
+          </div>
+          <div class="icon-card">
+            <div class="icon-bg">
+              <svg style="width:12px;height:9px;" width="12" height="9" viewBox="0 0 12 9" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0.75 4.75L3.75 7.75L10.75 0.75" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="icon-name">Check</div>
+            <div class="icon-size">12 × 9px</div>
+          </div>
+          <div class="icon-card">
+            <div class="icon-bg orange">
+              <svg style="width:10px;height:10px;" width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0.75 4.75H4.75M8.75 4.75H4.75M4.75 4.75V0.75M4.75 4.75V8.75" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="icon-name">Plus</div>
+            <div class="icon-size">10 × 10px</div>
+          </div>
+        </div>
+        <div class="callout">
+          <strong>SVG sizing rule</strong>
+          Pictograms must keep their natural aspect ratio. When a container forces a different size, add an inline <code class="inline">style="width:...;height:...;"</code> attribute on the SVG itself to override the parent CSS rule.
+        </div>
+      </section>
+
+      <!-- 11. States -->
+      <section id="states">
+        <h2><span class="num">11</span> Interactive states</h2>
+        <p>State semantics for each interactive surface. Timing details for transitions live in <a href="#motion" style="color:#ed6b1f;font-weight:600;">§8 Motion</a>.</p>
+
+        <h3>11.1 Price Journey toggle</h3>
+        <ul>
+          <li><strong>Production default:</strong> the whole <em>See price journey</em> section (toggle bar + body) is <strong>hidden</strong>. It is only rendered when the CMS editor enables it via the <strong>Show Price Journey</strong> field.</li>
+          <li><strong>Closed:</strong> no <code class="inline">.active</code> on the toggle, no <code class="inline">.open</code> on the body. Arrow points down. <code class="inline">aria-expanded="false"</code>.</li>
+          <li><strong>Open:</strong> toggle gets <code class="inline">.active</code>; body gets <code class="inline">.open</code> (which sets <code class="inline">max-height: 600px</code>). Arrow rotates 180°. <code class="inline">aria-expanded="true"</code>.</li>
+        </ul>
+
+        <h3>11.2 What's included toggle</h3>
+        <ul>
+          <li><strong>Always rendered</strong>, <strong>closed by default</strong>.</li>
+          <li>Same state pair as Price Journey (<code class="inline">.active</code> on toggle, <code class="inline">.open</code> on body), same transitions.</li>
+          <li><code class="inline">aria-expanded</code> stays in sync with the visual state.</li>
+        </ul>
+
+        <h3>11.3 CTA button</h3>
+        <ul>
+          <li><strong>Rest:</strong> orange background (<code class="inline">#ed6b1f</code>), white text, weight 700.</li>
+          <li><strong>Hover:</strong> pseudo-element fills from bottom up with solid black (<code class="inline">#000</code>), text stays white.</li>
+          <li><strong>Focus:</strong> default browser ring — do not <code class="inline">outline: none</code> without a replacement.</li>
+          <li><strong>Active (press):</strong> no custom state; the browser default is acceptable.</li>
+        </ul>
+        <span class="lang-tag">css</span>
+<pre><code>.cta-button {
+  position: relative;
+  overflow: hidden;
+  background: #ed6b1f;
+  color: #fff;
+  transition: color 0.3s ease;
+}
+.cta-button::before {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 0;
+  background: #000;
+  transition: height 0.3s ease;
+  z-index: -1;
+}
+.cta-button:hover::before { height: 100%; }
+.cta-button:hover { color: #fff; }</code></pre>
+
+        <h3>11.4 Visibility utility (<code class="inline">.hidden-el</code>)</h3>
+        <p>Every editor toggle in the panel — savings, original price, headline, specs, legal, summary banner, Price Journey, etc. — maps to a single CSS utility class:</p>
+        <span class="lang-tag">css</span>
+<pre><code>.hidden-el { display: none !important; }</code></pre>
+        <p>This keeps the markup stable. The directive / controller adds or removes the class according to the bound boolean. There is no other visibility mechanism in the component.</p>
+
+        <h3>11.5 Floating UI buttons (developer-only)</h3>
+        <p>The gear (configurator), docs and stories buttons in the preview page are <strong>developer affordances</strong>. They must not ship to production embeds of the rate card. Their styles and transitions live in the same file only for the preview experience.</p>
+      </section>
+
+      <!-- 12. AngularJS -->
+      <section id="angularjs">
+        <h2><span class="num">12</span> AngularJS 1.8.2 integration</h2>
+        <p>The component is plain HTML/CSS — AngularJS 1.8.2 drives <strong>three things</strong> only: (a) data binding from the CMS model (<code class="inline">vm.plan</code>), (b) the <code class="inline">.active</code> / <code class="inline">.open</code> classes on the accordion toggles, and (c) the visibility booleans that toggle the <code class="inline">.hidden-el</code> utility. Everything else (motion, layout, hover) stays in CSS.</p>
+
+        <div class="callout info">
+          <strong>Dependencies</strong>
+          AngularJS <code class="inline">1.8.2</code> · <code class="inline">angular-sanitize</code> <code class="inline">1.8.2</code> (mandatory — required by <code class="inline">ng-bind-html</code> for inline SVG). No other Angular modules are needed; do <em>not</em> add <code class="inline">angular-animate</code> — accordion motion is pure CSS.
+        </div>
+
+        <div class="callout">
+          <strong>Pattern used: <code class="inline">controllerAs vm</code></strong>
+          The shipped reference (<code class="inline">template.html</code>) binds via <code class="inline">ng-controller="RateCardCtrl as vm"</code>. All examples below assume that alias. If you prefer the legacy <code class="inline">$scope</code> pattern, swap every <code class="inline">vm.</code> for <code class="inline">$scope.</code> and inject <code class="inline">$scope</code> into the controller — the markup remains otherwise identical.
+        </div>
+
+        <h3>12.1 Module bootstrap</h3>
+        <span class="lang-tag">javascript</span>
+<pre><code>angular
+  .module('fhiRateCard', ['ngSanitize']);
+
+// In your view:
+// &lt;html ng-app="fhiRateCard"&gt;
+//   &lt;body ng-controller="RateCardCtrl as vm"&gt;
+//     &lt;!-- rate card markup --&gt;
+//   &lt;/body&gt;
+// &lt;/html&gt;</code></pre>
+
+        <h3>12.2 Canonical data model</h3>
+        <p>This is the full shape the CMS must produce. Every key maps 1:1 to a field in the admin configurator. Keep names stable — they are the contract between back-end and front-end.</p>
+        <span class="lang-tag">javascript</span>
+<pre><code>vm.plan = {
+
+  /* --- HEADER --- */
+  cardLabel:      '🌐 Internet — Rate Card Model',   // optional preview label
+  badge:          'Internet 1G',
+  badgeBg:        '#17599C',         // colour of the badge pill
+  headline:       'Internet 1G',
+  headlineSize:   48,                // desktop only, 24-60 (mobile forced to 32)
+  headlineColor:  '#ed6b1f',
+  headerGradient: { top: '#0a1628', bottom: '#162a4a' },
+
+  originalPrice:  95,
+  currentPrice:   75,
+  period:         '/mo.',
+  priceNote:      'for your first 12 months',
+  savings:        'Save $240 in your first year',    // full free-text
+
+  show: {
+    headline:      true,
+    originalPrice: true,
+    savings:       true
+  },
+
+  /* --- PRICE JOURNEY --- */
+  journey: {
+    enabled:     false,             // production default: OFF
+    toggleLabel: 'See price journey',
+    title:       '',                // empty by default
+    savingsText: 'Save $240/year',  // full free-text, not just the number
+    steps: [
+      { period: 'Months 1-3',  price: 'Free',   tag: 'Free trial', subtext: '3 months on us', style: 'active' },
+      { period: 'Months 4-12', price: '$39/mo', tag: '',           subtext: '$6 off/mo.',     style: 'active' },
+      { period: 'Ongoing',     price: '$45/mo', tag: '',           subtext: '',               style: 'regular' }
+    ],
+    summary: {
+      enabled: true,
+      text:    'Free for 3 months, then $39/mo. through month 12, then $45/mo. ongoing.'
+    }
+  },
+
+  /* --- INTERNET SPECS --- */
+  specs: {
+    enabled:   true,
+    showTitle: true,
+    title:     'Internet specs',
+    download:  { value: '1 Gbps',    label: 'download speed', color: '#2E7DC1' },
+    upload:    { value: '50 Mbps',   label: 'upload speed',   color: '#2E7DC1' },
+    usage:     { value: 'Unlimited', label: 'monthly usage',  color: '#2E7DC1' }
+  },
+
+  /* --- WHAT'S INCLUDED --- */
+  features: [
+    { text: 'Ideal for 20+ devices online at the same time', icon: 'check', color: '#2E7DC1' },
+    { text: 'Perfect for streaming, gaming &amp; 4K video',  icon: 'check', color: '#2E7DC1' },
+    { text: 'No contracts — cancel anytime',                 icon: 'plus',  color: '#ed6b1f' }
+  ],
+
+  /* --- FOOTER --- */
+  cta:       { label: 'Choose This Plan', color: '#ed6b1f' },
+  legal:     '*Promotional pricing. $95/mo. starting month 13. Taxes extra.',
+  showLegal: true
+};</code></pre>
+
+        <h3>12.3 Controller</h3>
+        <p>Keep the controller thin. It exposes the model (<code class="inline">vm.plan</code>), preview UI state (<code class="inline">vm.ui</code>), one helper for sanitized SVG, and one helper for the journey step CSS class. Don't add formatters here — the CMS is responsible for shipping ready-to-display strings.</p>
+        <span class="lang-tag">javascript</span>
+<pre><code>angular
+  .module('fhiRateCard')
+  .controller('RateCardCtrl', ['$sce', function ($sce) {
+
+    var vm = this;
+
+    /* --- Bind the CMS payload --- */
+    vm.plan = window.__RATE_CARD_PAYLOAD__;   // injected server-side
+
+    /* --- Collapsible UI state (preview-only) --- */
+    vm.ui = {
+      journeyOpen:  false,   // Price Journey accordion
+      featuresOpen: false    // What's included accordion
+    };
+
+    /* --- Card helpers used in template bindings --- */
+
+    // Inline-style object for the navy header gradient.
+    vm.headerGradient = function () {
+      return {
+        background: 'linear-gradient(180deg, '
+          + vm.plan.headerGradient.top    + ' 0%, '
+          + vm.plan.headerGradient.bottom + ' 100%)'
+      };
+    };
+
+    // CSS hook on the journey step background.
+    vm.stepClass = function (step) {
+      return step.style === 'active' || step.style === 'discounted' ? step.style : '';
+    };
+
+    /* --- Static SVG library for features, trusted once at boot --- */
+    var SVGS = {
+      check: '&lt;svg width="12" height="9" viewBox="0 0 12 9" fill="none"&gt;'
+           + '&lt;path d="M0.75 4.75L3.75 7.75L10.75 0.75" stroke="white" '
+           + 'stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/&gt;&lt;/svg&gt;',
+      plus:  '&lt;svg width="10" height="10" viewBox="0 0 10 10" fill="none"&gt;'
+           + '&lt;path d="M0.75 4.75H4.75M8.75 4.75H4.75M4.75 4.75V0.75M4.75 4.75V8.75" '
+           + 'stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/&gt;&lt;/svg&gt;'
+      // star, shield, wifi follow the same pattern — see template.html
+    };
+    var TRUSTED = {};
+    Object.keys(SVGS).forEach(function (k) { TRUSTED[k] = $sce.trustAsHtml(SVGS[k]); });
+    vm.iconSvg = function (name) { return TRUSTED[name]; };
+  }]);</code></pre>
+
+        <div class="callout">
+          <strong>Why a single-pass SVG trust?</strong>
+          <code class="inline">$sce.trustAsHtml()</code> creates a new trusted object on every call. Caching the trusted version in a lookup table (<code class="inline">TRUSTED</code>) avoids triggering the digest cycle on each render and keeps <code class="inline">ng-repeat</code> stable.
+        </div>
+
+        <div class="callout info">
+          <strong>Editor helpers (preview-only)</strong>
+          The reference <code class="inline">template.html</code> also exposes <code class="inline">vm.togglePanel()</code>, <code class="inline">vm.toggleSection(name)</code>, <code class="inline">vm.addFeature()</code>, <code class="inline">vm.removeFeature(i)</code>, <code class="inline">vm.addStep()</code>, <code class="inline">vm.removeStep(i)</code>, and <code class="inline">vm.resetAll()</code>. These power the live configurator side-panel and are <strong>not required in production</strong> — drop them with the rest of the preview UI.
+        </div>
+
+        <h3>12.4 View template</h3>
+        <p>This is the minimal markup the production card needs. Every value reads from <code class="inline">vm.plan</code>; every show/hide toggle reads from <code class="inline">vm.plan.show.*</code> / <code class="inline">vm.plan.*.enabled</code>; the two accordions read from <code class="inline">vm.ui.*Open</code>. See <a href="#angularjs" style="color:#ed6b1f;font-weight:600;">§12.5</a> for an optional one-time-binding optimisation for static CMS payloads.</p>
+        <span class="lang-tag">html</span>
+<pre><code>&lt;div class="pricing-card"&gt;
+
+  &lt;!-- HEADER --&gt;
+  &lt;div class="card-header" ng-style="vm.headerGradient()"&gt;
+    &lt;div class="header-top"&gt;
+      &lt;span class="plan-badge"
+            ng-style="{background: vm.plan.badgeBg}"&gt;{{ vm.plan.badge }}&lt;/span&gt;
+      &lt;div class="plan-headline"
+           ng-class="{'hidden-el': !vm.plan.show.headline}"
+           ng-style="{'font-size': vm.plan.headlineSize + 'px', color: vm.plan.headlineColor}"&gt;
+        {{ vm.plan.headline }}
+      &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div class="price-block"&gt;
+      &lt;p class="original-price"
+         ng-class="{'hidden-el': !vm.plan.show.originalPrice}"&gt;
+        Reg. Price: ${{ vm.plan.originalPrice }}{{ vm.plan.period }}
+      &lt;/p&gt;
+      &lt;div class="hero-price"&gt;
+        &lt;span class="currency"&gt;$&lt;/span&gt;
+        &lt;span class="amount"&gt;{{ vm.plan.currentPrice }}&lt;/span&gt;
+        &lt;span class="period"&gt;{{ vm.plan.period }}&lt;/span&gt;
+      &lt;/div&gt;
+      &lt;p class="price-note"&gt;{{ vm.plan.priceNote }}&lt;/p&gt;
+
+      &lt;div class="savings-label"
+           ng-class="{'hidden-el': !vm.plan.show.savings}"&gt;
+        &lt;svg viewBox="0 0 24 24" fill="none" aria-hidden="true"&gt;
+          &lt;!-- price-tag path, stroke="currentColor" --&gt;
+        &lt;/svg&gt;
+        &lt;span&gt;{{ vm.plan.savings }}&lt;/span&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;!-- PRICE JOURNEY (rendered only when editor enables it) --&gt;
+  &lt;div ng-if="vm.plan.journey.enabled"&gt;
+    &lt;button class="breakdown-toggle"
+            ng-class="{active: vm.ui.journeyOpen}"
+            ng-click="vm.ui.journeyOpen = !vm.ui.journeyOpen"
+            ng-attr-aria-expanded="{{ vm.ui.journeyOpen }}"&gt;
+      &lt;span&gt;{{ vm.plan.journey.toggleLabel }}&lt;/span&gt;
+      &lt;span class="arrow"&gt;&lt;/span&gt;
+    &lt;/button&gt;
+    &lt;div class="price-breakdown-section"
+         ng-class="{open: vm.ui.journeyOpen}"&gt;
+      &lt;div class="price-journey"&gt;
+        &lt;div class="journey-header"&gt;
+          &lt;span class="journey-title"&gt;{{ vm.plan.journey.title }}&lt;/span&gt;
+          &lt;span class="journey-savings"&gt;
+            &lt;svg class="savings-icon" viewBox="0 0 24 24" aria-hidden="true"&gt;
+              &lt;!-- price-tag path, stroke="currentColor" --&gt;
+            &lt;/svg&gt;
+            &lt;span&gt;{{ vm.plan.journey.savingsText }}&lt;/span&gt;
+          &lt;/span&gt;
+        &lt;/div&gt;
+
+        &lt;div class="journey-steps"&gt;
+          &lt;span ng-repeat-start="step in vm.plan.journey.steps track by $index"
+                ng-if="$index &gt; 0"
+                class="journey-chevron"
+                aria-hidden="true"&gt;›&lt;/span&gt;
+          &lt;div ng-repeat-end
+               class="journey-step"
+               ng-class="vm.stepClass(step)"&gt;
+            &lt;span class="step-tag"     ng-if="step.tag"&gt;{{ step.tag }}&lt;/span&gt;
+            &lt;span class="step-period"&gt;{{ step.period }}&lt;/span&gt;
+            &lt;span class="step-price"&gt;{{ step.price }}&lt;/span&gt;
+            &lt;span class="step-subtext" ng-if="step.subtext"&gt;{{ step.subtext }}&lt;/span&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+
+        &lt;div class="journey-summary"
+             ng-class="{'hidden-el': !vm.plan.journey.summary.enabled}"&gt;
+          &lt;svg class="summary-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"&gt;
+            &lt;circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/&gt;
+            &lt;line x1="12" y1="16" x2="12" y2="12" stroke="currentColor" stroke-width="2"/&gt;
+            &lt;line x1="12" y1="8" x2="12.01" y2="8" stroke="currentColor" stroke-width="2"/&gt;
+          &lt;/svg&gt;
+          &lt;span&gt;{{ vm.plan.journey.summary.text }}&lt;/span&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;!-- INTERNET SPECS --&gt;
+  &lt;div class="internet-specs"
+       ng-class="{'hidden-el': !vm.plan.specs.enabled}"&gt;
+    &lt;div class="specs-title"
+         ng-class="{'hidden-el': !vm.plan.specs.showTitle}"&gt;{{ vm.plan.specs.title }}&lt;/div&gt;
+    &lt;div class="speed-item"&gt;
+      &lt;span class="check-icon" ng-style="{background: vm.plan.specs.download.color}"&gt;
+        &lt;!-- download SVG --&gt;
+      &lt;/span&gt;
+      &lt;span&gt;&lt;strong&gt;{{ vm.plan.specs.download.value }}&lt;/strong&gt; {{ vm.plan.specs.download.label }}&lt;/span&gt;
+    &lt;/div&gt;
+    &lt;!-- repeat the same .speed-item block for upload + usage --&gt;
+  &lt;/div&gt;
+
+  &lt;!-- WHAT'S INCLUDED --&gt;
+  &lt;button class="breakdown-toggle"
+          ng-class="{active: vm.ui.featuresOpen}"
+          ng-click="vm.ui.featuresOpen = !vm.ui.featuresOpen"
+          ng-attr-aria-expanded="{{ vm.ui.featuresOpen }}"&gt;
+    &lt;span&gt;What's included&lt;/span&gt;
+    &lt;span class="arrow"&gt;&lt;/span&gt;
+  &lt;/button&gt;
+  &lt;div class="price-breakdown-section"
+       ng-class="{open: vm.ui.featuresOpen}"&gt;
+    &lt;div class="card-content"&gt;
+      &lt;ul class="features-list"&gt;
+        &lt;li ng-repeat="f in vm.plan.features track by $index"&gt;
+          &lt;span class="check-icon"
+                ng-class="{plus: f.icon === 'plus'}"
+                ng-style="{background: f.color}"
+                ng-bind-html="vm.iconSvg(f.icon)"&gt;&lt;/span&gt;
+          &lt;span&gt;{{ f.text }}&lt;/span&gt;
+        &lt;/li&gt;
+      &lt;/ul&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;!-- CTA --&gt;
+  &lt;div class="card-content"&gt;
+    &lt;button class="cta-button"
+            ng-style="{background: vm.plan.cta.color}"&gt;
+      {{ vm.plan.cta.label }}
+    &lt;/button&gt;
+  &lt;/div&gt;
+
+  &lt;!-- LEGAL --&gt;
+  &lt;p class="legal-note"
+     ng-class="{'hidden-el': !vm.plan.showLegal}"&gt;{{ vm.plan.legal }}&lt;/p&gt;
+&lt;/div&gt;</code></pre>
+
+        <h3>12.5 Performance &amp; digest discipline</h3>
+        <ul>
+          <li><strong><code class="inline">track by $index</code></strong> — Required on both <code class="inline">ng-repeat</code>s (steps, features) to keep DOM nodes stable when an editor reorders or replaces items.</li>
+          <li><strong>No <code class="inline">$watch</code> on the model</strong> — Don't add manual watchers. The whole card re-renders on the next digest whenever <code class="inline">vm.plan</code> mutates; that is enough.</li>
+          <li><strong>No <code class="inline">$apply</code> calls</strong> — All state changes happen inside Angular's digest (<code class="inline">ng-click</code>, <code class="inline">ng-change</code>, <code class="inline">ng-model</code>). Adding manual <code class="inline">$apply</code> will throw <em>"$digest already in progress"</em>.</li>
+          <li><strong>Optional optimisation — one-time bindings (<code class="inline">{{::expr}}</code>)</strong> — When the CMS payload is loaded once and never mutates, prefix every value-only binding with <code class="inline">::</code> (e.g. <code class="inline">{{::vm.plan.badge}}</code>). This stops the watcher after the first stable digest and trims ~30 watches off the card. <strong>Do not</strong> apply this in the shipped <code class="inline">template.html</code>: the live configurator mutates <code class="inline">vm.plan</code> via <code class="inline">ng-model</code>, and one-time bindings would freeze it.</li>
+        </ul>
+        <div class="callout info">
+          <strong>Rule of thumb</strong>
+          Use plain bindings (as in §12.4) anywhere the model can be re-assigned in-place (CMS preview, A/B test variant swap, live editing). Use <code class="inline">::</code> only when you can guarantee the bound expression is stable after first render.
+        </div>
+
+        <h3>12.6 Optional directive wrapper</h3>
+        <p>If you need to drop the card into multiple views, wrap the markup in a directive. Use <code class="inline">bindToController</code> + <code class="inline">controllerAs</code> so the template syntax stays identical (<code class="inline">vm.plan</code>) and the directive accepts the payload through an isolate-scope binding.</p>
+        <span class="lang-tag">javascript</span>
+<pre><code>angular
+  .module('fhiRateCard')
+  .directive('fhiRateCard', function () {
+    return {
+      restrict:         'E',
+      scope:            { plan: '=' },
+      controller:       'RateCardCtrl',
+      controllerAs:     'vm',
+      bindToController: true,
+      templateUrl:      '/partials/fhi-rate-card.html'
+    };
+  });
+
+/* Usage:
+   &lt;fhi-rate-card plan="parent.currentPlan"&gt;&lt;/fhi-rate-card&gt;
+
+   With bindToController:true the parent's plan reference is exposed as
+   `vm.plan` inside the directive — the same syntax used everywhere
+   else in this guide. */</code></pre>
+        <div class="callout">
+          <strong>Adapt the controller for the directive form</strong>
+          When the directive injects the payload, drop the line <code class="inline">vm.plan = window.__RATE_CARD_PAYLOAD__</code> from the controller (§12.3) — <code class="inline">bindToController</code> already assigned it. Keep everything else as-is.
+        </div>
+
+        <h3>12.7 CMS field-to-binding map</h3>
+        <p>Cross-reference for back-end / admin developers. Field names must match the model in §12.2. Bindings shown below assume the <code class="inline">controllerAs vm</code> pattern from §12.4.</p>
+        <table>
+          <thead><tr><th>CMS field</th><th>Model path</th><th>Type</th><th>Binding</th></tr></thead>
+          <tbody>
+            <tr><td>Plan badge</td><td><code class="inline">vm.plan.badge</code></td><td>String</td><td><code class="inline">{{ vm.plan.badge }}</code></td></tr>
+            <tr><td>Badge background</td><td><code class="inline">vm.plan.badgeBg</code></td><td>Colour</td><td><code class="inline">ng-style="{background: vm.plan.badgeBg}"</code></td></tr>
+            <tr><td>Headline text</td><td><code class="inline">vm.plan.headline</code></td><td>String</td><td><code class="inline">{{ vm.plan.headline }}</code></td></tr>
+            <tr><td>Headline size</td><td><code class="inline">vm.plan.headlineSize</code></td><td>Number (24-60)</td><td><code class="inline">ng-style="{'font-size': v + 'px'}"</code></td></tr>
+            <tr><td>Headline colour</td><td><code class="inline">vm.plan.headlineColor</code></td><td>Colour</td><td><code class="inline">ng-style="{color: v}"</code></td></tr>
+            <tr><td>Show headline</td><td><code class="inline">vm.plan.show.headline</code></td><td>Boolean</td><td><code class="inline">ng-class="{'hidden-el': !v}"</code></td></tr>
+            <tr><td>Header gradient (top / bottom)</td><td><code class="inline">vm.plan.headerGradient.{top,bottom}</code></td><td>Colour × 2</td><td><code class="inline">ng-style="vm.headerGradient()"</code></td></tr>
+            <tr><td>Current price</td><td><code class="inline">vm.plan.currentPrice</code></td><td>Number</td><td><code class="inline">{{ vm.plan.currentPrice }}</code></td></tr>
+            <tr><td>Original price</td><td><code class="inline">vm.plan.originalPrice</code></td><td>Number</td><td><code class="inline">{{ vm.plan.originalPrice }}</code></td></tr>
+            <tr><td>Show original price</td><td><code class="inline">vm.plan.show.originalPrice</code></td><td>Boolean</td><td><code class="inline">ng-class="{'hidden-el': !v}"</code></td></tr>
+            <tr><td>Period</td><td><code class="inline">vm.plan.period</code></td><td>String</td><td><code class="inline">{{ vm.plan.period }}</code></td></tr>
+            <tr><td>Price note</td><td><code class="inline">vm.plan.priceNote</code></td><td>String</td><td><code class="inline">{{ vm.plan.priceNote }}</code></td></tr>
+            <tr><td>Savings text</td><td><code class="inline">vm.plan.savings</code></td><td>String (full)</td><td><code class="inline">{{ vm.plan.savings }}</code></td></tr>
+            <tr><td>Show savings</td><td><code class="inline">vm.plan.show.savings</code></td><td>Boolean</td><td><code class="inline">ng-class="{'hidden-el': !v}"</code></td></tr>
+            <tr><td>Show Price Journey</td><td><code class="inline">vm.plan.journey.enabled</code></td><td>Boolean</td><td><code class="inline">ng-if="v"</code></td></tr>
+            <tr><td>Journey toggle label</td><td><code class="inline">vm.plan.journey.toggleLabel</code></td><td>String</td><td><code class="inline">{{ v }}</code></td></tr>
+            <tr><td>Journey title</td><td><code class="inline">vm.plan.journey.title</code></td><td>String (may be empty)</td><td><code class="inline">{{ v }}</code></td></tr>
+            <tr><td>Journey savings text</td><td><code class="inline">vm.plan.journey.savingsText</code></td><td>String (full)</td><td><code class="inline">{{ v }}</code></td></tr>
+            <tr><td>Journey steps</td><td><code class="inline">vm.plan.journey.steps</code></td><td>Array&lt;Step&gt;</td><td><code class="inline">ng-repeat track by $index</code></td></tr>
+            <tr><td>Summary banner enabled</td><td><code class="inline">vm.plan.journey.summary.enabled</code></td><td>Boolean</td><td><code class="inline">ng-class="{'hidden-el': !v}"</code></td></tr>
+            <tr><td>Summary banner text</td><td><code class="inline">vm.plan.journey.summary.text</code></td><td>String</td><td><code class="inline">{{ v }}</code></td></tr>
+            <tr><td>Specs enabled</td><td><code class="inline">vm.plan.specs.enabled</code></td><td>Boolean</td><td><code class="inline">ng-class="{'hidden-el': !v}"</code></td></tr>
+            <tr><td>Specs show title</td><td><code class="inline">vm.plan.specs.showTitle</code></td><td>Boolean</td><td><code class="inline">ng-class="{'hidden-el': !v}"</code></td></tr>
+            <tr><td>Specs title</td><td><code class="inline">vm.plan.specs.title</code></td><td>String</td><td><code class="inline">{{ v }}</code></td></tr>
+            <tr><td>Spec value (DL / UL / usage)</td><td><code class="inline">vm.plan.specs.{download,upload,usage}.value</code></td><td>String</td><td><code class="inline">&lt;strong&gt;{{ v }}&lt;/strong&gt;</code></td></tr>
+            <tr><td>Spec label (DL / UL / usage)</td><td><code class="inline">vm.plan.specs.{download,upload,usage}.label</code></td><td>String</td><td><code class="inline">{{ v }}</code></td></tr>
+            <tr><td>Spec icon colour</td><td><code class="inline">vm.plan.specs.{download,upload,usage}.color</code></td><td>Colour</td><td><code class="inline">ng-style="{background: v}"</code></td></tr>
+            <tr><td>Features list</td><td><code class="inline">vm.plan.features</code></td><td>Array&lt;Feature&gt;</td><td><code class="inline">ng-repeat track by $index</code></td></tr>
+            <tr><td>Feature icon</td><td><code class="inline">f.icon</code></td><td>Enum<sup>1</sup></td><td><code class="inline">ng-bind-html="vm.iconSvg(f.icon)"</code></td></tr>
+            <tr><td>CTA label</td><td><code class="inline">vm.plan.cta.label</code></td><td>String</td><td><code class="inline">{{ vm.plan.cta.label }}</code></td></tr>
+            <tr><td>CTA colour</td><td><code class="inline">vm.plan.cta.color</code></td><td>Colour</td><td><code class="inline">ng-style="{background: vm.plan.cta.color}"</code></td></tr>
+            <tr><td>Legal note</td><td><code class="inline">vm.plan.legal</code></td><td>String</td><td><code class="inline">{{ vm.plan.legal }}</code></td></tr>
+            <tr><td>Show legal</td><td><code class="inline">vm.plan.showLegal</code></td><td>Boolean</td><td><code class="inline">ng-class="{'hidden-el': !v}"</code></td></tr>
+          </tbody>
+        </table>
+        <p style="font-size:13px;color:#6b7280;margin-top:-8px;"><sup>1</sup> Allowed values: <code class="inline">'check'</code>, <code class="inline">'plus'</code>, <code class="inline">'star'</code>, <code class="inline">'shield'</code>, <code class="inline">'wifi'</code>. Add more by extending the <code class="inline">ICON_SVGS</code> map in the shipped <code class="inline">template.html</code> (§5 of that file).</p>
+
+        <h3>12.8 Gotchas specific to AngularJS 1.8.2</h3>
+        <ul>
+          <li><strong>SVG + <code class="inline">ng-bind-html</code></strong> — Without <code class="inline">ngSanitize</code> loaded, inline SVG strings render as text. Always load <code class="inline">angular-sanitize</code> and pipe through <code class="inline">$sce.trustAsHtml</code> as in §12.3.</li>
+          <li><strong><code class="inline">aria-expanded</code></strong> — Use <code class="inline">ng-attr-aria-expanded="{{ vm.ui.journeyOpen }}"</code>, not plain <code class="inline">aria-expanded="{{...}}"</code>. The <code class="inline">ng-attr-</code> prefix prevents the browser from reading the literal <code class="inline">{{...}}</code> before the first digest.</li>
+          <li><strong>Inline styles vs. CSS classes</strong> — Editor-controlled colours (badge background, headline colour, CTA, header gradient) use <code class="inline">ng-style</code>. Editor-controlled visibility uses <code class="inline">ng-class</code> with <code class="inline">.hidden-el</code>. <strong>Never</strong> mix the two; <code class="inline">display: none</code> in inline styles will fight the CSS animation on the accordions.</li>
+          <li><strong>Repeater + chevron pattern</strong> — The chevron between journey steps is rendered with <code class="inline">ng-repeat-start / ng-repeat-end</code> so the chevron and the step share the same iteration. Do <em>not</em> author chevrons in the data — the front-end inserts them.</li>
+          <li><strong><code class="inline">type="range"</code> + <code class="inline">ng-model</code></strong> — Angular returns a <em>string</em> from a range input. The shipped template handles this by string-concatenating <code class="inline">+ 'px'</code> inside <code class="inline">ng-style</code>; if you need a true number elsewhere, coerce with <code class="inline">parseInt</code> or use <code class="inline">type="number"</code>.</li>
+          <li><strong>Digest budget</strong> — A single card with three features and three journey steps produces roughly 40 watches. Multiple cards on a page can compound — paginate or virtualise listings if you ship more than 6 cards in a single view, and/or apply the <code class="inline">::</code> optimisation from §12.5.</li>
+        </ul>
+      </section>
+
+      <!-- 13. Data I/O (configurator) -->
+      <section id="data-io">
+        <h2><span class="num">13</span> Data I/O (configurator)</h2>
+
+        <p>
+          The configurator side-panel exposes a <strong>Data I/O</strong> section at the bottom that lets a designer, PO, or dev <strong>round-trip</strong> the card payload as JSON — without writing code. Three primary actions: export the current card, import an existing JSON, or download an annotated empty template (with a field mapping for the dev team). Everything in this section lives <strong>only in the configurator</strong>; the production rate card does not need any of it.
+        </p>
+
+        <p class="callout">
+          <strong>Where it lives in <code class="inline">template.html</code>.</strong>
+          Markup: the <code class="inline">.config-section</code> with <code class="inline">vm.ui.sections.dataIo</code> toggle, just above the <em>Reset to defaults</em> button. Controller: methods grouped under <em>Data I/O actions</em>, plus helpers (<code class="inline">setStatus</code>, <code class="inline">isValidPlan</code>, <code class="inline">downloadBlob</code>, <code class="inline">timestamp</code>). One supporting directive: <code class="inline">fileOnChange</code>.
+        </p>
+
+        <h3>13.1 The five actions</h3>
+        <ul>
+          <li><strong>Generate JSON</strong> — <code class="inline">vm.exportJson()</code>. Serialises <code class="inline">vm.plan</code> with <code class="inline">JSON.stringify(…, null, 2)</code>, mirrors it into the textarea (<code class="inline">vm.io.exportText</code>), and triggers a download as <code class="inline">fhi-rate-card-{YYYYMMDD-HHMMSS}.json</code>.</li>
+          <li><strong>Upload JSON</strong> — <code class="inline">vm.triggerImport()</code> programmatically clicks the hidden <code class="inline">&lt;input type="file"&gt;</code>. The <code class="inline">fileOnChange</code> directive (see <a href="#data-io" style="color:#ed6b1f;font-weight:600;">§13.5</a>) forwards the picked file to <code class="inline">vm.handleImportFile($files)</code>, which reads it with <code class="inline">FileReader</code>, parses, validates, and assigns to <code class="inline">vm.plan</code>.</li>
+          <li><strong>Download empty template</strong> — <code class="inline">vm.downloadTemplate()</code>. Bundles three blocks (<code class="inline">_about</code>, <code class="inline">_mapping</code>, <code class="inline">plan</code>) and downloads them as <code class="inline">fhi-rate-card-template.json</code>. The dev fills the file offline and re-uploads it.</li>
+          <li><strong>Copy JSON</strong> — <code class="inline">vm.copyJson()</code>. Pushes the textarea content to the system clipboard via <code class="inline">navigator.clipboard.writeText()</code>. Falls back to an explicit error message if the API is unavailable or the browser blocks it.</li>
+          <li><strong>Apply pasted JSON</strong> — <code class="inline">vm.applyPastedJson()</code>. Same parse + validate + assign pipeline as <em>Upload JSON</em>, but reads from the textarea — useful when you want to paste a payload (e.g. a CMS response) directly without saving a file first.</li>
+        </ul>
+        <p>
+          Every action ends by calling <code class="inline">setStatus(message, type)</code>, which populates <code class="inline">vm.io.status</code> + <code class="inline">vm.io.statusType</code> (<em>success</em> / <em>error</em> / <em>info</em>). The status div under the action buttons reflects the latest outcome.
+        </p>
+
+        <h3>13.2 Template file format</h3>
+        <p>The file produced by <em>Download empty template</em> has three top-level keys. The mapping block doubles as field documentation — it is what a dev who has never seen the card reads first.</p>
+<pre><code>{
+  "_about":   "FHI Rate Card — JSON template. Edit the \"plan\" object below, then re-upload
+               this file via 'Upload JSON' in the configurator. The '_mapping' block above
+               documents every supported field.",
+  "_version": "1.0",
+  "_mapping": {
+    "badge":                 "string  · Top-left badge text (e.g. \"Internet 1G\").",
+    "headline":              "string  · Headline rendered on the header gradient.",
+    "headerGradient.top":    "color   · Header gradient START colour, hex.",
+    "headerGradient.bottom": "color   · Header gradient END colour, hex.",
+    "journey.steps[].style": "enum    · One of \"active\" | \"discounted\" | \"regular\".",
+    "features[].icon":       "enum    · One of \"check\" | \"plus\" | \"star\" | \"shield\" | \"wifi\".",
+    "...":                   "(40+ entries — see MAPPING_DOC in template.html)"
+  },
+  "plan": {
+    "badge":     "Internet 1G",
+    "headline":  "Internet 1G",
+    "...":        "(complete defaultPlan() payload, ready to be edited)"
+  }
+}</code></pre>
+        <p>
+          <strong>Import is format-agnostic.</strong> Both <code class="inline">vm.handleImportFile</code> and <code class="inline">vm.applyPastedJson</code> accept either wrapper:
+        </p>
+        <ul>
+          <li>The full template object <code class="inline">{ _about, _mapping, plan }</code> — the configurator extracts <code class="inline">.plan</code>.</li>
+          <li>A raw plan payload (the same shape as <code class="inline">vm.plan</code>) — used as-is.</li>
+        </ul>
+        <p>This is the same logic that powers re-uploading a previously exported file (<code class="inline">fhi-rate-card-{timestamp}.json</code>), which is a raw plan.</p>
+
+        <h3>13.3 Import validation</h3>
+        <p>Before replacing <code class="inline">vm.plan</code>, the candidate is run through a structural check. If the check fails, the existing plan is kept untouched and the status area shows a precise error.</p>
+<pre><code>function isValidPlan(p) {
+  return p
+    &amp;&amp; typeof p === 'object'
+    &amp;&amp; typeof p.badge        === 'string'
+    &amp;&amp; typeof p.headline     === 'string'
+    &amp;&amp; typeof p.currentPrice !== 'undefined'
+    &amp;&amp; p.headerGradient &amp;&amp; typeof p.headerGradient === 'object'
+    &amp;&amp; p.cta &amp;&amp; typeof p.cta === 'object'
+    &amp;&amp; Array.isArray(p.features);
+}</code></pre>
+        <p>This is intentionally <strong>minimal</strong> — the goal is to stop a totally wrong file from blanking the card, not to enforce a full schema. If you need stricter validation (e.g. for a public-facing CMS endpoint), extend <code class="inline">isValidPlan</code> rather than wrapping it.</p>
+
+        <h3>13.4 Adding a new field to the model</h3>
+        <p>When you extend <code class="inline">vm.plan</code> with a new field, keep the template in sync by touching <strong>three places</strong> in <code class="inline">template.html</code>:</p>
+        <ol>
+          <li>Add the default value to <code class="inline">defaultPlan()</code> so the live preview and the downloaded template both ship it.</li>
+          <li>Add an entry to <code class="inline">MAPPING_DOC</code> with a one-line <em>type · description</em>. Use the same dot-path convention as existing entries (e.g. <code class="inline">'specs.download.value'</code>, <code class="inline">'features[].icon'</code>).</li>
+          <li>If the field is <strong>required</strong> for the card to render meaningfully, add a check inside <code class="inline">isValidPlan()</code>. Optional fields don't need a guard.</li>
+        </ol>
+        <p class="callout">
+          <strong>Doc sync reminder.</strong>
+          Also update the CMS field-to-binding map in <a href="#angularjs" style="color:#ed6b1f;font-weight:600;">§12.7</a> so the table and the downloadable mapping stay in agreement — they target the same audience.
+        </p>
+
+        <h3>13.5 Implementation notes</h3>
+        <ul>
+          <li><strong>Preview-only.</strong> The entire <code class="inline">.data-io-*</code> CSS block, the <em>Data I/O</em> <code class="inline">.config-section</code>, the <code class="inline">vm.io</code> state, every <code class="inline">vm.{exportJson, copyJson, triggerImport, applyPastedJson, handleImportFile, downloadTemplate}</code> method, the four helpers, and the <code class="inline">fileOnChange</code> directive are all safe to delete in production along with the rest of the configurator.</li>
+          <li><strong>Why a directive for the file input.</strong> AngularJS 1.x does not bind <code class="inline">ng-model</code> to <code class="inline">&lt;input type="file"&gt;</code>. The shipped <code class="inline">fileOnChange</code> directive listens for the native <code class="inline">change</code> event, then re-enters the Angular digest with <code class="inline">scope.$apply</code> and forwards the file list as a local <code class="inline">$files</code> binding — idiomatic usage is <code class="inline">file-on-change="vm.handleImportFile($files)"</code>.</li>
+          <li><strong>Why <code class="inline">$timeout</code>.</strong> <code class="inline">FileReader</code> callbacks and the <code class="inline">navigator.clipboard</code> Promise resolve outside Angular's digest. Wrapping the resulting state mutation in <code class="inline">$timeout(…)</code> schedules a digest so the textarea, status message, and card all re-render.</li>
+          <li><strong>File download primitive.</strong> The shared <code class="inline">downloadBlob(filename, text)</code> helper creates a <code class="inline">Blob</code>, exposes a transient <code class="inline">object URL</code>, clicks a synthetic <code class="inline">&lt;a download&gt;</code>, then revokes the URL on the next tick. This is the only place the rate card markup performs an explicit DOM lookup; production embeds drop it with the rest of the configurator.</li>
+          <li><strong>Re-selecting the same file.</strong> <code class="inline">vm.triggerImport</code> resets <code class="inline">input.value = ''</code> before opening the picker so picking the same filename twice still fires the <code class="inline">change</code> event.</li>
+          <li><strong>Accepted MIME / extension.</strong> The input declares <code class="inline">accept="application/json,.json"</code>. The browser hint is non-binding — parsing happens defensively in <code class="inline">vm.handleImportFile</code>.</li>
+        </ul>
+      </section>
+
+      <!-- 14. Accessibility -->
+      <section id="a11y">
+        <h2><span class="num">14</span> Accessibility</h2>
+        <ul>
+          <li><strong>Semantic toggles:</strong> the collapsible bars are <code class="inline">&lt;button&gt;</code> elements with <code class="inline">aria-expanded</code> kept in sync with the open/closed state via <code class="inline">ng-attr-aria-expanded</code>.</li>
+          <li><strong>Decorative SVG:</strong> all pictograms carry <code class="inline">aria-hidden="true"</code> — they sit next to descriptive text, so they do not need an explicit label.</li>
+          <li><strong>Focus ring:</strong> all interactive elements expose the default focus ring; do not <code class="inline">outline: none</code> without an equivalent <code class="inline">:focus-visible</code> style.</li>
+          <li><strong>Colour contrast (WCAG AA):</strong> orange CTA on white passes 4.5:1. White text on the navy gradient header passes 7+. Summary banner text (<code class="inline">#5d3a1a</code> on <code class="inline">#fff7f0</code>) passes 7+. Step periods/subtexts on the active blue background pass 4.5+.</li>
+          <li><strong>Reduced motion:</strong> the accordion durations (0.7–0.85s) and CTA hover (0.3s) are non-essential — apply the <code class="inline">prefers-reduced-motion</code> guard from <a href="#motion" style="color:#ed6b1f;font-weight:600;">§8.4</a>.</li>
+          <li><strong>Form-only fields:</strong> if the CTA becomes a form submit, ensure the surrounding <code class="inline">&lt;form&gt;</code> exposes a meaningful <code class="inline">aria-label</code> (e.g. <em>"Subscribe to Internet 1G plan"</em>).</li>
+        </ul>
+      </section>
+
+      <!-- 15. QA -->
+      <section id="checklist">
+        <h2><span class="num">15</span> QA checklist</h2>
+        <p>Before shipping the component to a new property, validate the following in order. Each item is binary — pass or fail, no "kind of".</p>
+
+        <h3>15.1 Layout &amp; chrome</h3>
+        <ul>
+          <li>Card renders at exactly <strong>411px</strong> wide on desktop and fills <strong>92vw</strong> below 480px.</li>
+          <li>Card border is <code class="inline">1px solid #CECECE</code>, border-radius <code class="inline">20px</code>, <strong>no</strong> drop shadow on the card.</li>
+          <li>Header gradient: <code class="inline">linear-gradient(180deg, #0a1628 → #162a4a)</code>.</li>
+        </ul>
+
+        <h3>15.2 Header</h3>
+        <ul>
+          <li>Plan badge background is <code class="inline">#17599C</code> (editor can override) with 14px / weight 700 white text.</li>
+          <li>Headline uses <strong>Ambra Sans Text Regular</strong>, default <strong>48px desktop / 32px mobile</strong>, orange <code class="inline">#ed6b1f</code>.</li>
+          <li>Currency <code class="inline">$</code> is 32px regular, sits 2px above the digit, with a 2px gap.</li>
+          <li>Promo amount is <strong>64px desktop / 48px mobile</strong>, weight 800, white.</li>
+          <li>Price note is <strong>14px desktop / 12px mobile</strong>.</li>
+          <li>Savings badge: 3px / 6px padding, <code class="inline">line-height: 1</code>, <strong>price-tag SVG at 16×16</strong>, full string editable from the CMS.</li>
+        </ul>
+
+        <h3>15.3 Price Journey</h3>
+        <ul>
+          <li><strong>Hidden by default</strong> in production. Renders only when <code class="inline">vm.plan.journey.enabled === true</code>.</li>
+          <li>When enabled, the accordion is closed initially. Toggle reveals header + steps + summary banner.</li>
+          <li>Header title is <strong>empty by default</strong>; render the <code class="inline">.journey-title</code> span only if populated.</li>
+          <li>Header savings line uses the <strong>same price-tag SVG at 16×16</strong>, colour inherits via <code class="inline">stroke: currentColor → #ed6b1f</code>.</li>
+          <li>Step typography: period &amp; subtext &amp; tag at <strong>14px desktop / 12px mobile</strong>. Step price stays <strong>26px / 800</strong> at every breakpoint.</li>
+          <li>Active steps use <code class="inline">#136BA3</code> background; discounted <code class="inline">#0d4d7a</code>; regular <code class="inline">#f0f1f3</code>.</li>
+          <li>Chevron between steps is <strong>27px / weight 700 / orange</strong> — never author it in data.</li>
+          <li>Summary banner: peach <code class="inline">#fff7f0</code> background, <strong>1px orange border (<code class="inline">#ed6b1f</code>)</strong>, 8px radius, info icon 16×16, <strong>14px desktop / 12px mobile</strong> text in <code class="inline">#5d3a1a</code>. Toggleable via <code class="inline">vm.plan.journey.summary.enabled</code>.</li>
+        </ul>
+
+        <h3>15.4 Motion</h3>
+        <ul>
+          <li>Accordion open: <code class="inline">max-height 0.85s cubic-bezier(0.65, 0, 0.35, 1)</code>.</li>
+          <li>Accordion close: <code class="inline">max-height 0.7s cubic-bezier(0.65, 0, 0.35, 1)</code>.</li>
+          <li>Arrow rotation: <code class="inline">transform 0.6s cubic-bezier(0.65, 0, 0.35, 1)</code>, 180° in active state.</li>
+          <li>CTA hover fills with solid black bottom-up over <code class="inline">0.3s ease</code>; text stays white.</li>
+          <li><code class="inline">prefers-reduced-motion: reduce</code> neutralises all transitions to ≤ 0.01ms.</li>
+        </ul>
+
+        <h3>15.5 Accessibility</h3>
+        <ul>
+          <li>All toggle buttons expose <code class="inline">aria-expanded</code> bound to the same scope flag that drives <code class="inline">.active</code> / <code class="inline">.open</code>.</li>
+          <li>All decorative SVGs carry <code class="inline">aria-hidden="true"</code>.</li>
+          <li>Focus rings visible on every interactive element (CTA, both toggles, skip link).</li>
+          <li>Skip link present at the top of the body, visible only on focus.</li>
+        </ul>
+
+        <h3>15.6 Integration</h3>
+        <ul>
+          <li><code class="inline">angular-sanitize</code> is loaded alongside AngularJS 1.8.2; SVG icons render as SVG nodes, not as escaped text.</li>
+          <li>Controller alias is <code class="inline">RateCardCtrl as vm</code>; the markup reads <code class="inline">vm.plan.*</code> as documented in <a href="#angularjs" style="color:#ed6b1f;font-weight:600;">§12.4</a>.</li>
+          <li>The CMS payload matches the shape in <a href="#angularjs" style="color:#ed6b1f;font-weight:600;">§12.2</a>; missing optional keys do not break rendering (every show/enable toggle defaults safely).</li>
+          <li>One-time bindings (<code class="inline">::</code>) are <strong>optional</strong> and only appropriate when <code class="inline">vm.plan</code> is immutable post-render. Confirm via Angular Batarang that the digest stays under ~50 watches per card.</li>
+          <li>No console errors or <code class="inline">$digest already in progress</code> warnings during open / close / repeater changes.</li>
+        </ul>
+      </section>
+
+    </main>
+  </div>
+
+</body>
+</html>

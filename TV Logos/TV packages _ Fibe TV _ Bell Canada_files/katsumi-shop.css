@@ -1,0 +1,1971 @@
+﻿﻿/*Katsumi shop - 05-23-2025*/
+
+/* Helpers */
+.txtGreen2 {
+    color : #339043;
+}
+
+.txtSize36 {
+    font-size: 36px;
+}
+
+.line-height-25 {
+    line-height: 25px;
+}
+
+.height-40 {
+    height: 40px;
+}
+
+.height-48 {
+    height: 48px;
+}
+
+.width-40 {
+    width: 40px;
+}
+
+.max-width-272 {
+    max-width: 272px;
+}
+
+.max-width-390 {
+    max-width: 390px;
+}
+
+.max-width-450 {
+    max-width: 450px;
+}
+
+.max-width-555 {
+    max-width: 555px;
+}
+
+.max-width-572 {
+    max-width: 572px;
+}
+
+.max-width-574 {
+    max-width: 574px;
+}
+
+.max-width-700 {
+    max-width: 700px;
+}
+
+.pad-v-100 {
+    padding-top: 100px;
+    padding-bottom: 100px;
+}
+
+.margin-v-90 {
+    margin-top: 90px;
+    margin-bottom: 90px;
+}
+
+.margin-t-3 {
+    margin-top: 3px;
+}
+
+.margin-t-90 {
+    margin-top: 90px;
+}
+
+.margin-t-100 {
+    margin-top: 100px;
+}
+
+.margin-b-90 {
+    margin-bottom: 90px;
+}
+
+.border-radius-10 {
+    border-radius: 10px;
+}
+
+.borderRadiusAll12 {
+    border-radius: 12px;
+}
+
+.borderRadiusAll20 {
+    border-radius: 20px;
+}
+/* Helpers */
+
+/* Start - Streaming landing page */
+.offer-streaming-tile .streaming-heading-title,
+.streaming-plans-carousel .small-title,
+.title.streaming-heading-title,
+.streaming-heading-small-title.small-title,
+.why-bell-streaming-info .small-title {
+    font-family:"bellslim_font_heavy",Helvetica,Arial,sans-serif;
+}
+
+
+.streaming-heading-small-title {
+    line-height: 26px;
+    font-family:"bellslim_font_heavy",Helvetica,Arial,sans-serif;
+}
+
+.streaming-plans-carousel {
+    font-family: "satoshi-regular",Arial,Helvetica,sans-serif;
+}
+
+
+.streaming-heading-title {
+    font-size: 24px;
+}
+
+.streaming-heading-big-title {
+    font-size: 32px;
+    line-height: 36px;
+}
+
+.why-bell-streaming-info h3.small-title {
+    font-size: 20px;
+}
+
+.streaming-save-bundle {
+    background: #F9F8F6;
+    padding: 24px 20px;
+}
+
+#streaming-save-bundle-heading {
+    max-width: 336px;
+    width: 100%;
+    margin-right: 24px;
+}
+
+.streaming-save-bundle-table-heading {
+    letter-spacing: -0.24px;
+}
+
+.streaming-save-bundle-img-container {
+    border-radius: 11px;
+    box-shadow: 35.03px 35.03px 13.896px 0px rgba(0, 0, 0, 0.00), 22.437px 22.437px 12.738px 0px rgba(0, 0, 0, 0.04), 12.594px 12.594px 10.712px 0px rgba(0, 0, 0, 0.13), 5.645px 5.645px 7.961px 0px rgba(0, 0, 0, 0.21), 1.448px 1.448px 4.343px 0px rgba(0, 0, 0, 0.25);
+}
+
+.streaming-save-bundle .big-price,
+.offer-streaming-tile .big-price {
+    font-size: 30px;
+    line-height: 32px;
+}
+
+.streaming-save-bundle .big-price > span,
+.offer-streaming-tile .big-price > span {
+    font-size: 28px;
+    line-height: 16px;
+    top: 5px;
+}
+
+.streaming-save-bundle .big-price > span > span,
+.offer-streaming-tile .big-price > span > span {
+    line-height: 16px;
+    top: 0;
+}
+
+.streaming-faq-wrapper {
+    padding-top: 60px;
+    padding-bottom: 40px;
+}
+
+.streaming-text-tag {
+    font-size: 10px;
+    line-height: 14px;
+    text-transform: uppercase;
+    color: #ffffff;
+    background: #00549A;
+    border-radius: 6px;
+    padding: 10px;
+    padding-top: 7.5px;
+    padding-bottom: 6.5px;
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.streaming-text-tag.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+  z-index: 1;
+}
+
+.streaming-text-tag.is-visible::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    to left,
+    rgba(100, 144, 194, 0) 0%,
+    rgba(100, 144, 194, 0.3) 50%,
+    rgba(100, 144, 194, 0) 100%
+  );
+  z-index: 0;
+  animation: shimmerMove 3s infinite;
+}
+
+@keyframes shimmerMove {
+  0% {
+    right: -100%;
+  }
+  66.67% {
+    right: 100%;
+  }
+  100% {
+    right: 100%; /* Pause shimmer */
+  }
+}
+
+.streaming-heading-package-title {
+    font-size: 32px;
+    line-height: 110%;
+    text-align: center;
+    width: 100%;
+    max-width: 320px;
+    margin-top: 20px;        
+    font-family: 'bellslim_font_heavy';
+}
+
+.streaming-heading-package-title .start-on-left {
+    opacity: 0;
+    transform: translateX(-320px);
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.streaming-heading-package-title .start-on-left.is-visible {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.streaming-heading-package-title .start-on-right {
+    opacity: 0;
+    transform: translateX(320px);
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.streaming-heading-package-title .start-on-right.is-visible {
+    opacity: 1;
+    transform: translateX(0);
+}
+/* End - Streaming landing page */
+
+/* Start - Streaming banner */
+.streaming-banner .big-title {
+    width: 100%;
+    max-width: 400px;
+}
+
+.streaming-banner-image-wrap {
+    width: 100%;
+    height: 100%;
+    max-height: 900px;
+    overflow: hidden;
+}
+
+.streaming-banner-image {
+    width: calc(100% + 30px);
+    height: auto;
+}
+
+.streaming-banner-content-wrap {
+    width: 100%;
+    max-width: 1200px;
+    height: 100%;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.streaming-heading-package-title > div {
+    font-family: 'bellslim_font_heavy';
+    background: linear-gradient(90deg, #0261D1 0%, #00549A 47.84%, #00215E 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+
+.streaming-banner .slider-rotating-carousel-pause[data-pressed="false"] .slider-rotating-carousel-pause-bg:before,
+.streaming-banner .slider-rotating-carousel-pause[data-pressed="false"] .slider-rotating-carousel-pause-bg:after {
+    border: 1px solid #00549A;
+    background-color: #00549A;
+}
+
+.streaming-banner-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    width: 100%;
+    height: 100%;
+}
+
+.streaming-banner-content-description {
+    margin-top: 10px;
+    width: 100%;
+}
+
+.streaming-banner-content-image img {
+    height: 75px;
+    width: 133px;
+    object-fit: contain;
+    object-position: center;
+}
+
+.streaming-banner-movie-title {
+    font-size: 12px;
+    line-height: 14px;
+}
+
+.streaming-banner .slick-list,
+.why-bell-streaming-img-slider .slick-list {
+    padding: 0;
+}
+
+.why-bell-streaming-info.slick-initialized .slick-slide {
+    max-width: 320px;
+}
+
+.streaming-banner .slider-rotating-carousel-buttons {
+    background: transparent;
+    box-shadow: none !important;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    bottom: -44px;
+    right: unset;
+    transform: unset;
+}
+
+.streaming-banner .slider-rotating-carousel-buttons li {
+    display: flex;
+}
+
+.streaming-banner .slider-rotating-carousel-buttons .slider-rotating-carousel-button {
+    background: #BABEC2;
+    font-size: 1px;
+    color: transparent !important;
+    width: 4px;
+    height: 4px;
+    opacity: 0.3;
+}
+
+.streaming-banner .slider-rotating-carousel-buttons li.slick-active .slider-rotating-carousel-button.slider-rotating-carousel-button {
+    display: block;
+    position: absolute;
+    width: 36px;
+    height: 4px;
+    background: transparent;
+    border-radius: 4px;
+    opacity: 1;
+}
+
+
+.streaming-banner .slider-rotating-carousel-buttons li.slick-active .slider-rotating-carousel-button,
+.streaming-banner .slider-rotating-carousel-buttons li:not(.slick-active) .streaming-banner-loader {
+    display: none;
+}
+
+.streaming-banner-loader {
+    width: 35px;
+    height: 4px;
+    border-radius: 4px;
+    margin: 0 5px;
+    overflow: hidden;
+    position: relative;
+}
+
+.streaming-loader-bg,
+.streaming-loader-initial-bg {
+    background: #BABEC2;
+    height: 100%;
+    position: absolute;
+}
+
+.streaming-loader-initial-bg {
+    width: 100%;
+    opacity: 0.3;
+}
+
+.streaming-banner .slider-rotating-carousel-pause {
+    background: #F4F4F4;
+    width: 34px;
+    height: 34px;
+    bottom: -44px;
+    right: 30px;
+    transform: unset;
+}
+
+.streaming-banner .slider-rotating-carousel-pause .slider-rotating-carousel-pause-bg {
+    background: #F4F4F4;
+    box-shadow:none;
+}
+
+.streaming-carousel-arrows {
+    position: absolute;
+    right: 80px;
+    bottom: -45px;
+}
+
+.streaming-carousel-arrows button {
+    background: #F4F4F4;
+    width: 34px;
+    height: 34px;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.streaming-carousel-arrows button:hover,
+.slider-rotating-carousel-pause:hover .slider-rotating-carousel-pause-bg,
+.why-bell-streaming-wrapper .slider-rotating-carousel-pause:hover .slider-rotating-carousel-pause-bg {
+    background: #ebf1f7;
+}
+
+.streaming-carousel-arrows button:active,
+.slider-rotating-carousel-pause:active .slider-rotating-carousel-pause-bg,
+.why-bell-streaming-wrapper .slider-rotating-carousel-pause:active .slider-rotating-carousel-pause-bg {
+    background-color: #d6e4ef;
+}
+
+
+.streaming-prev {
+    margin-right: 7.5px;
+}
+
+.streaming-next {
+    margin-left: 7.5px;
+}
+/* End - Streaming banner */
+
+.tv-streaming-byo .tile-wrap {
+    gap: 15px;
+    display: flex !important;
+    flex-wrap: nowrap !important;
+}
+
+.tv-streaming-byo .tile-wrap .tile {
+    width: auto !important;
+    max-width: 175px;
+    margin: 0px !important;
+    flex: 1;
+    box-shadow: none !important;
+
+}
+
+.tv-streaming-byo .tile-wrap .tile .tile-outline {
+    top: -1px;
+    right: -1px;
+    bottom: -1px;
+    left: -1px;
+    box-shadow: none !important;
+}
+
+.tv-streaming-byo .tile-wrap .tile-checkbox-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.tv-streaming-byo .tile-title.eshop-title {
+    margin-left: 0px;
+    margin-top: 0px;
+    padding-left: 15px;
+    padding-right: 15px;
+    font-size: 18px;
+    line-height: 22px
+}
+
+.tv-streaming-byo .icon-wrap {
+    width: 101px !important;
+    min-width: 101px !important;
+    height: 101px !important;
+    padding: 0px !important;
+    margin: 0px !important;
+}
+
+.tv-streaming-byo .icon-wrap .icon-katsumi {
+    color: #00549A;
+    font-size: 101px;
+}
+
+.tv-streaming-byo.tile-row.byo.pre-qual .icon-wrap .icon-katsumi {
+    color: #BABEC2;
+}
+
+.katsumi-tv-streaming-banner img {
+    object-fit: contain;
+    max-width: 440px;
+}
+
+.katsumi-tv-streaming-banner .katsumi-tv-streaming-content {
+   flex-basis:60%;
+}
+
+.katsumi-tv-streaming-banner div > .faq-link {
+	margin-left:25px;
+}
+
+
+
+/* TV STREAMING OPTION CARDS*/
+#brs-redesign-tv-option.tv-streaming.sb-section-header {
+    margin-top: 30px;
+}
+
+.tv-streaming .tile-row-cards {
+    background-color: #fff;
+    display: flex;
+    padding: 15px 0 0 0;
+}
+
+
+.tv-streaming.tile-card .tile-control {
+    margin-top:0px;
+    padding-top:0;
+} 
+
+.tv-streaming .tile-row-cards .tile-title .title {
+    font-family: bellslim_font_black, Helvetica, Arial, sans-serif;
+    font-size: 24px;
+    font-weight: 400;
+    letter-spacing: -.4px;
+    line-height: 26px;
+}
+
+.tv-streaming .tile-control .title-sub {
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 18px;
+    font-weight: 400;
+    letter-spacing: -.4px;
+    line-height: 22px;
+    color:#111;
+}
+
+.tv-streaming tile-row-cards .tile-card .tile-body .tile-img img {
+    margin-right:15px;
+}
+
+
+.tv-streaming .tile-row-cards .tile-body-text-price {
+    margin-top: 15px;
+}
+
+.tv-streaming .tile-row-cards .tile-card {
+    position: relative;
+    width: 50%;
+    border: 1px solid #e1e1e1;
+    border-radius: 20px;
+    background-color: #fff;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    margin-right: 15px;
+    flex: 1;
+    height: auto;
+}
+
+.tv-streaming .tile-row-cards  .tile-body {
+    display: flex;
+    flex-direction: column;
+    padding-bottom:0;
+}
+
+.tv-streaming.tile-row-cards .tile-card .tile .tile-body-text {
+    margin-top: 15px;
+    padding:0;
+    text-align:left;
+}
+
+.tv-streaming .tile-row-cards .tile-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    padding: 30px;
+}
+
+#brs-redesign-TVReceivers .tv-streaming .tile-row-cards .tile-content {
+    flex-direction: row;
+}
+   
+#brs-redesign-TVReceivers .btnContainerBRSNextStep,
+#brs-redesign-TVReceivers .tv-streaming .container {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.tv-streaming .tile-control {
+    padding-top: 15px;
+}
+
+.brs-redesign #maincontent_AltTv .tv-option .tile-row-cards .tile-card .tile-body>span {
+    display: block;
+    padding-top: 0;
+    text-align: left;
+}
+
+
+.tv-streaming .eshop-title {
+    color: #222;
+    font-size: 24px;
+    font-weight: bold;
+    letter-spacing: -0.4px;
+    line-height: 26px;
+    font-family: 'bellslim_font_black';
+}
+
+
+.tv-streaming .tile-row-cards .price .amount {
+    font-size: 14px;
+    color: #00549a;
+    display: block;
+    white-space: nowrap;
+    margin-top: 5px;
+    font-weight: bold;
+    font-size: 40px;
+    line-height: 20px;
+    letter-spacing: -0.45px;
+    font-family: "bellslim_font_heavy", Helvetica, Arial, sans-serif !important;
+}
+
+.brs-redesign .brs-enhance-wifipods .tile-row-cards .price .amount {
+    font-size: 22px;
+}
+
+.tv-streaming .tile-row-cards .price .amount sup {
+    font-size: 20px;
+    letter-spacing: -.35px;
+    top: -0.7em;
+}
+
+.tv-streaming .tile-row-cards .price .small-text {
+    font-size: 12px;
+    line-height: 14px;
+    margin-bottom: 8px;
+    display: block;
+    color: #111;
+}
+
+
+.tv-streaming.tile-row-cards .button-container {
+    margin-top:15px;
+}
+
+.tv-streaming .tile-row-cards .tile-title .title {
+    display:block;
+}
+
+ 
+ .tv-streaming .tile-row-cards .tile-card .tile-body .tile-img > img {
+    height: 48px;
+    margin-right: 15px;
+ }
+
+ .tv-streaming .tile-row-cards .tile-card .tile-body .tile-img {
+    margin-top: 10px;
+ }
+
+
+.tv-streaming  .tile-title,
+.tv-streaming .tile-body-text {
+        padding:0;
+    }
+
+.tv-streaming  .tile-title {
+    margin-top:0
+}
+
+.tv-streaming .tile-body-text,
+.tv-streaming .tile-control>:not(.tile-checkbox-wrap-master) {
+    text-align:left;
+    margin-left: 0;
+    padding: 0!important;
+}
+
+.tv-streaming .button-container {
+    margin-top:20px;
+}
+
+
+.tv-streaming-icon-container,
+.streaming-icon-container {
+      display: flex;
+      gap: 10px;
+      width: fit-content;
+}
+
+    .tv-streaming-icon-container .icon {
+      height: 50px;
+      border-radius: 15px;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .tv-streaming-icon-container .icon img {
+      width: 50px;
+      height: 50px;
+    }
+
+.tv-option .tile-row-cards .tv-streaming.tile-card .tile-body .tile-img > img {
+     height:50px !important;
+     margin-right:10px
+ }
+
+
+/* START streaming radio cards */
+.brs-redesign #maincontent_Subs .sb-section-step-wrap,
+.brs-redesign #maincontent_Subs .sb-section-title-wrap {
+    text-align: left;
+}
+
+.brs-redesign #maincontent_Subs .sb-section-title-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+}
+
+.brs-redesign #maincontent_Subs .sb-section-title-wrap a {
+    position: relative;
+}
+
+.brs-redesign #maincontent_Subs .sb-section-step-wrap {
+    margin-bottom: 5px;
+    flex-direction: column-reverse;
+    display: flex;
+}
+
+.brs-redesign #maincontent_Subs .sb-section-step-wrap .eshop-section-title {
+    margin-bottom: 4px;
+}
+
+.brs-redesign #maincontent_Subs .sb-section-step-wrap a {
+    position: relative;
+    font-size: 14px;
+    line-height: 18px;
+}
+
+.brs-redesign #maincontent_Subs .sb-section-step-wrap .sb-section-step.eshop-step-title.stepCount {
+    display: none;
+}
+
+.brs-redesign #maincontent_Subs .tile-carousel.prod-carousel .prod-carousel-content .slick-list {
+    padding-right: 28px !important;
+    margin: 0 10px;
+    width: calc(100% - 20px);
+}
+
+.brs-redesign #maincontent_Subs .tile-carousel.prod-carousel .tile-checkbox-wrap-master,
+.brs-redesign #maincontent_Subs .tile-carousel.prod-carousel .tile-body-text,
+.brs-redesign #maincontent_Subs .tile-carousel.prod-carousel .tile-channels {
+    padding: 0 15px;
+}
+
+.brs-redesign #maincontent_Subs .tile-carousel.prod-carousel .tile {
+    border-radius: 20px;
+    border: 1px solid #e1e1e1;
+}  
+
+.brs-redesign #maincontent_Subs .tile-carousel.prod-carousel .tileSelected {
+    box-shadow: 0px 0px 0px 3px #003778 inset;
+} 
+
+
+
+
+.brs-redesign #maincontent_Subs .tile-carousel.prod-carousel .tile-control {
+    padding-top: 0px;
+}
+
+.brs-redesign #maincontent_Subs .tile-carousel.prod-carousel .tile-checkbox-wrap-master .tile-checkbox-wrap.graphical_ctrl.ctrl_radioBtn {
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding-left: 0 !important;
+}
+
+.brs-redesign #maincontent_Subs .tile-carousel.prod-carousel .tile-checkbox-wrap-master .tile-checkbox-wrap .ctrl_element {
+    position: relative;
+    margin: 0;
+}
+
+.brs-redesign #maincontent_Subs .tile-carousel.prod-carousel .tile-checkbox-wrap-master .tile-checkbox-wrap.graphical_ctrl .tile-title {
+    font-size: 14px;
+    font-weight: normal;
+    line-height: 18px;
+    color: #555;
+    padding-left: 0;
+    padding-right: 0;
+    margin-top: 0;
+}
+
+.brs-redesign #maincontent_Subs .tile-carousel.prod-carousel .tile-footer {
+    background-color: transparent;
+    border-top: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-startgit ;
+    /* min-height: auto !important; */
+} 
+
+.brs-redesign #maincontent_Subs .tile-carousel.prod-carousel .tile-footer .tile-footer-content {
+    padding: 0 15px 30px 15px !important;
+} 
+
+.brs-redesign #maincontent_Subs .tile-carousel.prod-carousel .tile-body-text {
+    text-align:left;
+    margin-top: 30px;
+}
+    
+.brs-redesign #maincontent_Subs .tile-carousel.prod-carousel .tv-package-body-text .tile-body-text {
+    margin-top: 24px;
+}
+
+.brs-redesign #maincontent_Subs .tile-carousel.prod-carousel .tile-body-text a {
+    font-size: 14px;
+    line-height: 18px;
+}
+
+.brs-redesign #maincontent_Subs .tile-carousel.prod-carousel .tile-channels {
+    justify-content: left;
+}
+
+.brs-redesign #maincontent_Subs .tile-carousel.prod-carousel .tile-channels {
+    gap: 10px;
+}
+
+.brs-redesign #maincontent_Subs .tile-carousel.prod-carousel .tile-channel-circle {
+    height: 50px;
+    width: 50px;
+    margin: 0;
+}
+
+.brs-redesign #maincontent_Subs .tile-carousel.prod-carousel .tile-channel-circle img {
+    max-height: 34px;
+    max-width: 34px;
+}
+
+.brs-redesign #maincontent_Subs .tile-carousel.prod-carousel .tile-price {
+    font-size: 40px !important;
+    letter-spacing: -1px;
+    line-height: 43px;
+}
+
+.brs-redesign #maincontent_Subs .tile-carousel.prod-carousel .eshop-small-title {
+    margin-top: 15px;
+    font-size: 14px;
+    line-height: 18px;
+}   
+
+
+.brs-redesign #maincontent_Subs .tile-carousel.prod-carousel .slick-arrow {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+.brs-redesign #maincontent_Subs .tile-carousel.prod-carousel .slick-arrow.slick-disabled {
+    display: none !important;
+}
+
+.brs-redesign #maincontent_Subs .tile-carousel.prod-carousel .slick-next.slick-arrow {
+    right: 0;
+}
+
+.brs-redesign #maincontent_Subs .tile-carousel.prod-carousel .slick-prev.slick-arrow {
+    left: 0;
+}
+
+.brs-redesign #maincontent_Subs .tile-carousel.prod-carousel .slick-arrow:before {
+    display: block;
+    position: relative;
+    right: 0;
+    left: 0;
+    top: 0;
+}
+
+.brs-redesign #maincontent_Subs .tile-carousel.prod-carousel .tile-body-text {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.brs-redesign #maincontent_Subs .tile-carousel.prod-carousel .subDescList ul,
+#mainBundlesDiv .bundles-stream-and-description ul {
+    list-style: none;
+    padding-left: 0;
+    margin-bottom: 0px;
+}
+
+#mainBundlesDiv .bundles-stream-and-description ul {
+    padding-top: 30px;
+}
+
+.brs-redesign #maincontent_Subs .tile-carousel.prod-carousel .subDescList li,
+#mainBundlesDiv .bundles-stream-and-description li {
+    display: flex;
+    margin-bottom: 10px;
+}
+
+.brs-redesign #maincontent_Subs .tile-carousel.prod-carousel .subDescList li:before,
+#mainBundlesDiv .bundles-stream-and-description li:before {
+    /* Or use a font icon: */
+    font-family: 'bell-icon3';
+    content: "\e603";
+    color: #00549a;
+    font-size: 12px;
+    font-style: normal;
+    speak: none;
+    font-weight: 400;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    margin-right: 10px;
+    margin-top: 0.25rem;
+}
+.brs-redesign #maincontent_Subs .tile-carousel.prod-carousel .subDescList li:last-child {
+    margin-bottom: 0;
+}
+
+.brs-redesign #maincontent_Subs .tile-carousel.prod-carousel .tv-package-Footer .tile-footer-content .icon3 {
+    margin-top: 2px !important;
+}
+
+.brs-redesign #maincontent_Subs .tile-carousel.prod-carousel .tile-content .tile-channels {
+    margin-top: 15px;
+}
+/* END streaming radio cards */
+.streaming-plans-carousel-content {
+    margin-left: -15px;
+}
+
+html[lang="en"] .streaming-banner .slider-rotating-carousel .big-title {
+    font-family: "bellslim_font_heavy",Helvetica,Arial,sans-serif!important;
+    font-size: 76px;
+    font-style: normal;
+    font-weight: normal;
+    line-height: 78px; /* 102.632% */
+    letter-spacing: -2px;
+    color:#111;
+}
+
+
+html[lang="fr"] .streaming-banner .slider-rotating-carousel .big-title {
+    font-size: 56px;
+    color:#111;
+    line-height: 60px;
+}
+
+.streaming-banner .streaming-banner-content-description,
+.streaming-banner .streaming-banner-movie-title,
+.streaming-banner-carousel-slider .streaming-banner-content-description,
+.streaming-banner-carousel-slider .streaming-banner-movie-title {
+    color:#111!important;
+} 
+
+
+.streaming-banner .slider-rotating-carousel .streaming-plans-carousel-content .small-title {
+	max-width:274px;
+}
+
+.streaming-plans-carousel-content .tile-content .tile-body-text {
+    margin-left: 4px;
+    margin-bottom:15px;
+}
+
+.streaming-plans-carousel .slick-slide {
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.streaming-plans-carousel .slick-list {
+    padding: 0 !important;
+    overflow: unset;
+}
+
+.streaming-plans-carousel .slick-slide:first-child {
+    margin-left: 0;
+}
+
+.streaming-plans-carousel .slick-slide:last-child {
+    margin-right: 0;
+}
+
+.streaming-plans-carousel .tile {
+    background: #F4F6F9;
+    border-radius: 12px;
+    padding: 30px;
+    max-width: 458px;
+}
+
+.streaming-icon-container {
+    padding: 0;
+}
+
+.streaming-plans-footer {
+    border-top: 1px solid #E9EDF3;
+    padding-top: 16px;
+    margin-top: 12px;
+}
+
+.streaming-plans-footer .small-text.txtGreen2 {
+    color: #1E7C02;
+}
+
+.streaming-plans-carousel .small-price {
+    line-height: 32px !important;
+}
+
+.streaming-plans-carousel .small-price sup {
+    font-size: 14px;
+    top: 13px;
+}
+
+  .streaming-plans-carousel-content .slick-prev,.streaming-plans-carousel-content .slick-next {
+        width:40px;
+        height:40px;
+        background:#fff;
+        display: flex!important;
+        align-items: center;
+        justify-content: center
+    }
+
+  .streaming-plans-carousel-content .slick-prev:before{
+        content: "\e90f";
+        font-family: 'katsumi-icons' !important;
+        color:#111;
+        opacity: 1;
+        left: 9px;
+        top: unset;
+        bottom: unset;
+        right: unset;
+        font-size:17px;
+    }
+
+ .streaming-plans-carousel-content .slick-next:before{
+        content: "\e90f";
+        font-family: 'katsumi-icons' !important;
+        color:#111;
+        opacity: 1;
+        left: unset;
+        top: 10px;
+        bottom: unset;
+        right: unset;
+        font-size:17px;
+    }
+
+
+.streaming-plans-carousel-content .slick-prev:hover,
+.streaming-plans-carousel-content .slick-next:hover{
+     background-color: #ebf1f7;
+}
+
+.streaming-plans-carousel-content .slick-next:active,
+.streaming-plans-carousel-content .slick-prev:active {
+     background-color: #d6e4ef;
+}
+
+.slider-rotating-carousel-component.bottom-gradient:after {
+	content: none;
+}
+
+
+.streaming-plans-footer-btn .btn, 
+.streaming-plans-footer-btn .btn:active, 
+.streaming-plans-footer-btn .btn:not(:disabled):not(.disabled):active, 
+.streaming-plans-footer-btn .btn:focus {
+    padding: 16px 32px;							
+    min-height: 56px;
+    font-weight: 550;
+    font-size: 14px;							
+    border-radius: 32px;
+}
+
+.streaming-bundle-promo .blush {
+   position: relative;
+}
+
+
+.streaming-bundle-promo .blush img {
+  position: absolute;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  width: 100vw;
+  top:-140px;
+}
+
+.why-bell-streaming-wrapper .slider-rotating-carousel-pause[data-pressed="false"] .slider-rotating-carousel-pause-bg:before,
+.why-bell-streaming-wrapper .slider-rotating-carousel-pause[data-pressed="false"] .slider-rotating-carousel-pause-bg:after {
+    border: 1px solid #00549A;
+    background-color: #00549A;
+}
+
+.why-bell-streaming-wrapper .slider-rotating-carousel-pause {
+    background: #F4F4F4;
+    width: 34px;
+    height: 34px;
+    right: 30px;
+    transform: none;
+}
+
+.why-bell-streaming-wrapper .slider-rotating-carousel-pause .slider-rotating-carousel-pause-bg {
+    background: #F4F4F4;
+    box-shadow: none;
+}
+
+.slider-rotating-carousel-component,
+.streaming-plans-tab {
+    z-index: 9999;
+    position:relative;
+}
+
+.streaming-save-bundle-table-heading .table-heading {
+    display: block;
+    max-width:174px;
+}
+
+.streaming-legal-accordion .streaming-legal-icon {
+    margin-left: 2px;
+}
+
+.brs-redesign .modal-content {
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+
+#maincontent_Subs .prod-carousel-content .slick-dots .slick-active>button{
+    background-color: #003778 !important;
+    color: #FFF;
+}
+
+.streaming-banner .slider-rotating-carousel-component .slider-rotating-carousel.slick-initialized source {
+    visibility: hidden;
+}
+
+.add-streaming-modal .gap-15 {
+    gap: 15px;
+}
+
+.add-streaming-modal .tileButton {
+    flex: 1;
+}
+
+.add-streaming-modal .tileButton > div {
+    width: 100%;
+    border: 1px solid #D4D4D4;
+}
+
+/* mobile only */
+@media (max-width: 767.98px) {
+    .pad-b-xs-80 {
+        padding-bottom: 80px;
+    }
+
+    .pad-h-xs-0-force {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+
+    .pad-xs-v-0 {
+        padding-top: 0px;
+        padding-bottom: 0px;
+    }   
+
+    .margin-xs-v-30 {
+        margin-top:16px;
+        margin-bottom:16px;
+    }
+
+    .max-width-100p {
+        max-width: 100%;
+    }
+
+    .margin-t-xs-0 {
+        margin-top:0;
+    }
+
+    .margin-t-xs-80 {
+        margin-top:80px;
+    }
+
+    .margin-t-xs-100 {
+        margin-top:100px;
+    }
+
+    /* Start - Streaming landing page */
+    .why-bell-streaming-wrapper {
+        margin-left: -20px;
+        margin-right: -20px;
+    }
+    /* End - Streaming landing page */
+
+   .katsumi-tv-streaming-content h2 {
+        font-size: 22px !important;
+        line-height: 24px;
+   }
+
+    .tv-streaming-byo .tile-title.eshop-title {
+        line-height: 25px
+    }
+
+    .tv-streaming-byo .tile-wrap {
+        flex-direction: column !important;
+    }
+
+    .tv-streaming-byo .tile-wrap .tile-checkbox-wrap {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+    }
+
+    .tv-streaming-byo .tile-wrap .tile {
+        max-width: 100%;
+    } 
+    
+    #brs-redesign-tv-option.tv-streaming.sb-section-header {
+        margin-bottom: 40px;
+    }
+    
+    .tv-streaming .tile-control {
+        margin-top: 0;
+    }
+
+    #maincontent_TV .tv-streaming .tile-row-cards .tile-content {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+
+    .katsumi-tv-streaming-banner img {
+        width:290px;
+        max-width: 280px;
+        align-self: center;
+    } 
+
+    .streaming-plans-tab .tablist-pills-container ul.tab-price-guarantee li {
+        padding: 5px 15px !important;
+    }
+
+    .streaming-plans-tab .tablist-pills-container {
+        justify-content: flex-start;
+    }
+
+    .streaming-banner-content .subtitle-2-reg {
+        font-size: 14px;
+        line-height: 18px;        
+    }
+
+     .streaming-banner-content-image img {
+        width: 78px;
+        height: 40px;
+    }
+
+    .streaming-banner-image {
+        width: 100%;
+        height: 621px;
+        object-fit: cover;
+        object-position: center;
+    }
+
+    .offer-streaming-tile .tile-img img {
+	    width:100%;
+    }
+
+    .streaming-bundle-promo .blush img {
+        top: 0;
+    }
+
+    .streaming-carousel-arrows {  
+        right: 76px;
+    }
+
+    .streaming-banner .slider-rotating-carousel-pause {
+        right: 24px;
+    }
+
+    .streaming-plans-carousel .tile {
+        width: 300px!important;
+    }
+    
+    .why-bell-streaming-wrapper .slick-slide .borderRadiusAll12,
+    .why-bell-streaming-img-slider.borderRadiusAll12 {
+        border-radius:0px;
+    }
+
+    .sb-section-title-wrap.streaming-remove .streaming-remove-button  {
+        display:block;
+    }  
+    
+    .streaming-legal-accordion.additional-details#legalAccordion{
+        margin-bottom:45px
+    }
+
+    .tv-option .tile-row-cards .tv-streaming.tile-card .tile-body .tile-img > img {
+        height:48px !important;
+        margin-right:5px
+    }
+
+    .brs-redesign .tile-card.tv-streaming .tile-img.same-height {
+		margin-bottom:30px!important;
+	}
+
+    .brs-redesign #maincontent_Subs .eshop-section-title {
+        font-size: 24px;
+        line-height: 26px;
+    }
+
+    .brs-redesign #maincontent_Subs .streaming-remove-button {
+        display: block;
+        margin-top: 4px;
+    }
+
+    .ujet {
+        position: fixed;
+    }
+
+    html[lang="en"] .streaming-banner .slider-rotating-carousel .big-title {
+        font-family: "bellslim_font_heavy",Helvetica,Arial,sans-serif!important;
+        font-size: 36px;
+        font-style: normal;
+        font-weight: normal;
+        line-height: 38px; /* 105.556% */
+        letter-spacing: -0.6px;
+    }
+
+    html[lang="fr"] .streaming-banner .slider-rotating-carousel .big-title {
+        font-size: 36px;
+        line-height: 38px;
+    }
+
+    .slider-rotating-carousel-component,.streaming-plans-tab {
+        z-index: 10;
+        position:relative;
+    }
+
+
+    .add-streaming-modal .flex-column-xs {
+        flex-direction: column;
+    }
+
+    .add-streaming-modal h3 {
+        font-family: Arial;
+        font-size: 18px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: 22px;
+    }
+}
+
+/*Mobile and tablet*/
+@media (max-width: 991.98px) {
+    .tv-streaming-byo .icon-wrap {
+        width: 72px !important;
+        min-width: 72px !important;
+        height: 72px !important;
+        padding: 0px !important;
+    }
+
+    .tv-streaming-byo .icon-wrap .icon-katsumi {
+        font-size: 72px;
+        line-height: 100%;
+    }
+    
+    .katsumi-tv-streaming-banner {
+        flex-direction: column;
+    }
+
+    .katsumi-tv-streaming-banner .katsumi-tv-streaming-content {
+        order:1;
+    }
+
+    .katsumi-tv-streaming-banner img {
+        order:0;
+        margin-bottom: 30px;
+    }
+    
+}
+
+/* tablet and larger */
+@media (min-width: 768px) {
+    .max-width-sm-585 {
+        max-width: 585px;
+    }
+
+    .margin-b-sm-45 {
+        margin-bottom: 45px;
+    }
+
+    .line-v-seperator {
+        background: #FFFFFF;
+        width: 1px;
+        height: 42px;
+        margin-left: 30px;
+        margin-right: 30px;
+        opacity: 0.3;
+    }
+
+    /* START streaming radio cards */
+    .brs-redesign #maincontent_Subs .tile-carousel.prod-carousel .tile {
+        margin: 0 7.5px;
+    }  
+    /* END streaming radio cards */
+
+    /* Start - Streaming landing page */
+    .streaming-heading-small-title {
+        font-size: 28px;
+        line-height: 32px;
+    }
+
+    .streaming-heading-title {
+        font-size: 40px;
+        line-height: 48px;
+    }
+
+    .streaming-heading-package-title {
+        font-size: 60px;
+        line-height: 120%;
+        max-width: 640px;
+        margin-top: 35px;
+    }
+
+    .why-bell-streaming-info h3.small-title {
+        font-size: 22px;
+        line-height: 26px;
+    }
+    /* End - Streaming landing page */
+    .streaming-banner-content-description {
+        margin-top: 0;
+        max-width: 520px;
+    }
+
+    .streaming-banner-content-image img {
+        height: 75px;
+    }
+
+    .streaming-banner-movie-title {
+        font-size: 14px;
+        line-height: 18px;
+    }
+
+    .streaming-save-bundle {
+        padding-top: 60px;
+        padding-bottom: 90px;
+    }
+
+    .streaming-save-bundle-table-heading {
+        font-size: 18px;
+        line-height: 22px;
+        letter-spacing: normal;
+    }
+
+    .streaming-plans-carousel .slick-slide {
+        margin-left: 8px;
+        margin-right: 8px;
+    }
+
+    .streaming-plans-footer {
+        margin-top: 8px;
+    }
+
+    .streaming-faq-wrapper {
+        padding-bottom: 60px;
+    }
+}
+
+/* tablet only */
+@media (min-width: 768px) and (max-width: 991.98px) {
+    .min-width-325-sm {
+        min-width: 325px;
+    }
+
+    .max-width-350-sm {
+        max-width: 350px;
+    }
+
+    .margin-t-sm-0 {
+        margin-top:0;
+    }
+
+    .tv-streaming-byo .tile-wrap {
+        gap: 10px;
+    }
+
+    .tv-streaming-byo .tile-title.eshop-title {
+        font-size: 14px;
+        line-height: 18px
+    }
+
+    .streaming-heading-title {
+        font-size: 28px;
+        line-height: 32px;
+    }
+
+    /* START streaming radio cards */
+    .brs-redesign #maincontent_Subs .tile-carousel.prod-carousel .prod-carousel-content .slick-list {
+        padding-right: 16px !important;
+        margin: 0 22px;
+        width: calc(100% - 44px);
+    }
+    /* END streaming radio cards */
+
+    .tv-streaming .tile-control {
+        margin-top: 0;
+    }
+
+    .page-code_bellbundles-buildyourown .katsumi-tv-streaming-banner {
+        flex-direction:column;
+    }
+    #brs-redesign-Subs .katsumi-tv-streaming-banner {
+        flex-direction:row-reverse; 
+    }
+
+    #brs-redesign-Subs .katsumi-tv-streaming-banner img {
+        width:290px
+    } 
+
+    .streaming-banner-content-image img {
+        width: 94px;
+    }
+
+    .streaming-banner-image-wrap {
+        width: 100%;
+        height: 100%;
+        max-height: 750px;
+        overflow: hidden;
+    }
+
+
+    .offer-streaming-tile .tile-img img {
+	    width:263px
+    }     
+
+    .offer-streaming-tile .streaming-heading-title {
+        max-width: 460px;
+        margin: 0 auto;
+    }    
+
+    .offer-streaming-tile .streaming-heading-small-title {
+        font-size: 23px;
+        line-height: 26px;
+    }
+
+    .why-bell-streaming-wrapper .slider-rotating-carousel-pause {
+        background: #F4F4F4;
+        width: 34px;
+        height: 34px;
+        bottom: 100px;
+        right: 20px;
+        transform: none;
+    }
+
+    .streaming-plans-carousel .tile {
+        width: 333px!important;
+    }
+
+    .streaming-plans-carousel .slick-slide {
+         max-width: 40%; 
+    }
+
+    .streaming-legal-accordion#legalAccordion{
+        padding-left: 30px;
+        padding-right: 30px;
+    }
+
+    .streaming-legal-accordion.additional-details#legalAccordion{
+        margin-bottom:60px
+    }
+
+    .brs-redesign #maincontent_Subs .tile-carousel.prod-carousel .slick-arrow {
+        display: none !important;
+    }
+
+    
+     html[lang="en"] .streaming-banner .slider-rotating-carousel .big-title {
+        font-family: "bellslim_font_heavy",Helvetica,Arial,sans-serif!important;
+        font-size: 48px;
+        font-style: normal;
+        font-weight: normal;
+        line-height: 52px; /* 108.333% */
+        letter-spacing: -0.336px;
+        color: #111
+        }
+    
+    html[lang="fr"] .streaming-banner .slider-rotating-carousel .big-title {
+        font-size: 48px;
+        line-height: 52px;
+    }
+
+}
+
+@media (min-width:768px) and (max-width:840px) {
+       .streaming-banner-image {
+        width: 100%;
+        height: 820px;
+        object-fit: cover;
+        object-position: right
+    }
+
+}
+
+@media (min-width:841px) and (max-width:991.98px) {
+       .streaming-banner-image {
+        width: 100%;
+        height: 890px;
+        object-fit: cover;
+        object-position: right
+    }
+
+}
+
+
+@media (min-width:768px) and (max-width:840px) {
+       .streaming-banner-image {
+        width: 100%;
+        height: 820px;
+        object-fit: cover;
+        object-position: right
+    }
+
+}
+
+@media (min-width:650px) and (max-width:767.98px) {
+       .streaming-banner-image {
+        width: 100%;
+        height: 715px;
+        object-fit: cover;
+        object-position: right
+    }
+
+
+    .streaming-banner-image-wrap {
+        width: 100%;
+        height: 100%;
+        max-height: 600px;
+        overflow: hidden;
+    }
+
+
+}
+
+
+/*Desktop*/
+@media (min-width: 992px) {
+    .pad-r-md-90 {
+        padding-right: 90px;
+    }
+
+    .margin-b-md-75 {
+        margin-bottom: 75px;
+    }
+
+    .max-width-md-768 {
+        max-width: 768px;
+    }
+
+   .tv-streaming .tile-row-cards  .tile-body {
+        width: 75%;
+    }
+
+    .why-bell-streaming-info h3.small-title {
+        font-size: 28px;
+        line-height: 32px;
+    }
+
+        /* START tv radio cards */
+    .brs-redesign #maincontent_Subs .tile-carousel.prod-carousel .prod-carousel-content .slick-list {
+        padding-right: 288px !important;
+        margin: 0 0px;
+        width: calc(100% - 10px);
+    }
+
+    .brs-redesign #maincontent_Subs .tile-carousel.prod-carousel .tile-checkbox-wrap-master,
+    .brs-redesign #maincontent_Subs .tile-carousel.prod-carousel .tile-body-text,
+    .brs-redesign #maincontent_Subs .tile-carousel.prod-carousel .tile-channels {
+        padding: 0 30px;
+    }
+
+    .brs-redesign #maincontent_Subs .tile-carousel.prod-carousel .tile-footer .tile-footer-content {
+        padding: 0 30px 30px 30px !important;
+    }   
+    /* END tv radio cards */
+
+    .streaming-banner-content {
+        justify-content: space-between;
+    }
+
+    .streaming-banner-content-image img {
+        height: 75px;
+    }
+
+    .streaming-save-bundle {
+        padding-top: 90px;
+    }
+
+    .streaming-plans-carousel-content {
+        margin-left: 0;
+    }
+
+    .streaming-plans-carousel .slick-list {
+        overflow: hidden;
+    }
+
+    .streaming-plans-carousel .slick-slide {
+        margin-left: 11px;
+        margin-right: 11px;
+    }
+
+    .streaming-plans-carousel-content .slick-prev,
+    .streaming-plans-carousel-content .slick-next {
+        border: 1px solid #E1E1E1;
+        box-shadow: none;
+        opacity: 1;
+    }
+
+    .streaming-plans-carousel-content .slick-next {
+        margin-right: 0;
+    }
+
+    .streaming-plans-footer {
+        margin-top: 30px;
+    }
+
+    .streaming-heading-package-title {
+        font-size: 76px;
+        line-height: 120%;
+        max-width: 1200px;
+        margin-top: 50px;
+        
+    }
+
+    .streaming-banner .slider-rotating-carousel-buttons {
+        left: 50px;
+        padding-top:18px;
+    }
+
+    .streaming-carousel-arrows {        
+        right: 100px;
+        bottom:-55px;
+    }
+
+    .streaming-banner .slider-rotating-carousel-pause {
+        right: 50px;
+        bottom:-55px;
+    }
+
+     .brfpad .streaming-banner .container.streaming-banner-content-wrap {
+        padding-left: 100px;
+        padding-right: 100px;
+    }
+
+    .offer-streaming-tile .tile-img img {
+	    width:100%;
+    } 
+
+    .streaming-faq-wrapper {
+        padding-top: 90px;
+        padding-bottom: 90px;
+    }
+
+}
+
+@media (min-width: 1000px) {
+    .brs-redesign #maincontent_Subs .tile-carousel.prod-carousel .prod-carousel-content .slick-list {
+        padding-right: 50px !important;
+        margin: 0 0px;
+        width: calc(100% - 10px);
+    }
+}
+
+
+@media (min-width: 1240px) {
+    .brs-redesign #maincontent_Subs .tile-carousel.prod-carousel >.container {
+        width: 1200px;
+        position: relative;
+    }
+
+    .brs-redesign #maincontent_Subs .tile-carousel.prod-carousel >.container::after,
+    .brs-redesign #maincontent_Subs .tile-carousel.prod-carousel >.container::before {
+        top: -10px;
+        background: #fff;
+        bottom: 0;
+        z-index: 99;
+        width: calc((100vw - 1200px) / 2);
+        transform: translateX(100%);
+    }
+
+    .brs-redesign #maincontent_Subs .tile-carousel.prod-carousel >.container::after {
+        right: -5px;
+        transform: translateX(100%);
+    }
+
+    .brs-redesign #maincontent_Subs .tile-carousel.prod-carousel >.container::before {
+        left: -5px;
+        transform: translateX(-100%);
+    }
+
+    .brs-redesign #maincontent_Subs .tile-carousel.prod-carousel .prod-carousel-content,
+    .brs-redesign #maincontent_Internet .tile-carousel.prod-carousel {
+        margin-left: -7.5px;
+        margin-right: -7.5px;
+    }
+
+    .brs-redesign #maincontent_Subs .tile-carousel.prod-carousel .prod-carousel-content:after,
+    .brs-redesign #maincontent_Subs .tile-carousel.prod-carousel .prod-carousel-content:before {
+        display: none;
+    }
+
+    .brs-redesign #maincontent_Subs .tile-carousel.prod-carousel .prod-carousel-content .slick-list,
+    .brs-redesign #maincontent_Internet .tile-carousel.prod-carousel .prod-carousel-content .slick-list {
+        padding-left: 0px;
+        width: 100%;
+    }
+
+    .brs-redesign #maincontent_Subs .tile-carousel.prod-carousel .slick-arrow ~ .slick-list:after,
+    .brs-redesign #maincontent_Subs .tile-carousel.prod-carousel .slick-arrow ~ .slick-list:before {
+        content: '';
+        position: absolute;
+        width: 90px;
+        top: -10px;
+        bottom: -10px;
+        z-index: 99;
+        opacity: 1;
+        transition: opacity 0.3s ease;
+    }
+
+    .brs-redesign #maincontent_Subs .tile-carousel.prod-carousel .slick-arrow ~ .slick-list.brs-next-disabled:after,
+    .brs-redesign #maincontent_Subs .tile-carousel.prod-carousel .slick-arrow ~ .slick-list.brs-prev-disabled:before {
+        opacity: 0;
+    }
+
+    .brs-redesign #maincontent_Subs .tile-carousel.prod-carousel .slick-arrow ~ .slick-list:after {
+        right: -10px;
+        background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%);
+    }
+    
+    .brs-redesign #maincontent_Subs .tile-carousel.prod-carousel .slick-arrow ~ .slick-list:before {
+        left: 0px;
+        background: linear-gradient(90deg,rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 100%);
+    }
+    
+    /* START tv radio cards */
+    .brs-redesign #maincontent_Subs .tile-carousel.prod-carousel .prod-carousel-content .slick-list {
+        padding-right: 166px !important;
+        margin: 0 0px;
+        width: calc(100% - 10px);
+    }
+
+    .streaming-banner-image-wrap {
+        max-width: 1440px;
+        margin: auto;
+    }
+
+}
+
+/*for streaming larger desktop entry point*/
+@media (min-width:768px) and (max-width:860px) {
+    .tv-option .tile-row-cards .tv-streaming.tile-card .tile-body .tile-img > img {
+        margin-right: 0px;
+    }
+}
+
+/*for streaming larger desktop entry point*/
+@media (min-width:1150px) {
+    .tv-streaming-byo .tile-wrap .tile {
+        width: auto !important;
+        max-width: unset;
+    }
+}
+
+
+@media (min-width:992px) and (max-width:1299px) {
+    .streaming-plans-carousel .tile {
+        width: 385px!important;
+    }
+      .streaming-plans-carousel .slick-slide {
+         max-width: calc(100% / 3); /* Adjust to fit 4 slides */
+    }
+    
+}
+
+/*for bigger desktop*/
+@media (min-width:1300px) {
+     .brfpad .streaming-banner .container.streaming-banner-content-wrap {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+
+    .streaming-plans-carousel .slick-slide {
+         max-width: calc(100% / 4); /* Adjust to fit 4 slides */
+    }
+
+    .streaming-plans-carousel .tile {
+        width: 385px!important;
+    }
+
+}
+
+.small-price,
+.small-price span {
+    font-size: 22px !important;
+}
+
+.streaming-plans-carousel .small-price span,
+.streaming-plans-carousel .small-price .mo {
+    top: 0px;
+}
+
+
+.streaming-plans-carousel .slick-arrow.slick-disabled {
+    display: none!important;
+}
+
+.streaming-bonus-note {
+    border: 1px solid #00549A;
+    padding: 15px;
+    border-radius: 10px;
+}
+
+.streaming-bonus-note > p {
+    margin-bottom: 0;
+}
+
+.streaming-margin-note {
+    margin-right: 15px;
+    margin-top: 15px;
+    margin-left: 15px;
+}
+
+.streaming-tile-disabled .tile-title.eshop-title,
+.streaming-tile-disabled .icon-katsumi{
+    color: #BABEC2 !important;
+}
+
+.streaming-tile-disabled .ctrl_element {
+    background: #f4f4f4;
+}
+
+.streaming-tile-disabled .ctrl_element:after {
+    content: none;
+}
+.mdmData {
+    background-color: yellow; /* This is a common light purple (lavender) */
+}
+
+
+.mdmDataPartial {
+    background-color: greenyellow; /* This is a common light purple (lavender) */
+}

@@ -1,0 +1,862 @@
+/* START custom cookie banner styles */
+
+:root {
+    --font-family-primary: 'satoshi-variable', Arial, sans-serif;
+    --font-family-title: "bellslim_font_heavy", Helvetica, Arial, sans-serif;
+    --color-online-blue: #0070CE;
+    --color-light-vellum: #F9F8F6;
+    --border-color-vellum: #EEECE5
+}
+
+#onetrust-banner-sdk#onetrust-banner-sdk {
+    font-family: var(--font-family-primary);
+    box-shadow: none;
+    position: fixed;
+    z-index: 2147483645;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    max-height: 90%;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+    #onetrust-banner-sdk#onetrust-banner-sdk:focus {
+        outline: none !important;
+    }
+
+#onetrust-consent-sdk#onetrust-consent-sdk#onetrust-consent-sdk #onetrust-banner-sdk * {
+    float: none;
+    box-sizing: border-box;
+}
+
+#onetrust-consent-sdk div#onetrust-banner-sdk {
+    background: #00549a;
+}
+
+#onetrust-consent-sdk #onetrust-banner-sdk .ot-sdk-container {
+    padding: 30px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#onetrust-consent-sdk #onetrust-banner-sdk .ot-sdk-row {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+    #onetrust-consent-sdk #onetrust-banner-sdk .ot-sdk-row:after {
+        display: none;
+    }
+
+#onetrust-consent-sdk #onetrust-banner-sdk #onetrust-policy {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin: 0;
+}
+
+    #onetrust-consent-sdk #onetrust-banner-sdk #onetrust-policy h2#onetrust-policy-title {
+        color: #fff !important;
+        display: block;
+        /*Note: this assumes that bellslim_font_black is being loaded by other CSS across all pages in scope*/
+        font-family: var(--font-family-primary);
+        font-size: 22px;
+        font-weight: 550;
+        line-height: 30.8px;
+        letter-spacing: 0;
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+        padding-right: 41px; /*space for X*/
+    }
+
+    #onetrust-consent-sdk #onetrust-banner-sdk #onetrust-policy p,
+    #onetrust-consent-sdk #onetrust-banner-sdk #onetrust-policy #onetrust-policy-text {
+        color: #fff;
+        font-size: 14px;
+        line-height: 18px;
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+    }
+
+#onetrust-consent-sdk #onetrust-banner-sdk .ot-sdk-row #onetrust-group-container,
+#onetrust-consent-sdk #onetrust-banner-sdk .ot-sdk-row #onetrust-button-group-parent {
+    width: 100%;
+}
+
+#onetrust-consent-sdk #onetrust-banner-sdk #onetrust-button-group-parent {
+    min-width: initial;
+}
+
+#onetrust-consent-sdk #onetrust-banner-sdk #onetrust-button-group {
+    align-items: flex-start;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 0;
+}
+
+#onetrust-consent-sdk #onetrust-banner-sdk #onetrust-pc-btn-handler {
+    background: none;
+    border: 0;
+    color: #fff;
+    font-size: 14px;
+    font-weight: normal;
+    line-height: 18px;
+    letter-spacing: normal;
+    margin: 0;
+    min-width: 0;
+    padding: 0;
+    width: auto;
+    white-space: nowrap;
+    text-decoration: underline !important;
+}
+
+html[lang*=en] #onetrust-consent-sdk #onetrust-banner-sdk #onetrust-pc-btn-handler {
+    text-transform: lowercase;
+}
+
+    html[lang*=en] #onetrust-consent-sdk #onetrust-banner-sdk #onetrust-pc-btn-handler::first-letter {
+        text-transform: uppercase;
+    }
+
+#onetrust-consent-sdk #onetrust-banner-sdk #onetrust-accept-btn-handler {
+    background: #fff;
+    border: 0;
+    border-radius: 20px;
+    color: #003778;
+    font-size: 15px;
+    font-weight: normal;
+    line-height: 16px;
+    letter-spacing: normal;
+    margin: 0;
+    width: auto;
+    white-space: nowrap;
+    padding: 9.5px 30px;
+}
+
+#onetrust-consent-sdk #onetrust-banner-sdk #onetrust-close-btn-container {
+    transform: none;
+    position: static;
+}
+
+#onetrust-consent-sdk #onetrust-banner-sdk .onetrust-close-btn-ui {
+    position: absolute;
+    top: 30px;
+    right: 30px;
+    /* background-image: url('../../../oneTrust_production/consent/16cc4bef-039e-4015-b3dc-05552d35810b/018df5c5-902e-7a96-bf1c-66f9ebc88600/logos/static/close_banner.png') !important; */
+    background-color: transparent;
+    background-size: 11px;
+    background-repeat: no-repeat;
+    background-position: center;
+    border: 0;
+    padding: 0;
+    height: 11px;
+    width: 11px;
+}
+#onetrust-consent-sdk #onetrust-banner-sdk .onetrust-close-btn-ui::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='348.333' height='348.333' viewBox='0 0 348.333 348.334'%3E%3Cpath fill='%23565656' d='M336.559 68.611L231.016 174.165l105.543 105.549c15.699 15.705 15.699 41.145 0 56.85-7.844 7.844-18.128 11.769-28.407 11.769-10.296 0-20.581-3.919-28.419-11.769L174.167 231.003 68.609 336.563c-7.843 7.844-18.128 11.769-28.416 11.769-10.285 0-20.563-3.919-28.413-11.769-15.699-15.698-15.699-41.139 0-56.85l105.54-105.549L11.774 68.611c-15.699-15.699-15.699-41.145 0-56.844 15.696-15.687 41.127-15.687 56.829 0l105.563 105.554L279.721 11.767c15.705-15.687 41.139-15.687 56.832 0 15.705 15.699 15.705 41.145.006 56.844z'/%3E%3C/svg%3E")!important;
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    background-size: contain;
+    content: "";
+    background-repeat: no-repeat;
+    background-position: center;
+    position: absolute;
+    display:block;
+    top: -1px;
+    right: -1px;
+    filter: invert(100%) brightness(200%); /* makes it white */
+}
+    #onetrust-consent-sdk #onetrust-banner-sdk #onetrust-pc-btn-handler:hover,
+    #onetrust-consent-sdk #onetrust-banner-sdk #onetrust-accept-btn-handler:hover,
+    #onetrust-consent-sdk #onetrust-banner-sdk .onetrust-close-btn-ui:hover {
+        opacity: 1;
+    }
+
+#onetrust-consent-sdk #onetrust-banner-sdk #onetrust-pc-btn-handler:hover,
+#onetrust-consent-sdk #onetrust-banner-sdk #onetrust-pc-btn-handler:focus {
+    text-decoration: none !important;
+}
+
+#onetrust-consent-sdk #onetrust-banner-sdk #onetrust-pc-btn-handler:focus,
+#onetrust-consent-sdk #onetrust-banner-sdk #onetrust-accept-btn-handler:focus,
+#onetrust-consent-sdk #onetrust-banner-sdk .onetrust-close-btn-ui:focus {
+    opacity: 1;
+    outline: 2px solid #fff !important;
+    outline-offset: 3px;
+    box-shadow: none !important;
+}
+
+#onetrust-consent-sdk #onetrust-banner-sdk #onetrust-accept-btn-handler:focus {
+    background: #fff;
+}
+
+#onetrust-consent-sdk #onetrust-banner-sdk #onetrust-accept-btn-handler:hover {
+    background-color: #d6dce7;
+}
+
+@media (min-width: 768px) {
+    #onetrust-consent-sdk #onetrust-banner-sdk .ot-sdk-container {
+        padding: 20px 30px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    #onetrust-consent-sdk #onetrust-banner-sdk .ot-sdk-row {
+        align-items: center;
+        flex-direction: row;
+        gap: 30px;
+    }
+
+        #onetrust-consent-sdk #onetrust-banner-sdk .ot-sdk-row #onetrust-group-container,
+        #onetrust-consent-sdk #onetrust-banner-sdk .ot-sdk-row #onetrust-button-group-parent {
+            flex: 1 0 0;
+            padding: 0;
+            position: static;
+            transform: none;
+        }
+
+    #onetrust-consent-sdk #onetrust-banner-sdk #onetrust-policy h2#onetrust-policy-title {
+        padding-right: 0;
+        font-size: 24px;
+        line-height: 26px;
+    }
+
+    #onetrust-consent-sdk #onetrust-banner-sdk #onetrust-button-group {
+        margin-right: 0;
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 30px;
+        row-gap: 15px;
+        flex-wrap: wrap;
+        padding-right: 30px;
+    }
+}
+
+@media (min-width: 992px) {
+    #onetrust-consent-sdk #onetrust-banner-sdk .ot-sdk-container {
+        padding-left: 30px;
+        padding-right: 30px;
+        width: 100%;
+    }
+
+    #onetrust-consent-sdk #onetrust-banner-sdk #onetrust-button-group-parent {
+        display: flex;
+        flex: 1 0 0;
+        justify-content: flex-end;
+        margin: 0;
+        padding: 0;
+        position: static;
+        transform: none;
+        width: auto;
+    }
+
+    #onetrust-consent-sdk #onetrust-banner-sdk #onetrust-button-group {
+        align-items: center;
+        flex-direction: row;
+    }
+}
+
+@media (min-width: 1240px) {
+    #onetrust-consent-sdk #onetrust-banner-sdk .ot-sdk-container {
+        padding-left: 0;
+        padding-right: 0;
+        width: 1200px;
+    }
+
+    #onetrust-consent-sdk #onetrust-banner-sdk .ot-sdk-row {
+        gap: 30px;
+    }
+
+    #onetrust-consent-sdk #onetrust-banner-sdk #onetrust-button-group-parent {
+        padding: 0;
+        margin: 0;
+    }
+}
+
+/* END custom cookie banner styles */
+
+/* START of Data privacy settings modal */
+#onetrust-pc-sdk#onetrust-pc-sdk .ot-pc-logo {
+    display: none;
+}
+
+#onetrust-pc-sdk#onetrust-pc-sdk .ot-pc-footer-logo {
+    display: none;
+}
+
+#onetrust-pc-sdk#onetrust-pc-sdk [role="alertdialog"] {
+    background-color: #fff;
+    border: 1px solid #e1e1e1;
+}
+
+#onetrust-pc-sdk#onetrust-pc-sdk .ot-pc-header {
+    border: none;
+    padding: 20px 15px;
+    text-align: right;
+    height: auto;
+    background-color: #f4f4f4;
+}
+
+#onetrust-pc-sdk#onetrust-pc-sdk #close-pc-btn-handler.ot-close-icon {
+    position: static;
+    margin: 0;
+    background-image: none !important;
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    margin: 4px 0;
+    color: #00549a;
+}
+
+    #onetrust-pc-sdk#onetrust-pc-sdk #close-pc-btn-handler.ot-close-icon:hover {
+        opacity: 0.75;
+    }
+
+    #onetrust-pc-sdk#onetrust-pc-sdk #close-pc-btn-handler.ot-close-icon:focus {
+        opacity: 0.75;
+    }
+
+#onetrust-pc-sdk#onetrust-pc-sdk #close-pc-btn-handler.ot-close-icon {
+    background-color: transparent;
+    /*background-image: url('../../../oneTrust_production/consent/16cc4bef-039e-4015-b3dc-05552d35810b/018df5c5-902e-7a96-bf1c-66f9ebc88600/logos/static/close_modal.png') !important;*/
+    background-size: contain;
+}
+  #onetrust-pc-sdk #close-pc-btn-handler.ot-close-icon::after {
+    content: "";
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='348.333' height='348.333' viewBox='0 0 348.333 348.334'%3E%3Cpath fill='%2300549A' d='M336.559 68.611L231.016 174.165l105.543 105.549c15.699 15.705 15.699 41.145 0 56.85-7.844 7.844-18.128 11.769-28.407 11.769-10.296 0-20.581-3.919-28.419-11.769L174.167 231.003 68.609 336.563c-7.843 7.844-18.128 11.769-28.416 11.769-10.285 0-20.563-3.919-28.413-11.769-15.699-15.698-15.699-41.139 0-56.85l105.54-105.549L11.774 68.611c-15.699-15.699-15.699-41.145 0-56.844 15.696-15.687 41.127-15.687 56.829 0l105.563 105.554L279.721 11.767c15.705-15.687 41.139-15.687 56.832 0 15.705 15.699 15.705 41.145.006 56.844z'/%3E%3C/svg%3E");
+    
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center;
+}
+
+#onetrust-pc-sdk#onetrust-pc-sdk #ot-pc-content {
+    margin: 0;
+    padding: 30px 15px;
+    width: inherit;
+    bottom: 85px;
+    top: 68px;
+}
+
+#onetrust-pc-sdk#onetrust-pc-sdk#onetrust-pc-sdk h2::first-letter,
+#onetrust-pc-sdk#onetrust-pc-sdk#onetrust-pc-sdk h2 strong::first-letter,
+#onetrust-pc-sdk#onetrust-pc-sdk#onetrust-pc-sdk h3::first-letter {
+    text-transform: capitalize;
+}
+
+#onetrust-pc-sdk#onetrust-pc-sdk#onetrust-pc-sdk h2,
+#onetrust-pc-sdk#onetrust-pc-sdk#onetrust-pc-sdk h2 strong,
+#onetrust-pc-sdk#onetrust-pc-sdk#onetrust-pc-sdk h3 {
+    margin: 0 0 15px 0;
+    font-size: 22px;
+    text-transform: lowercase;
+    color: #111;
+    display: block;
+}
+
+    #onetrust-pc-sdk#onetrust-pc-sdk#onetrust-pc-sdk h2,
+    #onetrust-pc-sdk#onetrust-pc-sdk#onetrust-pc-sdk h2 strong {
+        font-size: 22px;
+        line-height: 24px;
+    }
+
+        #onetrust-pc-sdk#onetrust-pc-sdk#onetrust-pc-sdk h2#ot-pc-title {
+            margin-bottom: 15px;
+            font-family: var(--font-family-primary);
+        }
+
+        #onetrust-pc-sdk#onetrust-pc-sdk#onetrust-pc-sdk h2 strong {
+            letter-spacing: -0.4px;
+        }
+
+#onetrust-pc-sdk#onetrust-pc-sdk#onetrust-pc-sdk h3 {
+    padding-bottom: 0;
+    margin-bottom: 15px;
+    font-size: 18px !important;
+    line-height: 22px;
+}
+
+#onetrust-pc-sdk#onetrust-pc-sdk#onetrust-pc-sdk #ot-pc-desc p {
+    margin-bottom: 10px;
+}
+
+    #onetrust-pc-sdk#onetrust-pc-sdk#onetrust-pc-sdk #ot-pc-desc p:not(:first-of-type) {
+        margin-top: 10px !important;
+    }
+
+#onetrust-pc-sdk#onetrust-pc-sdk#onetrust-pc-sdk #ot-pc-desc p,
+#onetrust-pc-sdk#onetrust-pc-sdk .ot-cat-item p {
+    font-size: 14px;
+    line-height: 18px;
+}
+
+#onetrust-pc-sdk#onetrust-pc-sdk .ot-cat-item p {
+    margin-bottom: 0 !important;
+    margin-top: 15px;
+}
+
+#onetrust-pc-sdk#onetrust-pc-sdk #ot-pc-desc p a {
+    white-space: nowrap;
+    margin-left: 0;
+    text-decoration: underline;
+    color: #00549a;
+}
+
+#onetrust-pc-sdk#onetrust-pc-sdk #ot-pc-desc {
+    margin: 0;
+    padding-bottom: 20px;
+}
+
+#onetrust-pc-sdk#onetrust-pc-sdk section {
+    border-top: 1px solid #e1e1e1;
+    padding-top: 30px;
+    margin-top: 0;
+    line-height: 0;
+}
+
+    #onetrust-pc-sdk#onetrust-pc-sdk section .ot-cat-item {
+        border: 1px solid #e1e1e1;
+        margin-top: 0;
+        padding: 15px;
+        width: auto;
+    }
+
+        #onetrust-pc-sdk#onetrust-pc-sdk section .ot-cat-item:not(:first-of-type) {
+            border-top: none;
+        }
+
+        #onetrust-pc-sdk#onetrust-pc-sdk section .ot-cat-item:first-of-type {
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+        }
+
+        #onetrust-pc-sdk#onetrust-pc-sdk section .ot-cat-item:not(:last-of-type):not(:first-of-type) {
+            border-top: none;
+        }
+
+        #onetrust-pc-sdk#onetrust-pc-sdk section .ot-cat-item:last-of-type {
+            border-bottom-left-radius: 10px;
+            border-bottom-right-radius: 10px;
+        }
+
+    #onetrust-pc-sdk#onetrust-pc-sdk section .ot-cat-header,
+    #onetrust-pc-sdk#onetrust-pc-sdk section .ot-always-active {
+        font-weight: 700;
+        color: #111;
+        font-size: 14px;
+        line-height: 18px;
+        text-transform: lowercase;
+        font-family: inherit !important;
+    }
+
+    #onetrust-pc-sdk#onetrust-pc-sdk section .ot-cat-item:not(.ot-always-active-group) .ot-cat-header {
+        width: 77%;
+        box-sizing: border-box;
+        transform: translateY(3px);
+    }
+
+    #onetrust-pc-sdk#onetrust-pc-sdk section .ot-cat-header::first-letter,
+    #onetrust-pc-sdk#onetrust-pc-sdk section .ot-always-active::first-letter {
+        text-transform: uppercase;
+    }
+
+#onetrust-pc-sdk#onetrust-pc-sdk .ot-tgl {
+    line-height: 0;
+}
+
+    #onetrust-pc-sdk#onetrust-pc-sdk .ot-tgl input:checked + .ot-switch .ot-switch-nob {
+        background-color: #00549a !important;
+    }
+
+        #onetrust-pc-sdk#onetrust-pc-sdk .ot-tgl input:checked + .ot-switch .ot-switch-nob:before {
+            background-color: #ffffff;
+        }
+
+#onetrust-pc-sdk#onetrust-pc-sdk .ot-switch-nob {
+    background-color: #555555;
+    height: 22px;
+    top: -1px;
+}
+
+    #onetrust-pc-sdk#onetrust-pc-sdk .ot-switch-nob:before {
+        position: absolute;
+        content: "";
+        height: 16px;
+        width: 16px;
+        left: 3px;
+        background-color: #E1E1E1;
+    }
+
+#onetrust-pc-sdk#onetrust-pc-sdk .ot-switch {
+    position: relative;
+    display: inline-block;
+    width: 48px;
+    height: 22px;
+}
+
+#onetrust-pc-sdk#onetrust-pc-sdk .ot-tgl input:checked + .ot-switch .ot-switch-nob:before {
+    transform: translateX(24px);
+}
+
+#onetrust-pc-sdk#onetrust-pc-sdk .ot-pc-footer {
+    background-color: #f4f4f4;
+    border-top: 1px solid #cdcfd5;
+}
+
+    #onetrust-pc-sdk#onetrust-pc-sdk .ot-pc-footer .ot-btn-container {
+        text-align: left;
+        padding: 20px 15px;
+    }
+
+        #onetrust-pc-sdk#onetrust-pc-sdk .ot-pc-footer .ot-btn-container button {
+            margin: 0;
+        }
+
+#onetrust-consent-sdk#onetrust-consent-sdk#onetrust-consent-sdk #onetrust-pc-sdk#onetrust-pc-sdk .ot-pc-footer button.save-preference-btn-handler {
+    line-height: 16px;
+    font-weight: 400;
+    font-size: 15px;
+    color: #fff;
+    background-color: #003778;
+    border: 2px solid #003778;
+    text-align: center;
+    cursor: pointer;
+    text-transform: lowercase;
+    letter-spacing: normal;
+    border-radius: 30px;
+}
+
+    #onetrust-consent-sdk#onetrust-consent-sdk#onetrust-consent-sdk #onetrust-pc-sdk#onetrust-pc-sdk .ot-pc-footer button.save-preference-btn-handler:hover,
+    #onetrust-consent-sdk#onetrust-consent-sdk#onetrust-consent-sdk #onetrust-pc-sdk#onetrust-pc-sdk .ot-pc-footer button.save-preference-btn-handler:focus {
+        opacity: 1;
+        background-color: #00549a;
+        border-color: #00549a;
+    }
+
+#onetrust-consent-sdk#onetrust-consent-sdk #onetrust-pc-sdk .ot-pc-footer button::first-letter {
+    text-transform: uppercase;
+}
+
+#onetrust-consent-sdk#onetrust-consent-sdk #onetrust-pc-sdk button:focus,
+#onetrust-consent-sdk#onetrust-consent-sdk p a:focus,
+#onetrust-consent-sdk#onetrust-consent-sdk .ot-tgl input:focus + .ot-switch {
+    outline: 2px solid #0075ff !important;
+    outline-offset: 2px !important;
+    box-shadow: none !important;
+}
+
+/* START Cookie Policy Icon */
+.privacy-notice-link {
+    color: #00549A !important;
+    font-size: 14px !important;
+    position: relative;
+}
+
+    .privacy-notice-link:after {
+        content: url('../../../oneTrust_production/consent/16cc4bef-039e-4015-b3dc-05552d35810b/018df5c5-902e-7a96-bf1c-66f9ebc88600/logos/static/external.png') !important;
+        margin-left: 5px;
+        vertical-align: text-top;
+    }
+
+#ot-pc-desc br {
+    display: none;
+}
+
+[lang=fr] #ot-pc-desc#ot-pc-desc#ot-pc-desc p:last-of-type {
+    display: inline;
+}
+#ot-pc-desc#ot-pc-desc#ot-pc-desc p:last-of-type {
+    margin-bottom: 0px !important;
+}
+
+@media (min-width: 320px) and (max-width: 767.98px) {
+    #ot-pc-desc#ot-pc-desc#ot-pc-desc p:last-of-type {
+        display: inline !important;
+    }
+}
+/* END Cookie Policy Icon */
+
+@media (max-width: 767.98px) {
+    #onetrust-consent-sdk #onetrust-pc-sdk.otPcCenter {
+        min-width: 100% !important;
+        height: 100% !important;
+        top: 0 !important;
+        border-radius: 0 !important;
+        border: 1px solid #e1e1e1;
+    }
+
+    #onetrust-pc-sdk#onetrust-pc-sdk [role="alertdialog"] {
+        border: none !important;
+    }
+}
+
+@media (min-width: 768px) {
+    #onetrust-consent-sdk #onetrust-pc-sdk {
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+    }
+
+    #onetrust-consent-sdk #onetrust-pc-sdk {
+        border-bottom-left-radius: 10px;
+        border-bottom-right-radius: 10px;
+    }
+
+    #onetrust-pc-sdk#onetrust-pc-sdk [role="alertdialog"] {
+        border-radius: 10px !important;
+    }
+
+    #onetrust-pc-sdk#onetrust-pc-sdk .ot-pc-header {
+        padding: 20px 30px;
+    }
+
+    #onetrust-pc-sdk#onetrust-pc-sdk .ot-pc-footer .ot-btn-container {
+        padding: 20px 30px;
+    }
+
+    #onetrust-pc-sdk#onetrust-pc-sdk.otPcCenter {
+        width: 646px;
+        max-width: 646px;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+    #onetrust-consent-sdk#onetrust-consent-sdk#onetrust-consent-sdk #onetrust-pc-sdk#onetrust-pc-sdk .ot-pc-footer button.save-preference-btn-handler {
+        padding: 13px 18px;
+    }
+
+    #onetrust-pc-sdk#onetrust-pc-sdk #ot-pc-content {
+        padding: 30px;
+        bottom: 86px;
+    }
+
+    #onetrust-pc-sdk#onetrust-pc-sdk#onetrust-pc-sdk h2,
+    #onetrust-pc-sdk#onetrust-pc-sdk#onetrust-pc-sdk h2 strong {
+        font-size: 24px;
+        line-height: 26px;
+    }
+}
+
+
+/* END of Data privacy settings modal */
+
+/* START of Cookie Settings Footer */
+
+.page-code_home-personal ul#footerLinksSectionResources.bhp-footer-links li:last-child a {
+    margin-bottom: 0px;
+    position: static;
+    min-height: 0px;
+}
+
+.page-code_home-personal ul#footerLinksSectionResources.bhp-footer-links li:last-child {
+    margin-bottom: 0px;
+}
+
+li a[role=button].ot-sdk-show-settings {
+    display: inline-block;
+}
+
+    li a[role=button].ot-sdk-show-settings:first-letter {
+        text-transform: uppercase
+    }
+
+li a[role=button].ot-sdk-show-settings {
+    text-transform: lowercase;
+}
+
+li a[role=button]#ot-sdk-btn.ot-sdk-show-settings, #ot-sdk-btn.optanon-show-settings {
+    color: #00549a !important;
+    border: 0 !important;
+    padding: 0 !important;
+    font-size: unset !important;
+}
+
+#ot-sdk-btn.optanon-show-settings {
+    text-decoration: none !important;
+}
+
+    li a[role=button]#ot-sdk-btn.ot-sdk-show-settings:hover, #ot-sdk-btn.optanon-show-settings:hover {
+        color: #00549a !important;
+        background-color: inherit !important;
+        text-decoration: underline !important;
+    }
+
+.page-code_home-personal li a[role=button]#ot-sdk-btn.ot-sdk-show-settings, #ot-sdk-btn.optanon-show-settings {
+    color: #fff !important;
+    border: 0 !important;
+    padding: 0 !important;
+    font-size: unset !important;
+    text-decoration: none !important;
+}
+
+    .page-code_home-personal li a[role=button]#ot-sdk-btn.ot-sdk-show-settings:hover, #ot-sdk-btn.optanon-show-settings:hover {
+        color: #fff !important;
+        background-color: inherit !important;
+        text-decoration: underline !important;
+    }
+
+.bhp-footer .bhp-footer-links-section--double ul {
+    width: 100%;
+    columns: 2;
+    -webkit-column-count: 2;
+    height: 160px;
+    margin-bottom: 15px;
+}
+
+.rsx_footer .rsx_footer_legal_links a {
+    white-space: nowrap;
+}
+
+footer #ot-sdk-btn#ot-sdk-btn.ot-sdk-show-settings {
+    border: none;
+    padding: 0;
+    transition: none;
+    line-height: inherit;
+    color: #00549a;
+    white-space: nowrap;
+}
+
+footer:not(.bhp-footer) #ot-sdk-btn#ot-sdk-btn.ot-sdk-show-settings:hover,
+footer:not(.bhp-footer) #ot-sdk-btn#ot-sdk-btn.ot-sdk-show-settings:focus {
+    background-color: transparent !important;
+    color: #003778 !important;
+}
+
+footer #ot-sdk-btn#ot-sdk-btn.ot-sdk-show-settings.txtSize12,
+footer#Footer_BRF3_Responsive #ot-sdk-btn#ot-sdk-btn.ot-sdk-show-settings {
+    font-size: 12px;
+}
+
+.manage-sim-footer #ot-sdk-btn.ot-sdk-show-settings {
+    color: #00549a;
+    font-size: 12px;
+    transition: none;
+    line-height: inherit;
+}
+
+li a[role=button]#ot-sdk-btn.ot-sdk-show-settings {
+    transition: none;
+    line-height: inherit;
+}
+
+footer .rsx_footer_legal_links #ot-sdk-btn.ot-sdk-show-settings {
+    font-size: inherit;
+}
+
+.standard-minimal-footer li a[role=button]#ot-sdk-btn.ot-sdk-show-settings:focus {
+    text-decoration: underline !important;
+}
+
+footer .rsx-active > .rsx-expandable-section-content {
+    margin-left: -10px;
+    margin-bottom: -10px;
+}
+
+    footer .rsx-active > .rsx-expandable-section-content .rsx-footer-misc-links {
+        padding-left: 10px;
+        padding-bottom: 10px;
+    }
+
+footer#ftrSelfRepair #ot-sdk-btn#ot-sdk-btn.ot-sdk-show-settings {
+    color: #00549a;
+    font-size: 12px;
+}
+
+    footer#ftrSelfRepair #ot-sdk-btn#ot-sdk-btn.ot-sdk-show-settings:focus,
+    footer.standard-minimal-footer:not(.bhp-footer) #ot-sdk-btn#ot-sdk-btn.ot-sdk-show-settings:focus {
+        color: #003778 !important;
+    }
+
+footer #ot-sdk-btn#ot-sdk-btn.ot-sdk-show-settings.txtDarkGrey {
+    color: #555;
+}
+
+.bhp-footer-links li:last-child a#ot-sdk-btn#ot-sdk-btn.ot-sdk-show-settings {
+    min-height: unset;
+}
+
+footer.bhp-footer:not(.bhp-footer--home) li a[role=button].ot-sdk-show-settings {
+    display: block;
+}
+
+footer .footerList > #ot-sdk-btn.ot-sdk-show-settings {
+    font-size: inherit;
+}
+
+#ot-sdk-btn.ot-sdk-show-settings {
+    background-color: transparent !important;
+}
+
+footer.MYBMakePaymentFooterFocusOutline .footerList #ot-sdk-btn.ot-sdk-show-settings:focus {
+    outline: 2px solid #0075ff !important;
+    outline-offset: 4px;
+    box-shadow: none !important;
+}
+
+.login-mfa-footer-section #ot-sdk-btn.ot-sdk-show-settings {
+    color: #00549a;
+    font-size: 12px;
+    line-height: 14px;
+    text-transform: lowercase;
+    display: inline-block;
+    transition: unset;
+}
+
+    .login-mfa-footer-section #ot-sdk-btn.ot-sdk-show-settings::first-letter {
+        text-transform: uppercase
+    }
+
+    .login-mfa-footer-section #ot-sdk-btn.ot-sdk-show-settings:hover {
+        color: #00549a;
+    }
+
+@media (min-width: 768px) {
+    .page-code_home-personal ul#footerLinksSectionResources.bhp-footer-links li:last-child {
+        margin-bottom: 0;
+    }
+}
+div#onetrust-pc-sdk div.ot-pc-header button::after{
+    position: unset !important;
+    transform: unset !important;
+}
+footer.gf-shop.bgWhite li a.border-lightGray-left.pad-l-5.ot-sdk-show-settings.txtSize14.stu{
+    font-size: 14px !important;
+    padding-left: 5px !important;
+    border-left: 1px solid #d4d4d4 !important;
+    text-decoration: underline !important
+}
+.bhp-footer-copyright a.ot-sdk-show-settings.rsx {
+    border-left: 1px solid #d4d4d4 !important;
+    color:#555 !important;
+    padding-left: 10px !important;
+    margin-left: 10px !important;
+}
+footer:not(.bhp-footer) #ot-sdk-btn#ot-sdk-btn.ot-sdk-show-settings.rsx:focus, 
+footer:not(.bhp-footer) #ot-sdk-btn#ot-sdk-btn.ot-sdk-show-settings.rsx:hover{
+    color: #555 !important;
+}
+footer:not(.bhp-footer) li > a#ot-sdk-btn#ot-sdk-btn.ot-sdk-show-settings {
+    /* font-family: var(--font-family-primary) !important; */
+    color: #fff !important;
+    font-size: 14px !important;
+    font-style: normal !important;
+    font-weight: 450 !important;
+    line-height: 26px !important;
+}
+footer:not(.bhp-footer) li > a#ot-sdk-btn#ot-sdk-btn.ot-sdk-show-settings.ot-sdk-style {
+    /* font-family: "satoshi-variable", Arial, Helvetica, sans-serif !important; */
+    color: #00549a !important;
+    font-size: 12px !important;
+    font-style: normal !important;
+    font-weight: 450 !important;
+    line-height: 15px !important;
+}
+/* END of Cookie Settings Footer */
