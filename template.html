@@ -414,6 +414,26 @@
       overflow: hidden;
     }
 
+    /* ── Top banner (optional "ribbon" tab above the header) ─── */
+    .card-top-banner {
+      background: #2E7DC1;
+      color: #ffffff;
+      font-size: 16px;
+      font-weight: 600;
+      text-align: center;
+      padding: 14px 20px;
+      letter-spacing: 0.2px;
+      /* Top corners are clipped automatically by .pricing-card's
+         overflow:hidden + border-radius:20px, so no own radius needed. */
+    }
+
+    /* When the banner is present, give the header its own top radius
+       so the blue strip visibly wraps around the card-header. */
+    .card-top-banner + .card-header {
+      border-top-left-radius: 20px;
+      border-top-right-radius: 20px;
+    }
+
     /* ── Header (navy gradient region) ─────────────────────── */
     .card-header {
       background: linear-gradient(180deg, #0a1628 0%, #162a4a 100%);
@@ -668,6 +688,7 @@
        ============================================================ */
     @media (max-width: 480px) {
       .pricing-card  { width: 92vw; }
+      .card-top-banner  { padding: 12px 16px; }
       .config-panel  { width: 100vw; right: -100vw; }
       .legal-note    { font-size: 12px; }
       .period,
@@ -762,6 +783,29 @@
             <label>Card label</label>
             <input type="text" ng-model="vm.plan.cardLabel">
           </div>
+
+          <!-- Top banner (blue ribbon above the header) -->
+          <div class="toggle-field">
+            <label>Show top banner</label>
+            <button class="toggle"
+                    ng-class="{on: vm.plan.topBanner.enabled}"
+                    ng-click="vm.plan.topBanner.enabled = !vm.plan.topBanner.enabled"></button>
+          </div>
+          <div class="field" ng-if="vm.plan.topBanner.enabled">
+            <label>Banner text</label>
+            <input type="text" ng-model="vm.plan.topBanner.text">
+          </div>
+          <div class="field-row" ng-if="vm.plan.topBanner.enabled">
+            <div class="field">
+              <label>Banner background</label>
+              <input type="color" ng-model="vm.plan.topBanner.bgColor">
+            </div>
+            <div class="field">
+              <label>Banner text color</label>
+              <input type="color" ng-model="vm.plan.topBanner.textColor">
+            </div>
+          </div>
+
           <div class="field-row">
             <div class="field">
               <label>Badge text</label>
@@ -1190,6 +1234,13 @@
 
     <div class="pricing-card">
 
+      <!-- ── (Optional) Top banner / ribbon above the header ── -->
+      <div class="card-top-banner"
+           ng-if="vm.plan.topBanner && vm.plan.topBanner.enabled"
+           ng-style="{background: vm.plan.topBanner.bgColor, color: vm.plan.topBanner.textColor}">
+        {{ vm.plan.topBanner.text }}
+      </div>
+
       <!-- ── Card header ── -->
       <div class="card-header" ng-style="vm.headerGradient()">
         <div class="header-top">
@@ -1405,6 +1456,10 @@
       var MAPPING_DOC = {
         /* Header */
         'cardLabel':              'string  · Header label above the card (preview only — safe to drop in production).',
+        'topBanner.enabled':      'boolean · Show / hide the blue "ribbon" tab above the card header.',
+        'topBanner.text':         'string  · Banner copy (e.g. "Limited time offer!").',
+        'topBanner.bgColor':      'color   · Banner background colour, hex (default #2E7DC1).',
+        'topBanner.textColor':    'color   · Banner text colour, hex (default #ffffff).',
         'badge':                  'string  · Top-left badge text (e.g. "Internet 1G").',
         'badgeBg':                'color   · Badge background colour, hex (e.g. "#17599C").',
         'headline':               'string  · Headline rendered on the header gradient.',
@@ -1474,6 +1529,12 @@
         return {
           /* Header */
           cardLabel:      '🌐 Internet — Rate Card Model',
+          topBanner: {
+            enabled:   false,
+            text:      'Limited time offer!',
+            bgColor:   '#2E7DC1',
+            textColor: '#ffffff'
+          },
           badge:          'Internet 1G',
           badgeBg:        '#17599C',
           headline:       'Internet 1G',
@@ -1719,6 +1780,22 @@
 
           // Apply whatever JSON is currently in the textarea
           // (useful when devs paste a payload directly).
+          /* Back-fill any fields newly introduced after a payload was
+             authored. Add new defaults here so older JSON files stay
+             compatible after the schema grows. */
+          function ensurePlanDefaults(plan) {
+            if (!plan || typeof plan !== 'object') return plan;
+            if (!plan.topBanner || typeof plan.topBanner !== 'object') {
+              plan.topBanner = { enabled: false, text: 'Limited time offer!', bgColor: '#2E7DC1', textColor: '#ffffff' };
+            } else {
+              if (typeof plan.topBanner.enabled   !== 'boolean') plan.topBanner.enabled   = false;
+              if (typeof plan.topBanner.text      !== 'string')  plan.topBanner.text      = 'Limited time offer!';
+              if (typeof plan.topBanner.bgColor   !== 'string')  plan.topBanner.bgColor   = '#2E7DC1';
+              if (typeof plan.topBanner.textColor !== 'string')  plan.topBanner.textColor = '#ffffff';
+            }
+            return plan;
+          }
+
           vm.applyPastedJson = function () {
             if (!vm.io.exportText) {
               setStatus('Textarea is empty — paste a JSON payload first.', 'info');
@@ -1733,7 +1810,7 @@
                 setStatus('Invalid payload: missing required fields (e.g. badge, headline, currentPrice).', 'error');
                 return;
               }
-              vm.plan = candidate;
+              vm.plan = ensurePlanDefaults(candidate);
               vm.io.exportText = JSON.stringify(vm.plan, null, 2);
               setStatus('Pasted JSON applied to the card.', 'success');
             } catch (err) {
@@ -1760,7 +1837,7 @@
                     setStatus('Invalid file: missing required fields (e.g. badge, headline, currentPrice).', 'error');
                     return;
                   }
-                  vm.plan = candidate;
+                  vm.plan = ensurePlanDefaults(candidate);
                   vm.io.exportText = JSON.stringify(vm.plan, null, 2);
                   setStatus('Plan imported from "' + file.name + '". Card refreshed.', 'success');
                 } catch (err) {
