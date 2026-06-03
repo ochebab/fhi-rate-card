@@ -42,6 +42,7 @@ jobs:
           set -e
           mkdir -p _deploy/template
           # ── /public_html/fhi/ ───────────────────────────────────
+          cp freedom-tv-pricing.html    _deploy/index.html
           cp template.html              _deploy/template.html
           # ── /public_html/fhi/template/ ──────────────────────────
           cp template.html              _deploy/template/index.html

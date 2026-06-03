@@ -1375,10 +1375,94 @@
       background: rgba(255,255,255,0.3);
     }
 
+    /* Search bar inside the channels modal */
+    .modal-search {
+      position: relative;
+      padding: 14px 24px;
+      background: #fafbfc;
+      border-bottom: 1px solid #e5e5e5;
+    }
+
+    .modal-search-input {
+      width: 100%;
+      padding: 10px 38px 10px 40px;
+      font-size: 14px;
+      font-family: inherit;
+      color: #333;
+      background: #ffffff;
+      border: 1px solid #d5dae0;
+      border-radius: 8px;
+      outline: none;
+      box-sizing: border-box;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .modal-search-input::placeholder {
+      color: #999;
+    }
+
+    .modal-search-input:focus {
+      border-color: #ed6b1f;
+      box-shadow: 0 0 0 3px rgba(237, 107, 31, 0.15);
+    }
+
+    .modal-search-icon {
+      position: absolute;
+      left: 38px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 16px;
+      height: 16px;
+      color: #888;
+      pointer-events: none;
+    }
+
+    .modal-search-clear {
+      position: absolute;
+      right: 38px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 22px;
+      height: 22px;
+      padding: 0;
+      border: none;
+      border-radius: 50%;
+      background: #d5dae0;
+      color: #fff;
+      font-size: 18px;
+      line-height: 1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+    }
+
+    .modal-search-clear:hover {
+      background: #8a8f96;
+    }
+
+    /* Empty state when no channels match the keyword */
+    .modal-search-empty {
+      padding: 32px 24px;
+      text-align: center;
+      font-size: 14px;
+      color: #888;
+    }
+
+    .modal-search-empty strong {
+      color: #333;
+    }
+
+    /* Hide sections whose channels all filter out */
+    .channels-section.no-matches {
+      display: none;
+    }
+
     .modal-body {
       padding: 20px 24px;
       overflow-y: auto;
-      max-height: calc(80vh - 140px);
+      max-height: calc(80vh - 200px);
     }
 
     .channels-section {
@@ -2762,18 +2846,48 @@
         </div>
         <button class="modal-close" ng-click="vm.closeModal()" aria-label="Close channels modal">&times;</button>
       </div>
+      <!-- Real-time keyword search -->
+      <div class="modal-search">
+        <svg class="modal-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input
+          type="text"
+          class="modal-search-input"
+          ng-model="vm.channelSearch"
+          ng-model-options="{ debounce: 80 }"
+          placeholder="Search channels…"
+          aria-label="Search channels in this pack">
+        <button
+          type="button"
+          class="modal-search-clear"
+          ng-if="vm.channelSearch"
+          ng-click="vm.clearChannelSearch()"
+          aria-label="Clear search">&times;</button>
+      </div>
       <div class="modal-body">
-        <div class="channels-section" 
+        <div class="channels-section"
              ng-repeat="section in vm.channelSections"
-             ng-class="{'open': section.isOpen}">
-          <button class="channels-section-toggle" ng-click="vm.toggleSection(section)">
-            <span class="channels-section-title">{{section.title}} ({{section.channels.length}})</span>
+             ng-class="{
+               'open': section.isOpen || vm.channelSearch,
+               'no-matches': vm.channelSearch && vm.sectionMatchCount(section) === 0
+             }">
+          <button class="channels-section-toggle"
+                  ng-click="!vm.channelSearch && vm.toggleSection(section)"
+                  ng-attr-aria-expanded="{{ !!(section.isOpen || vm.channelSearch) }}">
+            <span class="channels-section-title">
+              {{section.title}}
+              <span ng-if="!vm.channelSearch">({{section.channels.length}})</span>
+              <span ng-if="vm.channelSearch">({{vm.sectionMatchCount(section)}}/{{section.channels.length}})</span>
+            </span>
             <span class="channels-section-arrow">▼</span>
           </button>
           <div class="channels-section-content">
             <div class="channels-grid-wrapper">
               <div class="channels-grid">
-                <div class="channel-item" ng-repeat="channel in section.channels">
+                <div class="channel-item"
+                     ng-repeat="channel in section.channels | filter: { name: vm.channelSearch } track by channel.name">
                   <div class="channel-logo">
                     <img ng-src="{{channel.logo}}" alt="{{channel.name}}">
                   </div>
@@ -2782,6 +2896,11 @@
               </div>
             </div>
           </div>
+        </div>
+        <!-- Empty state when zero channels match across all sections -->
+        <div class="modal-search-empty" ng-if="vm.channelSearch && vm.totalMatchCount() === 0">
+          No channels match <strong>“{{vm.channelSearch}}”</strong>.<br>
+          Try a shorter or different keyword.
         </div>
       </div>
       <div class="modal-footer">
@@ -3527,6 +3646,9 @@
         // Modal state
         vm.modalOpen = false;
 
+        // Real-time channel search inside the modal
+        vm.channelSearch = '';
+
         // Toggle card breakdown
         vm.toggleBreakdown = function(card) {
           card.isOpen = !card.isOpen;
@@ -3553,8 +3675,34 @@
         vm.openModal = function(pack) {
           vm.currentModalPack = pack || 'starter';
           vm.channelSections = vm.getChannelSections(vm.currentModalPack);
+          vm.channelSearch = '';
           vm.modalOpen = true;
           document.body.style.overflow = 'hidden';
+        };
+
+        // Channel search helpers
+        vm.clearChannelSearch = function() {
+          vm.channelSearch = '';
+        };
+
+        vm.sectionMatchCount = function(section) {
+          if (!section || !section.channels) return 0;
+          if (!vm.channelSearch) return section.channels.length;
+          var q = vm.channelSearch.toLowerCase();
+          var count = 0;
+          for (var i = 0; i < section.channels.length; i++) {
+            if (section.channels[i].name.toLowerCase().indexOf(q) !== -1) count++;
+          }
+          return count;
+        };
+
+        vm.totalMatchCount = function() {
+          if (!vm.channelSections) return 0;
+          var total = 0;
+          for (var i = 0; i < vm.channelSections.length; i++) {
+            total += vm.sectionMatchCount(vm.channelSections[i]);
+          }
+          return total;
         };
 
         // Close modal
