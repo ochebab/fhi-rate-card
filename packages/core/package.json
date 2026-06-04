@@ -1,0 +1,19 @@
+{
+  "name": "@fhi/rate-card-core",
+  "version": "0.1.0",
+  "description": "Shared schema, defaults, validation, icons, and styles for FHI rate card components.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "src/components/rate-card/styles"
+  ],
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "build": "tsc -p tsconfig.json"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}

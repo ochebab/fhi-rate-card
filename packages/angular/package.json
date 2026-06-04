@@ -1,0 +1,26 @@
+{
+  "name": "@fhi/rate-card-angular",
+  "version": "0.1.0",
+  "description": "Angular wrapper for the FHI rate card component.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "build": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@fhi/rate-card-core": "0.1.0",
+    "tslib": "^2.0.0"
+  },
+  "peerDependencies": {
+    "@angular/common": ">=16",
+    "@angular/core": ">=16"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}

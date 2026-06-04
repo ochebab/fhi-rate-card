@@ -1,0 +1,298 @@
+.fhi-rate-card {
+  --fhi-rate-card-font-family: 'Ambra Sans Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --fhi-rate-card-text: #0a1628;
+  --fhi-rate-card-muted: #6b7280;
+  box-sizing: border-box;
+  color: var(--fhi-rate-card-text);
+  font-family: var(--fhi-rate-card-font-family);
+  width: min(411px, 92vw);
+}
+
+.fhi-rate-card *,
+.fhi-rate-card *::before,
+.fhi-rate-card *::after {
+  box-sizing: border-box;
+}
+
+.fhi-rate-card__label {
+  color: #6b7280;
+  font-size: 12px;
+  font-weight: 700;
+  margin: 0 0 8px;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.fhi-rate-card__card {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(10, 22, 40, 0.18);
+  overflow: hidden;
+}
+
+.fhi-rate-card__banner {
+  font-size: 13px;
+  font-weight: 700;
+  padding: 9px 16px;
+  text-align: center;
+}
+
+.fhi-rate-card__header {
+  color: #fff;
+  padding: 24px 22px 28px;
+}
+
+.fhi-rate-card__badge {
+  border-radius: 999px;
+  color: #fff;
+  display: inline-flex;
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 14px;
+  padding: 6px 12px;
+}
+
+.fhi-rate-card__headline {
+  font-weight: 800;
+  line-height: 1;
+  margin-bottom: 16px;
+}
+
+.fhi-rate-card__original-price,
+.fhi-rate-card__price-note,
+.fhi-rate-card__legal {
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 13px;
+  margin: 0;
+}
+
+.fhi-rate-card__original-price {
+  text-decoration: line-through;
+}
+
+.fhi-rate-card__price {
+  align-items: baseline;
+  display: flex;
+  gap: 2px;
+  margin: 2px 0;
+}
+
+.fhi-rate-card__currency {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.fhi-rate-card__amount {
+  font-size: 64px;
+  font-weight: 800;
+  line-height: 0.95;
+}
+
+.fhi-rate-card__period {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.fhi-rate-card__savings {
+  align-items: center;
+  background: #fff7f0;
+  border-radius: 999px;
+  color: #b34d0d;
+  display: inline-flex;
+  font-size: 13px;
+  font-weight: 700;
+  gap: 6px;
+  margin-top: 14px;
+  padding: 7px 11px;
+}
+
+.fhi-rate-card__body {
+  padding: 18px 20px;
+}
+
+.fhi-rate-card__specs {
+  background: #f7f9fc;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 16px 20px;
+}
+
+.fhi-rate-card__spec-title {
+  color: var(--fhi-rate-card-muted);
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.fhi-rate-card__spec-item,
+.fhi-rate-card__feature {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  margin: 10px 0;
+}
+
+.fhi-rate-card__icon {
+  align-items: center;
+  border-radius: 50%;
+  color: #fff;
+  display: inline-flex;
+  flex: 0 0 24px;
+  height: 24px;
+  justify-content: center;
+  width: 24px;
+}
+
+.fhi-rate-card__toggle {
+  align-items: center;
+  background: #fff;
+  border: 0;
+  border-bottom: 1px solid #e5e7eb;
+  cursor: pointer;
+  display: flex;
+  font: inherit;
+  font-weight: 700;
+  justify-content: space-between;
+  padding: 15px 20px;
+  width: 100%;
+}
+
+.fhi-rate-card__features {
+  border-bottom: 1px solid #e5e7eb;
+  display: none;
+  margin: 0;
+  padding: 8px 20px 16px;
+}
+
+.fhi-rate-card__features--open {
+  display: block;
+}
+
+.fhi-rate-card__features ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.fhi-rate-card__cta {
+  border: 0;
+  border-radius: 4px;
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 800;
+  padding: 14px 16px;
+  width: 100%;
+}
+
+.fhi-rate-card__journey-row {
+  align-items: center;
+  display: flex;
+  height: 38px;
+  justify-content: center;
+}
+
+.fhi-rate-card__journey-link {
+  background: transparent;
+  border: 0;
+  color: #2e7dc1;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+}
+
+.fhi-rate-card__legal {
+  color: #6b7280;
+  padding: 0 20px 18px;
+}
+
+.fhi-rate-card__modal {
+  align-items: center;
+  background: rgba(10, 22, 40, 0.68);
+  display: none;
+  inset: 0;
+  justify-content: center;
+  padding: 24px;
+  position: fixed;
+  z-index: 1000;
+}
+
+.fhi-rate-card__modal--open {
+  display: flex;
+}
+
+.fhi-rate-card__modal-panel {
+  background: #fff;
+  border-radius: 8px;
+  max-width: 560px;
+  padding: 20px;
+  width: min(560px, 100%);
+}
+
+.fhi-rate-card__modal-header {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.fhi-rate-card__modal-title {
+  font-size: 20px;
+  margin: 0;
+}
+
+.fhi-rate-card__modal-close {
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  font-size: 22px;
+}
+
+.fhi-rate-card__journey-steps {
+  display: grid;
+  gap: 10px;
+}
+
+.fhi-rate-card__journey-step {
+  border: 1px solid #d8dee8;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.fhi-rate-card__journey-step--active,
+.fhi-rate-card__journey-step--discounted {
+  background: #136ba3;
+  color: #fff;
+}
+
+.fhi-rate-card__summary {
+  background: #fff7f0;
+  border: 1px solid #ed6b1f;
+  border-radius: 8px;
+  color: #5d3a1a;
+  margin-top: 14px;
+  padding: 12px;
+}
+
+.fhi-rate-card__hidden {
+  display: none !important;
+}
+
+@media (max-width: 480px) {
+  .fhi-rate-card__amount {
+    font-size: 48px;
+  }
+
+  .fhi-rate-card__headline {
+    font-size: 32px !important;
+  }
+
+  .fhi-rate-card__modal {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .fhi-rate-card__modal-panel {
+    border-radius: 16px 16px 0 0;
+    max-width: none;
+  }
+}

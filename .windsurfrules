@@ -1,0 +1,81 @@
+# Windsurf Rules
+
+## Repository Context
+
+This repository contains static HTML prototypes and documentation for the FHI rate card. Treat `template.html` as the canonical single-card source and `instructions.html` as the developer/CMS field reference. Use `rate-cards-demo.html` to verify multi-card layout behavior.
+
+## Source of Truth
+
+Before changing component behavior, read:
+
+- `template.html`: production markup, CSS, model defaults, and behavior.
+- `instructions.html`: CMS mapping, accessibility notes, and integration details.
+- `docs/component-library-spec.md`: generic Angular/React component library architecture.
+- `docs/components/rate-card/spec.md`: rate-card-specific component contract and implementation plan.
+- `docs/components/rate-card/integration.md`: host-app usage instructions.
+- `docs/component-creation-rules.md`: rules for future component implementation.
+
+Do not invent a new schema or visual structure when the existing files already define one.
+
+## Component Library Rules
+
+- Build future Angular and React packages from a shared framework-neutral core.
+- Keep `RateCardPlan`, defaults, normalization, validation, and icon mappings in core.
+- Angular and React wrappers must consume the same normalized data contract.
+- Support both declarative data input and imperative `setData(json)`.
+- Accept raw plan JSON and `{ plan: {...} }` wrapper JSON.
+- Do not mutate incoming data.
+- Keep local UI state separate from JSON data.
+- Do not hard-code plan copy, pricing, colors, legal text, or features in framework templates.
+
+## Production-Only Constraint
+
+Do not ship preview-only pieces into production packages:
+
+- configurator panel
+- floating demo/docs/stories buttons
+- JSON import/export UI
+- preview body/reset styles
+- AngularJS controller code
+- AngularJS dependencies
+
+Production packages should use only the rate card markup, production CSS, responsive CSS, shared model logic, icon definitions, and documented behavior.
+
+## Styling and Accessibility
+
+- Preserve production class names such as `.pricing-card`, `.journey-link-row`, `.internet-specs`, and root `.fhi-rate-card`.
+- Avoid global `body`, universal reset, or page layout styles in package CSS.
+- Preserve the reserved journey link row for multi-card alignment.
+- Keep the price journey hidden by default unless `journey.enabled` is true.
+- Keep modal accessibility: `role="dialog"`, `aria-modal="true"`, labelled title, Escape close, backdrop close, and focus restoration where practical.
+
+## Validation and Testing
+
+For behavior or schema changes, update core normalization/validation first, then Angular and React wrappers. Add tests for default render, data input, `setData(json)`, CTA events, feature accordion behavior, journey hidden by default, and modal open/close.
+
+For visual changes, manually check `template.html` and `rate-cards-demo.html` at desktop and mobile widths.
+
+## Rules and Docs Parity
+
+- Keep `.windsurfrules`, `AGENTS.md`, `docs/component-creation-rules.md`, and `docs/component-library-spec.md` aligned when generic process or library rules change.
+- Keep component-specific rules in `docs/components/<component-name>/spec.md`; do not move one-off component details into the generic library spec.
+- When a component changes, update all related docs and integration instructions in the same change: component spec, examples, CMS/API field mapping, host-app usage snippets, and framework integration notes.
+- Keep `template.html`, `instructions.html`, and docs aligned when behavior, fields, CSS, or accessibility requirements change.
+- Do not make a framework change without checking whether Angular, React, shared core, examples, and docs need the same update.
+- If `.windsurfrules` is shorter than other guidance files, it must still preserve the same source-of-truth and production-only requirements.
+
+## Commands
+
+There is no build or test command yet. Validate static pages by opening them directly:
+
+```powershell
+Start-Process .\template.html
+Start-Process .\rate-cards-demo.html
+Start-Process .\instructions.html
+```
+
+Use `rg` for searches:
+
+```powershell
+rg "journey.enabled" template.html instructions.html
+```

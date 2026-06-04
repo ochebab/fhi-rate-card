@@ -1,0 +1,15 @@
+{
+  "name": "fhi-rate-card-workspace",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Workspace for reusable FHI rate card component packages.",
+  "workspaces": [
+    "packages/*",
+    "examples/*"
+  ],
+  "scripts": {
+    "build": "npm run build -w @fhi/rate-card-core && npm run build -w @fhi/rate-card-angular && npm run build -w @fhi/rate-card-react",
+    "test": "npm run test --workspaces --if-present",
+    "typecheck": "npm run build -w @fhi/rate-card-core && npm run typecheck -w @fhi/rate-card-angular && npm run typecheck -w @fhi/rate-card-react"
+  }
+}

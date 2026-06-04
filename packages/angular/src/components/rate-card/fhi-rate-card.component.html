@@ -1,0 +1,138 @@
+<article class="fhi-rate-card">
+  <div *ngIf="plan.cardLabel" class="fhi-rate-card__label">{{ plan.cardLabel }}</div>
+
+  <div class="fhi-rate-card__card">
+    <div
+      *ngIf="plan.topBanner.enabled"
+      class="fhi-rate-card__banner"
+      [ngStyle]="{ background: plan.topBanner.bgColor, color: plan.topBanner.textColor }"
+    >
+      {{ plan.topBanner.text }}
+    </div>
+
+    <header
+      class="fhi-rate-card__header"
+      [ngStyle]="{
+        background: 'linear-gradient(180deg, ' + plan.headerGradient.top + ' 0%, ' + plan.headerGradient.bottom + ' 100%)'
+      }"
+    >
+      <span class="fhi-rate-card__badge" [ngStyle]="{ background: plan.badgeBg }">{{ plan.badge }}</span>
+
+      <div
+        [ngClass]="plan.show.headline ? 'fhi-rate-card__headline' : 'fhi-rate-card__hidden'"
+        [ngStyle]="{ color: plan.headlineColor, 'font-size.px': plan.headlineSize }"
+      >
+        {{ plan.headline }}
+      </div>
+
+      <p [ngClass]="plan.show.originalPrice ? 'fhi-rate-card__original-price' : 'fhi-rate-card__hidden'">
+        Reg. Price: ${{ plan.originalPrice }}{{ plan.period }}
+      </p>
+
+      <div class="fhi-rate-card__price">
+        <span class="fhi-rate-card__currency">$</span>
+        <span class="fhi-rate-card__amount">{{ plan.currentPrice }}</span>
+        <span class="fhi-rate-card__period">{{ plan.period }}</span>
+      </div>
+
+      <p class="fhi-rate-card__price-note">{{ plan.priceNote }}</p>
+
+      <div [ngClass]="plan.show.savings ? 'fhi-rate-card__savings' : 'fhi-rate-card__hidden'">
+        <span aria-hidden="true">{{ iconLabel('tag') }}</span>
+        <span>{{ plan.savings }}</span>
+      </div>
+    </header>
+
+    <section *ngIf="plan.specs.enabled" class="fhi-rate-card__specs">
+      <div *ngIf="plan.specs.showTitle" class="fhi-rate-card__spec-title">{{ plan.specs.title }}</div>
+
+      <div *ngFor="let spec of specItems()" class="fhi-rate-card__spec-item">
+        <span class="fhi-rate-card__icon" [ngStyle]="{ background: spec.item.color }" aria-hidden="true">
+          {{ iconLabel(spec.icon) }}
+        </span>
+        <span><strong>{{ spec.item.value }}</strong> {{ spec.item.label }}</span>
+      </div>
+    </section>
+
+    <button
+      class="fhi-rate-card__toggle"
+      type="button"
+      [attr.aria-expanded]="featuresOpen"
+      (click)="featuresOpen = !featuresOpen"
+    >
+      <span>What's included</span>
+      <span aria-hidden="true">{{ featuresOpen ? '-' : '+' }}</span>
+    </button>
+
+    <section [ngClass]="featuresOpen ? 'fhi-rate-card__features fhi-rate-card__features--open' : 'fhi-rate-card__features'">
+      <ul>
+        <li *ngFor="let feature of plan.features; let i = index; trackBy: featureTrackBy" class="fhi-rate-card__feature">
+          <span class="fhi-rate-card__icon" [ngStyle]="{ background: feature.color }" aria-hidden="true">
+            {{ iconLabel(feature.icon) }}
+          </span>
+          <span>{{ feature.text }}</span>
+        </li>
+      </ul>
+    </section>
+
+    <div class="fhi-rate-card__body">
+      <button class="fhi-rate-card__cta" type="button" [ngStyle]="{ background: plan.cta.color }" (click)="emitCta()">
+        {{ plan.cta.label }}
+      </button>
+    </div>
+
+    <div class="fhi-rate-card__journey-row">
+      <button
+        *ngIf="plan.journey.enabled"
+        class="fhi-rate-card__journey-link"
+        type="button"
+        aria-haspopup="dialog"
+        aria-controls="fhi-rate-card-journey"
+        (click)="openJourney()"
+      >
+        {{ plan.journey.toggleLabel }} <span aria-hidden="true">&gt;</span>
+      </button>
+    </div>
+
+    <p [ngClass]="plan.showLegal ? 'fhi-rate-card__legal' : 'fhi-rate-card__hidden'">{{ plan.legal }}</p>
+  </div>
+</article>
+
+<div
+  id="fhi-rate-card-journey"
+  [attr.aria-hidden]="!journeyModalOpen"
+  [ngClass]="journeyModalOpen ? 'fhi-rate-card__modal fhi-rate-card__modal--open' : 'fhi-rate-card__modal'"
+  (click)="closeJourneyOnBackdrop($event)"
+>
+  <div class="fhi-rate-card__modal-panel" role="dialog" aria-modal="true" aria-labelledby="fhi-rate-card-journey-title">
+    <header class="fhi-rate-card__modal-header">
+      <h2 class="fhi-rate-card__modal-title" id="fhi-rate-card-journey-title">{{ plan.badge }} - Price journey</h2>
+      <button class="fhi-rate-card__modal-close" type="button" aria-label="Close" (click)="closeJourney()">x</button>
+    </header>
+
+    <section>
+      <strong *ngIf="plan.journey.title">{{ plan.journey.title }}</strong>
+      <p *ngIf="plan.journey.savingsText">{{ plan.journey.savingsText }}</p>
+
+      <div class="fhi-rate-card__journey-steps">
+        <div
+          *ngFor="let step of plan.journey.steps; let i = index; trackBy: stepTrackBy"
+          [ngClass]="journeyStepClass(step.style)"
+        >
+          <strong *ngIf="step.tag">{{ step.tag }}</strong>
+          <div>{{ step.period }}</div>
+          <div>{{ step.price }}</div>
+          <small *ngIf="step.subtext">{{ step.subtext }}</small>
+        </div>
+      </div>
+
+      <div *ngIf="plan.journey.summary.enabled" class="fhi-rate-card__summary">{{ plan.journey.summary.text }}</div>
+    </section>
+
+    <footer class="fhi-rate-card__body">
+      <button class="fhi-rate-card__cta" type="button" [ngStyle]="{ background: plan.cta.color }" (click)="emitCta()">
+        {{ plan.cta.label }}
+      </button>
+    </footer>
+  </div>
+</div>
