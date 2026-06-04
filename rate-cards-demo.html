@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FHI — Rate cards multi-card demo</title>
+  <!--
+    Static UX demo (vanilla JS, no AngularJS) showing two patterns that
+    work together when several rate cards are placed side-by-side:
+
+      1) "What's included" → sync-expand on the whole row
+         A click on any card's "What's included" header opens (and closes)
+         the section on EVERY card in the row simultaneously, so the user
+         can compare features ligne par ligne.
+         On mobile (< 480px) cards stack and the sync becomes per-card
+         naturally (1 card == 1 row).
+
+      2) "Price journey" → modal with darkened backdrop
+         A click on any card's "See price journey" opens a focused modal
+         (same vocabulary visuel que le modal des chaînes TV sur /fhi/).
+         Arrows in the modal header let the user navigate between cards
+         without closing.
+
+    The visual language (gradient, colors, typography, radii, breakpoint
+    480px) is lifted from /template.html so the demo can be dropped next
+    to it without visual drift.
+  -->
+  <!-- ============================================================
+       §0  FONTS — identical to /template.html
+       ============================================================ -->
+  <style>
+    @font-face {
+      font-family: 'Ambra Sans Text';
+      src: url('fonts/Ambra-Sans-Text-Regular.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'Ambra Sans Text Book';
+      src: url('fonts/Ambra-Sans-Text-Book.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+    }
+  </style>
+
+  <style>
+    /* ============================================================
+       §1  RESET + BASE  (mirrors §3.1 of /template.html)
+       ============================================================ */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Ambra Sans Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f0f0f0;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+    button { font-family: inherit; }
+
+    /* ============================================================
+       §1b  FLOATING NAV — back to the template page
+       ============================================================ */
+    .template-btn {
+      position: fixed; top: 20px; right: 20px;
+      width: 48px; height: 48px;
+      background: #0d9488;
+      border: none; border-radius: 50%;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+      z-index: 200;
+      transition: background 0.2s, transform 0.2s;
+      text-decoration: none;
+    }
+    .template-btn:hover { background: #0f766e; transform: translateY(-1px); }
+    .template-btn svg   { width: 22px; height: 22px; stroke: #fff; fill: none; stroke-width: 2; }
+
+    /* ============================================================
+       §2  DEMO HEADER
+       ============================================================ */
+    .demo-header {
+      max-width: 1320px;
+      margin: 0 auto;
+      padding: 40px 24px 16px;
+      text-align: center;
+    }
+    .demo-eyebrow {
+      display: inline-block;
+      background: #e8efff;
+      color: #1d4fa3;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      padding: 6px 12px;
+      border-radius: 999px;
+      margin-bottom: 14px;
+    }
+    .demo-title {
+      font-size: 32px;
+      font-weight: 700;
+      color: #0a1628;
+      margin: 0 0 8px;
+      letter-spacing: -0.4px;
+    }
+    .demo-subtitle {
+      font-size: 16px;
+      color: #555;
+      max-width: 720px;
+      margin: 0 auto;
+    }
+    .demo-hint {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 20px;
+      padding: 10px 16px;
+      background: #fff;
+      border: 1px solid #e3e6ec;
+      border-radius: 999px;
+      font-size: 13px;
+      color: #444;
+      box-shadow: 0 1px 2px rgba(0,0,0,.04);
+    }
+    .demo-hint .dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: #ed6b1f;
+      animation: pulse 1.8s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%,100% { transform: scale(1);   opacity: 1;   }
+      50%     { transform: scale(1.4); opacity: 0.5; }
+    }
+
+    /* ============================================================
+       §3  CARDS GRID (with row-level sync expand)
+       ============================================================ */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 411px));
+      gap: 24px;
+      justify-content: center;
+      align-items: stretch;   /* equal heights = visual symmetry */
+      max-width: 1320px;
+      margin: 0 auto;
+      padding: 24px 20px 60px;
+    }
+
+    @media (max-width: 1100px) {
+      .cards-grid { grid-template-columns: repeat(2, minmax(0, 411px)); }
+    }
+    @media (max-width: 760px) {
+      .cards-grid { grid-template-columns: minmax(0, 411px); }
+    }
+
+    /* ============================================================
+       §4  CARD (visual language mirroring /template.html)
+       ============================================================ */
+    .pricing-card {
+      background: #fff;
+      border: 1px solid #CECECE;
+      border-radius: 20px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 10px 30px rgba(10, 22, 40, 0.06);
+      transition: box-shadow 0.25s ease, transform 0.25s ease;
+    }
+    .pricing-card:hover { box-shadow: 0 16px 40px rgba(10, 22, 40, 0.1); }
+
+    /* Top banner ("tab behind" effect from template.html) */
+    .card-top-banner {
+      position: relative;
+      z-index: 1;
+      background: #2E7DC1;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 600;
+      text-align: center;
+      padding: 14px 20px 34px;
+      margin-bottom: -20px;
+      letter-spacing: 0.2px;
+    }
+    .card-top-banner + .card-header {
+      position: relative;
+      z-index: 2;
+      border-top-left-radius: 20px;
+      border-top-right-radius: 20px;
+    }
+
+    /* Align card-header TOPS across the row when at least one card
+       has a top banner: push the banner-less cards down by the
+       visible height of the banner (banner = 14 top + ~22 line-height
+       + 14 visible bottom = ~50px above the header). The banner card
+       keeps its banner extending above the alignment line.
+       Scoped to >= 761px so the gap doesn't appear on mobile, where
+       each card is on its own row and the concept doesn't apply. */
+    @media (min-width: 761px) {
+      .cards-grid:has(.card-top-banner) .pricing-card:not(:has(.card-top-banner)) {
+        margin-top: 50px;
+      }
+    }
+
+    /* Header (navy gradient) */
+    .card-header {
+      background: linear-gradient(180deg, #0a1628 0%, #162a4a 100%);
+      color: white;
+      padding: 20px;
+    }
+    .header-top {
+      display: flex; flex-direction: column;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+    .plan-badge {
+      display: inline-block;
+      background: #17599C;
+      color: #fff;
+      padding: 8px 20px; border-radius: 30px;
+      font-size: 14px; font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+    .plan-headline {
+      font-family: 'Ambra Sans Text', sans-serif;
+      font-size: 48px; font-weight: normal;
+      color: #ed6b1f;
+      margin-top: 8px;
+      width: 100%; text-align: left;
+      line-height: 1.1;
+    }
+
+    .price-block { margin-top: 4px; }
+    .original-price {
+      font-size: 14px;
+      color: rgba(255,255,255,0.6);
+      text-decoration: line-through;
+      margin: 0 0 4px;
+    }
+    .hero-price { display: flex; align-items: baseline; gap: 2px; }
+    .currency   { font-size: 32px; font-weight: normal; color: #fff; align-self: flex-start; line-height: 1; margin-top: -2px; }
+    .amount     { font-size: 64px; font-weight: 800; color: #fff; line-height: 1; }
+    .period     { font-size: 16px; color: rgba(255,255,255,0.8); font-weight: 500; }
+    .price-note { font-size: 14px; color: rgba(255,255,255,0.7); margin: 4px 0 0; }
+
+    .savings-label {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(237,107,31,0.9);
+      color: white;
+      padding: 3px 6px; border-radius: 6px;
+      font-size: 14px; font-weight: 600;
+      margin-top: 12px;
+      line-height: 1;
+    }
+    .savings-label svg { width: 16px; height: 16px; }
+
+    /* Accordion toggle button shared by Journey + Included */
+    .breakdown-toggle {
+      display: flex; align-items: center; justify-content: space-between;
+      width: 100%; padding: 14px 20px;
+      background: #f5f7fa;
+      border: none; border-bottom: 1px solid #e5e5e5;
+      cursor: pointer;
+      font-size: 16px; color: #333; font-weight: 500;
+      transition: background 0.2s;
+      font-family: inherit;
+      text-align: left;
+    }
+    .breakdown-toggle:hover { background: #eef1f5; }
+    .breakdown-toggle .arrow {
+      width: 16px; height: 16px;
+      display: inline-flex; align-items: center; justify-content: center;
+      transition: transform 0.6s cubic-bezier(0.65, 0, 0.35, 1);
+    }
+    .breakdown-toggle .arrow::before {
+      content: '';
+      width: 8px; height: 8px;
+      border-right: 2.5px solid #ed6b1f;
+      border-bottom: 2.5px solid #ed6b1f;
+      transform: rotate(45deg);
+      margin-top: -4px;
+    }
+    .breakdown-toggle.active .arrow { transform: rotate(180deg); }
+
+    /* Specs panel */
+    .internet-specs {
+      padding: 16px 20px;
+      display: flex; flex-direction: column; gap: 12px;
+      border-top: 1px solid #f0f0f0;
+      border-bottom: 1px solid #f0f0f0;
+      background: #fafafa;
+    }
+    .specs-title { font-size: 16px; color: #7c7c7c; text-align: left; margin-bottom: -4px; }
+    .speed-item  { display: flex; align-items: center; gap: 10px; font-size: 16px; color: #444; }
+    .speed-item strong { font-weight: normal; color: #111; }
+
+    .check-icon {
+      width: 24px; height: 24px;
+      background: #2E7DC1;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .check-icon svg  { width: 12px; height: 12.75px; color: white; }
+    .check-icon.plus { background: #ed6b1f; }
+
+    /* "What's included" panel (sync-expand target) — same max-height
+       budget as /template.html's .price-breakdown-section (600px). */
+    .included-section {
+      max-height: 0;
+      overflow: hidden;
+      background: #fff;
+      transition: max-height 0.7s cubic-bezier(0.65, 0, 0.35, 1);
+    }
+    /* SYNC EXPAND — the magic happens here:
+       1 class on the grid → ALL cards open at once */
+    .cards-grid.included-open .included-section { max-height: 600px; }
+    .cards-grid.included-open .included-toggle  { background: #eef1f5; }
+    .cards-grid.included-open .included-toggle .arrow { transform: rotate(180deg); }
+
+    .features-list {
+      list-style: none;
+      padding: 20px 20px 16px;
+      margin: 0;
+      display: flex; flex-direction: column; gap: 12px;
+    }
+    .features-list li {
+      display: flex; align-items: flex-start; gap: 10px;
+      font-size: 16px; color: #444;
+    }
+    .features-list li svg { display: block; }
+
+    /* Footer / CTA / legal */
+    .card-footer {
+      margin-top: auto;            /* equal-height alignment trick */
+      padding: 16px 20px 8px;
+      background: #fff;
+    }
+    .cta-button {
+      width: 100%; padding: 18px;
+      background: #ed6b1f;
+      border: none; border-radius: 50px;
+      color: white;
+      font-size: 16px; font-weight: 700;
+      cursor: pointer;
+      position: relative; overflow: hidden;
+      z-index: 1;
+      font-family: inherit;
+      transition: color 0.3s ease;
+    }
+    .cta-button::before {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 0;
+      background: #000;
+      transition: height 0.3s ease;
+      z-index: -1;
+    }
+    .cta-button:hover::before { height: 100%; }
+
+    .legal-note {
+      font-size: 14px; color: #999;
+      text-align: center;
+      padding: 12px 20px;
+      background: #fafafa;
+      border-top: 1px solid #f0f0f0;
+    }
+
+    /* ============================================================
+       §5  MODAL (Price journey deep-dive)
+       ============================================================ */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(2px);
+      -webkit-backdrop-filter: blur(2px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 24px;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.2s ease, visibility 0.2s;
+    }
+    .modal-overlay.open { opacity: 1; visibility: visible; }
+
+    .modal-panel {
+      background: #fff;
+      border-radius: 20px;
+      width: 100%;
+      max-width: 560px;
+      max-height: 86vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transform: translateY(12px);
+      transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.35);
+    }
+    .modal-overlay.open .modal-panel { transform: translateY(0); }
+
+    .modal-header {
+      display: grid;
+      grid-template-columns: 40px 1fr 40px 40px;
+      align-items: center;
+      gap: 4px;
+      padding: 14px 16px;
+      border-bottom: 1px solid #eef0f3;
+      background: #fff;
+    }
+    .modal-title {
+      grid-column: 2;
+      margin: 0;
+      font-size: 16px;
+      font-weight: 700;
+      color: #0a1628;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .modal-nav, .modal-close {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: #f3f5f8;
+      border: none;
+      color: #0a1628;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center;
+      transition: background 0.15s, transform 0.15s;
+      padding: 0;
+    }
+    .modal-nav:hover, .modal-close:hover { background: #e6eaf0; }
+    .modal-nav:active                    { transform: scale(0.92); }
+    .modal-nav[disabled] {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+    .modal-close {
+      grid-column: 4;
+      font-size: 16px;
+    }
+    .modal-nav.prev { grid-column: 1; }
+    .modal-nav.next { grid-column: 3; }
+
+    .modal-body {
+      padding: 20px 24px 24px;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .modal-footer {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 16px;
+      border-top: 1px solid #eef0f3;
+      background: #fff;
+    }
+    .modal-footer .recap {
+      display: flex; flex-direction: column;
+      flex: 1;
+      min-width: 0;
+    }
+    .modal-footer .recap .recap-plan {
+      font-size: 14px; color: #6b7280;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .modal-footer .recap .recap-price {
+      font-size: 18px; font-weight: 700; color: #0a1628;
+    }
+    .modal-footer .cta-button {
+      width: auto;
+      padding: 14px 22px;
+      font-size: 15px;
+      flex-shrink: 0;
+    }
+
+    /* Journey content (same primitives as template.html) */
+    .price-journey { padding: 0; }
+    .journey-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 20px;
+    }
+    .journey-title    { font-weight: 600; color: #0a1628; font-size: 14px; }
+    .journey-savings  { font-size: 14px; color: #ed6b1f; font-weight: 600; display: inline-flex; align-items: center; gap: 5px; }
+    .journey-savings .savings-icon { width: 16px; height: 16px; flex-shrink: 0; }
+
+    .journey-steps { display: flex; align-items: stretch; gap: 0; }
+    .journey-step {
+      flex: 1;
+      background: #f0f1f3;
+      color: #0a1628;
+      border-radius: 16px;
+      padding: 18px 8px 14px;
+      text-align: center;
+      position: relative;
+      min-width: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+    }
+    .journey-step.active     { background: #136BA3; color: #fff; }
+    .journey-step.discounted { background: #0d4d7a; color: #fff; }
+    .step-period { display: block; font-size: 14px; font-weight: 500; opacity: 0.95; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+    .step-price  { display: block; font-size: 24px; font-weight: 800; line-height: 1; }
+    .step-subtext { display: block; font-size: 14px; opacity: 0.9; margin-top: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+    .step-tag {
+      position: absolute;
+      top: -12px; left: 50%;
+      transform: translateX(-50%);
+      background: #ed6b1f; color: #fff;
+      font-size: 14px; font-weight: 700;
+      padding: 4px 10px; border-radius: 20px;
+      white-space: nowrap;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+    }
+    .journey-chevron {
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; width: 24px;
+      color: #ed6b1f;
+      font-size: 27px; font-weight: 700;
+      line-height: 1;
+    }
+    .journey-summary {
+      display: flex; align-items: flex-start; gap: 10px;
+      margin-top: 18px;
+      padding: 12px 14px;
+      background: #fff7f0;
+      border: 1px solid #ed6b1f;
+      border-radius: 8px;
+      font-size: 14px; line-height: 1.45;
+      color: #5d3a1a;
+    }
+    .journey-summary svg { width: 16px; height: 16px; color: #ed6b1f; margin-top: 1px; flex-shrink: 0; }
+
+    /* "See price journey" hyperlink — sits BELOW the CTA, above the
+       legal note. .journey-link-row holds the reserved space whether
+       or not the link is rendered, so cards without a journey stay
+       perfectly aligned with cards that have one. */
+    .journey-link-row {
+      min-height: 36px;
+      padding: 10px 20px 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #fff;
+    }
+    .journey-link {
+      background: none;
+      border: 0;
+      padding: 4px 8px;
+      font-family: inherit;
+      font-size: 16px;
+      font-weight: 600;
+      color: #2E7DC1;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      text-decoration-thickness: 1px;
+      text-decoration-color: rgba(46, 125, 193, 0.5);
+      transition: color 0.2s, text-decoration-color 0.2s;
+    }
+    .journey-link:hover {
+      color: #136BA3;
+      text-decoration-color: currentColor;
+    }
+    .journey-link:focus-visible {
+      outline: 2px solid #2E7DC1;
+      outline-offset: 2px;
+      border-radius: 4px;
+    }
+    .journey-link .chev {
+      color: #ed6b1f;
+      font-size: 18px;
+      font-weight: 700;
+      line-height: 1;
+      transition: transform 0.2s;
+    }
+    .journey-link:hover .chev { transform: translateX(2px); }
+
+    /* ============================================================
+       §6  RESPONSIVE (≤ 480px — same breakpoint as template.html)
+       ============================================================ */
+    @media (max-width: 480px) {
+      .demo-header { padding: 24px 16px 8px; }
+      .demo-title  { font-size: 22px; }
+      .cards-grid  { padding: 16px 12px 40px; gap: 16px; }
+      .card-top-banner { padding: 12px 16px 32px; font-size: 15px; }
+      .plan-headline { font-size: 40px; }
+      .amount       { font-size: 56px; }
+
+      /* Same 16 → 14 step-down logic used everywhere else on the card */
+      .journey-link { font-size: 14px; }
+      .journey-link .chev { font-size: 16px; }
+
+      /* On mobile, cards stack — sync == per-card naturally */
+      /* No special logic needed: each card is its own grid row */
+
+      .modal-overlay { padding: 0; }
+      .modal-panel {
+        border-radius: 20px 20px 0 0;
+        max-width: 100%;
+        max-height: 100vh;
+        height: 100vh;
+        align-self: flex-end;
+      }
+      .modal-overlay { align-items: flex-end; }
+      .modal-body { padding: 16px 18px 20px; }
+      .modal-footer .cta-button { padding: 12px 16px; font-size: 14px; }
+    }
+
+    /* Utility */
+    .visually-hidden {
+      position: absolute !important;
+      width: 1px; height: 1px;
+      padding: 0; margin: -1px; overflow: hidden;
+      clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Floating nav → template.html (single-card configurator) -->
+<a class="template-btn" href="template.html"
+   title="Open template configurator" aria-label="Open the template configurator page">
+  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
+       stroke-linecap="round" stroke-linejoin="round">
+    <rect x="6" y="3" width="12" height="18" rx="2"/>
+    <line x1="9"  y1="8"  x2="15" y2="8"/>
+    <line x1="9"  y1="12" x2="15" y2="12"/>
+    <line x1="9"  y1="16" x2="13" y2="16"/>
+  </svg>
+</a>
+
+<header class="demo-header">
+  <span class="demo-eyebrow">UX prototype</span>
+  <h1 class="demo-title">Multi-card layout — sync expand + journey modal</h1>
+  <p class="demo-subtitle">
+    Pattern proposal for the rate cards grid:
+    <strong>What's included</strong> opens on the whole row at once for
+    side-by-side comparison; <strong>Price journey</strong> opens in a
+    focused modal with a darkened backdrop.
+  </p>
+  <div class="demo-hint">
+    <span class="dot" aria-hidden="true"></span>
+    Try clicking <strong>“What's included”</strong> on any card, then <strong>“See price journey”</strong>.
+  </div>
+</header>
+
+<main>
+  <section class="cards-grid" id="cardsGrid" aria-label="Internet plans">
+    <!-- Cards are rendered by JS from the PLANS data -->
+  </section>
+</main>
+
+<!-- ── Price journey modal ─────────────────────────────────────── -->
+<div class="modal-overlay" id="journeyModal" aria-hidden="true" role="presentation">
+  <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="journeyModalTitle">
+    <header class="modal-header">
+      <button class="modal-nav prev" id="modalPrev" aria-label="Previous plan" type="button">‹</button>
+      <h2 class="modal-title" id="journeyModalTitle">Price journey</h2>
+      <button class="modal-nav next" id="modalNext" aria-label="Next plan" type="button">›</button>
+      <button class="modal-close" id="modalClose" aria-label="Close" type="button">✕</button>
+    </header>
+    <div class="modal-body" id="journeyModalBody"></div>
+    <footer class="modal-footer" id="journeyModalFooter"></footer>
+  </div>
+</div>
+
+<script>
+/* ==============================================================
+   §A  DATA — 3 plans with deliberately asymmetric feature counts
+              to validate the equal-height behaviour of the row.
+   ============================================================== */
+const PLANS = [
+  {
+    id: 'i500',
+    badge: 'Internet 500',
+    headline: 'Internet 500',
+    originalPrice: 85,
+    currentPrice: 65,
+    period: '/mo.',
+    priceNote: 'for your first 12 months',
+    savings: 'Save $240 in your first year',
+    specs: {
+      download: { value: '500 Mbps', label: 'download speed' },
+      upload:   { value: '25 Mbps',  label: 'upload speed'   },
+      usage:    { value: 'Unlimited', label: 'monthly usage' }
+    },
+    features: [
+      { icon: 'check', text: 'Ideal for 10+ devices online at the same time' },
+      { icon: 'check', text: 'Great for HD streaming & casual gaming' },
+      { icon: 'plus',  text: 'No contracts — cancel anytime' }
+    ],
+    // No price journey for this plan — demonstrates that the
+    // "See price journey" link row still reserves its vertical
+    // space, keeping the CTA + legal note aligned across the row.
+    journey: null,
+    cta: 'Choose Internet 500',
+    legal: '*Promotional pricing. $65/mo. starting month 13. Taxes extra.'
+  },
+  {
+    id: 'i1g',
+    badge: 'Internet 1G',
+    headline: 'Internet 1G',
+    originalPrice: 95,
+    currentPrice: 75,
+    period: '/mo.',
+    priceNote: 'for your first 12 months',
+    savings: 'Save $240 in your first year',
+    topBanner: { text: 'Most popular' },
+    specs: {
+      download: { value: '1 Gbps',    label: 'download speed' },
+      upload:   { value: '50 Mbps',   label: 'upload speed'   },
+      usage:    { value: 'Unlimited', label: 'monthly usage'  }
+    },
+    features: [
+      { icon: 'check', text: 'Ideal for 20+ devices online at the same time' },
+      { icon: 'check', text: 'Perfect for 4K streaming & gaming' },
+      { icon: 'check', text: 'Gaming-grade latency included' },
+      { icon: 'check', text: 'Free WiFi 6 router included' },
+      { icon: 'plus',  text: 'No contracts — cancel anytime' }
+    ],
+    journey: {
+      savingsText: 'Save $240/year',
+      steps: [
+        { period: 'Months 1-3',  price: 'Free',   tag: 'Free trial', subtext: '3 months on us', style: 'active' },
+        { period: 'Months 4-12', price: '$49/mo', tag: '',           subtext: '$26 off/mo.',    style: 'active' }
+      ],
+      summary: 'Free for 3 months, then $49/mo. through month 12, then $75/mo. ongoing.'
+    },
+    cta: 'Choose Internet 1G',
+    legal: '*Promotional pricing. $75/mo. starting month 13. Taxes extra.'
+  },
+  {
+    id: 'i3g',
+    badge: 'Internet 3G',
+    headline: 'Internet 3G',
+    originalPrice: 145,
+    currentPrice: 115,
+    period: '/mo.',
+    priceNote: 'for your first 12 months',
+    savings: 'Save $360 in your first year',
+    specs: {
+      download: { value: '3 Gbps',    label: 'download speed' },
+      upload:   { value: '100 Mbps',  label: 'upload speed'   },
+      usage:    { value: 'Unlimited', label: 'monthly usage'  }
+    },
+    features: [
+      { icon: 'check', text: 'Ideal for 50+ devices simultaneously' },
+      { icon: 'check', text: 'Perfect for 8K streaming & pro gaming' },
+      { icon: 'check', text: 'Ultra-low latency for streamers' },
+      { icon: 'check', text: 'Free WiFi 6E router included' },
+      { icon: 'check', text: 'Priority support 24/7' },
+      { icon: 'check', text: 'Cloud backup included' },
+      { icon: 'plus',  text: 'No contracts — cancel anytime' }
+    ],
+    journey: {
+      savingsText: 'Save $360/year',
+      steps: [
+        { period: 'Months 1-3',  price: 'Free',    tag: 'Free trial', subtext: '3 months on us', style: 'active' },
+        { period: 'Months 4-12', price: '$79/mo',  tag: '',           subtext: '$36 off/mo.',    style: 'active' }
+      ],
+      summary: 'Free for 3 months, then $79/mo. through month 12, then $115/mo. ongoing.'
+    },
+    cta: 'Choose Internet 3G',
+    legal: '*Promotional pricing. $115/mo. starting month 13. Taxes extra.'
+  }
+];
+
+/* ==============================================================
+   §B  SVG ICON LIBRARY  (white-on-blue circle treatment from
+        the official FHI design system)
+   ============================================================== */
+const ICONS = {
+  download: `<svg width="12" height="12.75" viewBox="0 0 12 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0.75 11.25H11.25C11.66 11.25 12 11.59 12 12C12 12.41 11.66 12.75 11.25 12.75H0.75C0.34 12.75 0 12.41 0 12C0 11.59 0.34 11.25 0.75 11.25Z" fill="white"/>
+    <path d="M12 10.5V12C12 12.41 11.66 12.75 11.25 12.75C10.84 12.75 10.5 12.41 10.5 12V10.5C10.5 10.09 10.84 9.75 11.25 9.75C11.66 9.75 12 10.09 12 10.5Z" fill="white"/>
+    <path d="M1.5 10.5V12C1.5 12.41 1.16 12.75 0.75 12.75C0.34 12.75 0 12.41 0 12V10.5C0 10.09 0.34 9.75 0.75 9.75C1.16 9.75 1.5 10.09 1.5 10.5Z" fill="white"/>
+    <path d="M6 9C6.16 9 6.31 8.95 6.43 8.86L9.43 6.75C9.6 6.64 9.71 6.46 9.74 6.27C9.77 6.07 9.73 5.87 9.61 5.71C9.49 5.55 9.31 5.43 9.13 5.4C8.94 5.36 8.74 5.41 8.56 5.53C7.04 6.6 4.99 6.56 3.5 5.44L3.45 5.4C3.29 5.28 3.09 5.23 2.89 5.26C2.7 5.29 2.52 5.39 2.4 5.55C2.28 5.71 2.23 5.91 2.26 6.11C2.29 6.3 2.39 6.48 2.55 6.6L5.55 8.85C5.68 8.95 5.84 9 6 9Z" fill="white"/>
+    <path d="M6 7.5C6.2 7.5 6.39 7.42 6.53 7.28C6.67 7.14 6.75 6.95 6.75 6.75V0.75C6.75 0.55 6.67 0.36 6.53 0.22C6.39 0.08 6.2 0 6 0C5.8 0 5.61 0.08 5.47 0.22C5.33 0.36 5.25 0.55 5.25 0.75V6.75C5.25 6.95 5.33 7.14 5.47 7.28C5.61 7.42 5.8 7.5 6 7.5Z" fill="white"/>
+  </svg>`,
+  upload: `<svg width="12" height="12.75" viewBox="0 0 12 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0.75 1.5H11.25C11.66 1.5 12 1.16 12 0.75C12 0.34 11.66 0 11.25 0H0.75C0.34 0 0 0.34 0 0.75C0 1.16 0.34 1.5 0.75 1.5Z" fill="white"/>
+    <path d="M12 2.25V0.75C12 0.34 11.66 0 11.25 0C10.84 0 10.5 0.34 10.5 0.75V2.25C10.5 2.66 10.84 3 11.25 3C11.66 3 12 2.66 12 2.25Z" fill="white"/>
+    <path d="M1.5 2.25V0.75C1.5 0.34 1.16 0 0.75 0C0.34 0 0 0.34 0 0.75V2.25C0 2.66 0.34 3 0.75 3C1.16 3 1.5 2.66 1.5 2.25Z" fill="white"/>
+    <path d="M6 3.75C6.16 3.75 6.31 3.8 6.43 3.89L9.43 6C9.6 6.11 9.71 6.29 9.74 6.48C9.77 6.68 9.73 6.88 9.61 7.04C9.49 7.2 9.31 7.32 9.13 7.35C8.94 7.39 8.74 7.34 8.56 7.22C7.04 6.15 4.99 6.19 3.5 7.31L3.45 7.35C3.29 7.47 3.09 7.52 2.89 7.49C2.7 7.46 2.52 7.36 2.4 7.2C2.28 7.04 2.23 6.84 2.26 6.64C2.29 6.45 2.39 6.27 2.55 6.15L5.55 3.9C5.68 3.8 5.84 3.75 6 3.75Z" fill="white"/>
+    <path d="M6 5.25C6.2 5.25 6.39 5.33 6.53 5.47C6.67 5.61 6.75 5.8 6.75 6V12C6.75 12.2 6.67 12.39 6.53 12.53C6.39 12.67 6.2 12.75 6 12.75C5.8 12.75 5.61 12.67 5.47 12.53C5.33 12.39 5.25 12.2 5.25 12V6C5.25 5.8 5.33 5.61 5.47 5.47C5.61 5.33 5.8 5.25 6 5.25Z" fill="white"/>
+  </svg>`,
+  unlimited: `<svg style="width:16px;height:8px;" width="16" height="8" viewBox="0 0 16 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M5.99 5.54L5.78 5.78C5.36 6.2 4.82 6.48 4.24 6.6C3.66 6.71 3.06 6.65 2.51 6.43C1.96 6.2 1.49 5.82 1.16 5.32C0.83 4.83 0.66 4.25 0.66 3.66C0.66 3.06 0.83 2.48 1.16 1.99C1.49 1.5 1.96 1.11 2.51 0.88C3.06 0.66 3.66 0.6 4.24 0.71C4.82 0.83 5.36 1.12 5.78 1.53L9.53 5.78C9.95 6.2 10.49 6.48 11.07 6.6C11.65 6.71 12.26 6.65 12.8 6.43C13.35 6.2 13.82 5.82 14.15 5.32C14.48 4.83 14.66 4.25 14.66 3.66C14.66 3.06 14.48 2.48 14.15 1.99C13.82 1.5 13.35 1.11 12.8 0.88C12.26 0.66 11.65 0.6 11.07 0.71C10.49 0.83 9.95 1.12 9.53 1.53L9.33 1.77" stroke="white" stroke-width="1.3125" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>`,
+  check: `<svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M2 6.5L4.5 9L10 3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>`,
+  plus: `<svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M6 2V10M2 6H10" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>`,
+  savings: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <path d="M8 8H8.01M4.56 2.94L2.94 4.56C2.59 4.91 2.42 5.08 2.29 5.28C2.19 5.46 2.1 5.66 2.06 5.86C2 6.09 2 6.34 2 6.83V9.67C2 10.16 2 10.41 2.06 10.64C2.1 10.84 2.19 11.04 2.29 11.22C2.42 11.42 2.59 11.59 2.94 11.94L10.61 19.61C11.79 20.79 12.39 21.39 13.07 21.61C13.68 21.81 14.32 21.81 14.93 21.61C15.61 21.39 16.21 20.79 17.39 19.61L19.61 17.39C20.79 16.21 21.39 15.61 21.61 14.93C21.81 14.32 21.81 13.68 21.61 13.07C21.39 12.39 20.79 11.79 19.61 10.61L11.94 2.94C11.59 2.59 11.42 2.42 11.22 2.29C11.04 2.19 10.84 2.1 10.64 2.06C10.41 2 10.16 2 9.67 2H6.83C6.34 2 6.09 2 5.86 2.06C5.66 2.1 5.46 2.19 5.28 2.29C5.08 2.42 4.91 2.59 4.56 2.94Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>`,
+  info: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
+  </svg>`
+};
+
+/* ==============================================================
+   §C  TINY DOM HELPERS — small enough to avoid a framework here
+   ============================================================== */
+const $  = (sel, root = document) => root.querySelector(sel);
+const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+const escape = s => String(s).replace(/[&<>"']/g, c => ({
+  '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+}[c]));
+
+/* ==============================================================
+   §D  TEMPLATES — return HTML strings from a plan object
+   ============================================================== */
+function cardTpl(plan) {
+  return `
+    <article class="pricing-card" data-plan-id="${plan.id}">
+      ${plan.topBanner ? `<div class="card-top-banner">${escape(plan.topBanner.text)}</div>` : ''}
+      <div class="card-header">
+        <div class="header-top">
+          <span class="plan-badge">${escape(plan.badge)}</span>
+          <div class="plan-headline">${escape(plan.headline)}</div>
+        </div>
+        <div class="price-block">
+          <p class="original-price">Reg. Price: $${plan.originalPrice}${escape(plan.period)}</p>
+          <div class="hero-price">
+            <span class="currency">$</span>
+            <span class="amount">${plan.currentPrice}</span>
+            <span class="period">${escape(plan.period)}</span>
+          </div>
+          <p class="price-note">${escape(plan.priceNote)}</p>
+          <div class="savings-label">${ICONS.savings}<span>${escape(plan.savings)}</span></div>
+        </div>
+      </div>
+
+      <!-- Specs panel -->
+      <div class="internet-specs">
+        <div class="specs-title">Internet specs</div>
+        <div class="speed-item"><span class="check-icon">${ICONS.download}</span>
+          <span><strong>${escape(plan.specs.download.value)}</strong> ${escape(plan.specs.download.label)}</span></div>
+        <div class="speed-item"><span class="check-icon">${ICONS.upload}</span>
+          <span><strong>${escape(plan.specs.upload.value)}</strong> ${escape(plan.specs.upload.label)}</span></div>
+        <div class="speed-item"><span class="check-icon">${ICONS.unlimited}</span>
+          <span><strong>${escape(plan.specs.usage.value)}</strong> ${escape(plan.specs.usage.label)}</span></div>
+      </div>
+
+      <!-- "What's included" — SYNC EXPAND target -->
+      <button class="breakdown-toggle included-toggle" type="button"
+              data-action="toggle-included"
+              aria-expanded="false" aria-controls="included-${plan.id}">
+        <span>What's included</span>
+        <span class="arrow" aria-hidden="true"></span>
+      </button>
+      <div class="included-section" id="included-${plan.id}">
+        <ul class="features-list">
+          ${plan.features.map(f => `
+            <li>
+              <span class="check-icon${f.icon === 'plus' ? ' plus' : ''}">${ICONS[f.icon] || ICONS.check}</span>
+              <span>${escape(f.text)}</span>
+            </li>`).join('')}
+        </ul>
+      </div>
+
+      <!-- Footer (CTA + journey link + legal pushed to bottom for equal-height rows) -->
+      <div class="card-footer">
+        <button class="cta-button" type="button">${escape(plan.cta)}</button>
+        <!-- Reserved row, present on EVERY card whether or not journey exists -->
+        <div class="journey-link-row">
+          ${plan.journey ? `
+            <button class="journey-link" type="button"
+                    data-action="open-journey" data-plan-id="${plan.id}"
+                    aria-haspopup="dialog">
+              <span>See price journey</span>
+              <span class="chev" aria-hidden="true">›</span>
+            </button>
+          ` : ''}
+        </div>
+      </div>
+      <p class="legal-note">${escape(plan.legal)}</p>
+    </article>
+  `;
+}
+
+function journeyTpl(plan) {
+  return `
+    <div class="price-journey">
+      <div class="journey-header">
+        <span class="journey-title">Your price over time</span>
+        <span class="journey-savings">${ICONS.savings.replace('aria-hidden="true"', 'class="savings-icon"')}<span>${escape(plan.journey.savingsText)}</span></span>
+      </div>
+      <div class="journey-steps">
+        ${plan.journey.steps.map((step, i) => `
+          ${i > 0 ? '<span class="journey-chevron" aria-hidden="true">›</span>' : ''}
+          <div class="journey-step${step.style ? ' ' + step.style : ''}">
+            ${step.tag ? `<span class="step-tag">${escape(step.tag)}</span>` : ''}
+            <span class="step-period">${escape(step.period)}</span>
+            <span class="step-price">${escape(step.price)}</span>
+            ${step.subtext ? `<span class="step-subtext">${escape(step.subtext)}</span>` : ''}
+          </div>
+        `).join('')}
+      </div>
+      ${plan.journey.summary ? `
+        <div class="journey-summary">${ICONS.info}<span>${escape(plan.journey.summary)}</span></div>
+      ` : ''}
+    </div>
+  `;
+}
+
+function modalFooterTpl(plan) {
+  return `
+    <div class="recap">
+      <span class="recap-plan">${escape(plan.badge)}</span>
+      <span class="recap-price">$${plan.currentPrice}${escape(plan.period)}</span>
+    </div>
+    <button class="cta-button" type="button">${escape(plan.cta)}</button>
+  `;
+}
+
+/* ==============================================================
+   §E  RENDER THE GRID
+   ============================================================== */
+const grid = $('#cardsGrid');
+grid.innerHTML = PLANS.map(cardTpl).join('');
+
+/* ==============================================================
+   §F  SYNC EXPAND — one class on the grid, all rows open at once
+   ============================================================== */
+grid.addEventListener('click', (e) => {
+  const toggle = e.target.closest('[data-action="toggle-included"]');
+  if (!toggle) return;
+  const isOpen = grid.classList.toggle('included-open');
+  // Update ARIA on every toggle button to reflect the shared state
+  $$('.included-toggle', grid).forEach(btn => {
+    btn.setAttribute('aria-expanded', String(isOpen));
+    btn.classList.toggle('active', isOpen);
+  });
+});
+
+/* ==============================================================
+   §G  MODAL — price journey deep-dive
+   ============================================================== */
+const modal       = $('#journeyModal');
+const modalTitle  = $('#journeyModalTitle');
+const modalBody   = $('#journeyModalBody');
+const modalFooter = $('#journeyModalFooter');
+const modalPrev   = $('#modalPrev');
+const modalNext   = $('#modalNext');
+const modalClose  = $('#modalClose');
+
+let currentPlanIdx = 0;
+let lastTrigger    = null;   // for focus restoration on close
+
+function openJourney(planId) {
+  const idx = PLANS.findIndex(p => p.id === planId);
+  if (idx === -1) return;
+  currentPlanIdx = idx;
+  renderModal();
+  modal.classList.add('open');
+  modal.setAttribute('aria-hidden', 'false');
+  document.body.style.overflow = 'hidden';
+  // Move focus into the modal
+  setTimeout(() => modalClose.focus(), 50);
+}
+
+function closeJourney() {
+  modal.classList.remove('open');
+  modal.setAttribute('aria-hidden', 'true');
+  document.body.style.overflow = '';
+  if (lastTrigger && typeof lastTrigger.focus === 'function') {
+    lastTrigger.focus();
+  }
+}
+
+/* Walk PLANS in the given direction and return the index of the next
+   plan that has a journey (or -1 if none). Used so the modal arrows
+   skip over cards that don't have a price journey. */
+function adjacentJourneyIdx(direction) {
+  for (let i = currentPlanIdx + direction; i >= 0 && i < PLANS.length; i += direction) {
+    if (PLANS[i].journey) return i;
+  }
+  return -1;
+}
+
+function renderModal() {
+  const plan = PLANS[currentPlanIdx];
+  modalTitle.textContent = plan.badge + ' — Price journey';
+  modalBody.innerHTML    = journeyTpl(plan);
+  modalFooter.innerHTML  = modalFooterTpl(plan);
+  modalPrev.disabled = adjacentJourneyIdx(-1) === -1;
+  modalNext.disabled = adjacentJourneyIdx(1)  === -1;
+}
+
+/* Triggers on the cards */
+grid.addEventListener('click', (e) => {
+  const trigger = e.target.closest('[data-action="open-journey"]');
+  if (!trigger) return;
+  lastTrigger = trigger;
+  openJourney(trigger.dataset.planId);
+});
+
+/* Modal close interactions */
+modalClose.addEventListener('click', closeJourney);
+modal.addEventListener('click', (e) => {
+  if (e.target === modal) closeJourney();   // backdrop click
+});
+modalPrev.addEventListener('click', () => {
+  const i = adjacentJourneyIdx(-1);
+  if (i !== -1) { currentPlanIdx = i; renderModal(); }
+});
+modalNext.addEventListener('click', () => {
+  const i = adjacentJourneyIdx(1);
+  if (i !== -1) { currentPlanIdx = i; renderModal(); }
+});
+
+/* Keyboard: Esc closes, arrows navigate */
+document.addEventListener('keydown', (e) => {
+  if (!modal.classList.contains('open')) return;
+  if (e.key === 'Escape')    { e.preventDefault(); closeJourney(); }
+  if (e.key === 'ArrowLeft'  && !modalPrev.disabled) { modalPrev.click(); }
+  if (e.key === 'ArrowRight' && !modalNext.disabled) { modalNext.click(); }
+});
+</script>
+
+</body>
+</html>

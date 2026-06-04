@@ -40,14 +40,13 @@ jobs:
       - name: Build deploy tree (mirror final FTP layout)
         run: |
           set -e
-          mkdir -p _deploy/template
-          # ── /public_html/fhi/ ───────────────────────────────────
+          mkdir -p _deploy
+          # ── /public_html/fhi/  (flat layout, matches local dev) ──
           cp freedom-tv-pricing.html    _deploy/index.html
           cp template.html              _deploy/template.html
-          # ── /public_html/fhi/template/ ──────────────────────────
-          cp template.html              _deploy/template/index.html
-          cp instructions.html          _deploy/template/instruction.html
-          cp user-stories.html          _deploy/template/user-stories.html
+          cp instructions.html          _deploy/instructions.html
+          cp user-stories.html          _deploy/user-stories.html
+          cp rate-cards-demo.html       _deploy/rate-cards-demo.html
           echo ""
           echo "── _deploy/ contents ────────────────────────────"
           find _deploy -type f -exec ls -lh {} \;
@@ -82,6 +81,6 @@ jobs:
           echo ""
           echo "Live URLs:"
           echo "  https://oualid.fun/fhi/template.html"
-          echo "  https://oualid.fun/fhi/template/"
-          echo "  https://oualid.fun/fhi/template/instruction.html"
-          echo "  https://oualid.fun/fhi/template/user-stories.html"
+          echo "  https://oualid.fun/fhi/instructions.html"
+          echo "  https://oualid.fun/fhi/user-stories.html"
+          echo "  https://oualid.fun/fhi/rate-cards-demo.html"

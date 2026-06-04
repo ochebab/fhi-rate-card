@@ -361,7 +361,7 @@
   <!-- Header -->
   <header class="doc-header">
     <div class="doc-header-inner">
-      <a href="../template.html" class="doc-header-back">
+      <a href="template.html" class="doc-header-back">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="15 18 9 12 15 6"/>
         </svg>
@@ -419,13 +419,19 @@
 
         <div class="callout info">
           <strong>Default visibility of “See price journey”</strong>
-          In production, the <em>See price journey</em> toggle bar should be <strong>hidden by default</strong>. It is only shown when an editor explicitly enables it from the admin panel. The on-by-default state in the live preview exists for design review only. See dedicated <a href="#price-journey" style="color:#ed6b1f;font-weight:600;">Price Journey</a> section below.
+          In production, the <em>See price journey</em> link below the CTA should be <strong>hidden by default</strong>. It is only shown when an editor explicitly enables it from the admin panel; the on-by-default state in the live preview exists for design review only. When the editor flips it on, the link opens a focused <strong>modal</strong> — centred panel on desktop, full-screen bottom-sheet on mobile — never an inline accordion. See the dedicated <a href="#price-journey" style="color:#ed6b1f;font-weight:600;">Price Journey</a> section below.
+        </div>
+
+        <div class="callout info">
+          <strong>Multi-card preview page</strong>
+          A separate <code class="inline">rate-cards-demo.html</code> page ships alongside <code class="inline">template.html</code> to demonstrate the rate card in a multi-card layout (3 plans side by side). It validates the spacing rules that make cards line up vertically when only <em>some</em> plans have a price journey, and exposes a synchronised “What’s included” expand pattern. Floating teal buttons on both pages cross-link them for design review.
         </div>
 
         <h3>Key characteristics</h3>
         <ul>
           <li>Single column, fixed width <code class="inline">411px</code> on desktop, fluid <code class="inline">92vw</code> on mobile.</li>
-          <li>Two collapsible sections: <em>Price Journey</em> (hidden by default in production — opens when enabled by the editor; contains an optional summary banner) and <em>what's included</em> (always rendered, closed by default).</li>
+          <li>One collapsible section: <em>what’s included</em> (always rendered in the markup, closed by default — the only accordion left in the card).</li>
+          <li>One opt-in <em>Price Journey</em> link under the CTA. When enabled, clicking it opens a focused modal with the price breakdown (centred panel desktop, bottom-sheet mobile). The link’s row is reserved on <em>every</em> card so plans with and without a journey stay vertically aligned in multi-card grids — see <a href="#price-journey" style="color:#ed6b1f;font-weight:600;">§4</a>.</li>
           <li>One static panel: <em>internet specs</em> — always visible, never collapsible.</li>
           <li>One primary action: the orange CTA button with full-fill black hover.</li>
           <li>One legal footer at the very bottom.</li>
@@ -499,8 +505,11 @@
       showLegal: true
     };
 
-    // Accordion UI state (preview-only — see §12.3 for full controller).
-    vm.ui = { journeyOpen: false, featuresOpen: false };
+    // UI state (preview-only — see §12.3 for the full controller).
+    vm.ui = {
+      journeyModalOpen: false,   // price-journey modal open/closed
+      featuresOpen:     false    // "What's included" accordion
+    };
   }]);</code></pre>
 
         <h3>4. Mount the view</h3>
@@ -518,10 +527,9 @@
         <p>The card is composed of five vertically stacked regions inside a single <code class="inline">.pricing-card</code> container.</p>
         <ol class="numbered">
           <li><strong>Card header</strong> — dark navy gradient. Contains the plan badge, the orange headline (48px desktop / 32px mobile), the price block (original price, hero price at 64/48px, period, price note, savings badge with the price-tag pictogram).</li>
-          <li><strong>Price Journey toggle + body</strong> — collapsible horizontal timeline of pricing steps with an optional summary banner underneath (hidden by default in production). See the dedicated <a href="#price-journey" style="color:#ed6b1f;font-weight:600;">Price Journey</a> section.</li>
-          <li><strong>Internet specs panel</strong> — three rows with circular icons (download / upload / unlimited).</li>
-          <li><strong>What's included toggle + body</strong> — collapsible list of selling points with check or plus icons (closed by default).</li>
-          <li><strong>Footer</strong> — CTA button + legal note.</li>
+          <li><strong>Internet specs panel</strong> — three rows with circular icons (download / upload / unlimited). Always rendered between the header and the features accordion.</li>
+          <li><strong>What’s included toggle + body</strong> — collapsible list of selling points with check or plus icons (closed by default).</li>
+          <li><strong>CTA + Price Journey link + legal</strong> — footer cluster. The CTA is always visible; below it a reserved row holds the optional <em>See price journey</em> link which, when enabled, opens a modal with the price breakdown (see the dedicated <a href="#price-journey" style="color:#ed6b1f;font-weight:600;">Price Journey</a> section). The legal note sits below on its own light-grey strip.
         </ol>
         <div class="callout">
           <strong>Container constraints</strong>
@@ -532,55 +540,104 @@
       <!-- 4. Price Journey -->
       <section id="price-journey">
         <h2><span class="num">4</span> Price Journey</h2>
-        <p>The Price Journey is a collapsible horizontal timeline that shows how the plan price evolves over time. It replaces the legacy “price breakdown” table. Each pricing period is a rounded card, separated by an orange chevron <code class="inline">›</code>. An optional summary banner sits underneath. Editors compose everything from the CMS.</p>
+        <p>The Price Journey is a focused breakdown of how the plan price evolves over time — a horizontal timeline of pricing periods, each rendered as a rounded card separated by an orange chevron <code class="inline">›</code>, with an optional summary banner underneath. It lives inside a <strong>modal</strong> that opens when the user clicks the <em>See price journey</em> link sitting below the CTA. Editors compose every piece from the CMS.</p>
 
         <div class="callout info">
           <strong>Production default</strong>
-          The Price Journey is wrapped by a toggle button (<em>“See price journey”</em>) and is <strong>hidden by default</strong>. Surface it only when an editor enables it from the admin panel.
+          The journey link below the CTA is <strong>hidden by default</strong>. Surface it only when an editor enables it from the admin panel. The reserved row that holds the link (<code class="inline">.journey-link-row</code>) stays present in the markup even when the link itself isn’t rendered, so plans with and without a journey stay vertically aligned in multi-card grids.
         </div>
 
+        <p>The pattern has three pieces:</p>
+        <ol class="numbered">
+          <li><strong>Trigger</strong> — a hyperlink (<code class="inline">.journey-link</code>) inside a reserved 36px row between the CTA and the legal note. Blue underlined text + orange chevron <code class="inline">›</code>. The row reserves space on every card; the link only renders when <code class="inline">vm.plan.journey.enabled === true</code>.</li>
+          <li><strong>Modal</strong> — fixed-position overlay (<code class="inline">.modal-overlay</code>) with a dark backdrop (<code class="inline">rgba(0,0,0,0.6)</code>) + 2px blur, centred panel (<code class="inline">.modal-panel</code>, <code class="inline">max-width 560px</code>, <code class="inline">max-height 86vh</code>). Header (badge + close ✕), body (the <code class="inline">.price-journey</code> block), and a sticky footer (price recap + duplicated CTA).</li>
+          <li><strong>State</strong> — a single boolean <code class="inline">vm.ui.journeyModalOpen</code> drives the <code class="inline">.open</code> class on the overlay. Opening locks <code class="inline">document.body.overflow</code>; closing restores it. Focus moves to the close button on open and returns to the link on close.</li>
+        </ol>
+
         <h3>4.1 HTML structure</h3>
+        <p>Two pieces, declared separately. The <strong>trigger</strong> sits inside the card footer; the <strong>modal</strong> lives outside <code class="inline">.pricing-card</code> at the body level so it overlays the entire page.</p>
+
+        <p style="margin-top:14px;"><strong>Trigger — in the card footer, between CTA and legal note:</strong></p>
         <span class="lang-tag">html</span>
-<pre><code>&lt;button class="breakdown-toggle" aria-expanded="false"&gt;
-  &lt;span&gt;See price journey&lt;/span&gt;
-  &lt;span class="arrow"&gt;&lt;/span&gt;
-&lt;/button&gt;
+<pre><code>&lt;div class="journey-link-row"&gt;&lt;!-- reserved row, always rendered --&gt;
+  &lt;button class="journey-link" type="button"
+          aria-haspopup="dialog" aria-controls="journeyModal"
+          ng-if="vm.plan.journey.enabled"
+          ng-click="vm.openJourney()"&gt;
+    &lt;span&gt;See price journey&lt;/span&gt;
+    &lt;span class="chev" aria-hidden="true"&gt;›&lt;/span&gt;
+  &lt;/button&gt;
+&lt;/div&gt;</code></pre>
 
-&lt;div class="price-breakdown-section"&gt;
-  &lt;div class="price-journey"&gt;
+        <p style="margin-top:14px;"><strong>Modal — sibling of <code class="inline">.card-stage</code>, single instance per page:</strong></p>
+        <span class="lang-tag">html</span>
+<pre><code>&lt;div class="modal-overlay" id="journeyModal"
+     ng-class="{open: vm.ui.journeyModalOpen}"
+     ng-click="vm.closeJourneyOnBackdrop($event)"
+     ng-attr-aria-hidden="{{ !vm.ui.journeyModalOpen }}"&gt;
+  &lt;div class="modal-panel" role="dialog" aria-modal="true"
+       aria-labelledby="journeyModalTitle"&gt;
 
-    &lt;!-- 1) Header: optional title + free-text savings line --&gt;
-    &lt;div class="journey-header"&gt;
-      &lt;span class="journey-title"&gt;&lt;/span&gt; &lt;!-- empty by default --&gt;
-      &lt;span class="journey-savings"&gt;
-        &lt;svg class="savings-icon" viewBox="0 0 24 24"&gt;…&lt;/svg&gt;
-        &lt;span&gt;Save $240/year&lt;/span&gt;
-      &lt;/span&gt;
-    &lt;/div&gt;
+    &lt;header class="modal-header"&gt;
+      &lt;h2 id="journeyModalTitle" class="modal-title"&gt;
+        Internet 1G — Price journey
+      &lt;/h2&gt;
+      &lt;button class="modal-close" type="button"
+              ng-click="vm.closeJourney()" aria-label="Close"&gt;✕&lt;/button&gt;
+    &lt;/header&gt;
 
-    &lt;!-- 2) Steps: flexbox row, chevrons inserted by the renderer --&gt;
-    &lt;div class="journey-steps"&gt;
-      &lt;div class="journey-step active"&gt;
-        &lt;span class="step-tag"&gt;Free trial&lt;/span&gt;
-        &lt;span class="step-period"&gt;Months 1-3&lt;/span&gt;
-        &lt;span class="step-price"&gt;Free&lt;/span&gt;
-        &lt;span class="step-subtext"&gt;3 months on us&lt;/span&gt;
+    &lt;div class="modal-body"&gt;
+      &lt;div class="price-journey"&gt;
+        &lt;!-- Header (title + savings), steps row, summary banner --&gt;
+        &lt;!-- Full markup is unchanged from the previous accordion-hosted version --&gt;
       &lt;/div&gt;
-      &lt;span class="journey-chevron" aria-hidden="true"&gt;›&lt;/span&gt;
-      &lt;div class="journey-step active"&gt;
-        &lt;span class="step-period"&gt;Months 4-12&lt;/span&gt;
-        &lt;span class="step-price"&gt;$39/mo&lt;/span&gt;
-        &lt;span class="step-subtext"&gt;$6 off/mo.&lt;/span&gt;
+    &lt;/div&gt;
+
+    &lt;footer class="modal-footer"&gt;
+      &lt;div class="recap"&gt;
+        &lt;span class="recap-plan"&gt;Internet 1G&lt;/span&gt;
+        &lt;span class="recap-price"&gt;$75/mo.&lt;/span&gt;
       &lt;/div&gt;
-    &lt;/div&gt;
-
-    &lt;!-- 3) Optional summary banner under the steps --&gt;
-    &lt;div class="journey-summary"&gt;
-      &lt;svg class="summary-icon" viewBox="0 0 24 24"&gt;…&lt;/svg&gt;
-      &lt;span&gt;Free for 3 months, then $39/mo. through month 12, then $45/mo. ongoing.&lt;/span&gt;
-    &lt;/div&gt;
-
+      &lt;button class="cta-button"&gt;Choose This Plan&lt;/button&gt;
+    &lt;/footer&gt;
   &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+
+        <p style="margin-top:14px;"><strong>Journey body — the <code class="inline">.price-journey</code> block that lives inside <code class="inline">.modal-body</code>:</strong></p>
+        <span class="lang-tag">html</span>
+<pre><code>&lt;div class="price-journey"&gt;
+
+  &lt;!-- 1) Header: optional title + free-text savings line --&gt;
+  &lt;div class="journey-header"&gt;
+    &lt;span class="journey-title"&gt;&lt;/span&gt; &lt;!-- empty by default --&gt;
+    &lt;span class="journey-savings"&gt;
+      &lt;svg class="savings-icon" viewBox="0 0 24 24"&gt;…&lt;/svg&gt;
+      &lt;span&gt;Save $240/year&lt;/span&gt;
+    &lt;/span&gt;
+  &lt;/div&gt;
+
+  &lt;!-- 2) Steps: flexbox row, chevrons inserted by the renderer --&gt;
+  &lt;div class="journey-steps"&gt;
+    &lt;div class="journey-step active"&gt;
+      &lt;span class="step-tag"&gt;Free trial&lt;/span&gt;
+      &lt;span class="step-period"&gt;Months 1-3&lt;/span&gt;
+      &lt;span class="step-price"&gt;Free&lt;/span&gt;
+      &lt;span class="step-subtext"&gt;3 months on us&lt;/span&gt;
+    &lt;/div&gt;
+    &lt;span class="journey-chevron" aria-hidden="true"&gt;›&lt;/span&gt;
+    &lt;div class="journey-step active"&gt;
+      &lt;span class="step-period"&gt;Months 4-12&lt;/span&gt;
+      &lt;span class="step-price"&gt;$39/mo&lt;/span&gt;
+      &lt;span class="step-subtext"&gt;$6 off/mo.&lt;/span&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;!-- 3) Optional summary banner under the steps --&gt;
+  &lt;div class="journey-summary"&gt;
+    &lt;svg class="summary-icon" viewBox="0 0 24 24"&gt;…&lt;/svg&gt;
+    &lt;span&gt;Free for 3 months, then $39/mo. through month 12, then $45/mo. ongoing.&lt;/span&gt;
+  &lt;/div&gt;
+
 &lt;/div&gt;</code></pre>
 
         <h3>4.2 Step model</h3>
@@ -617,14 +674,21 @@
           </tbody>
         </table>
 
-        <h3>4.4 Visual tokens (steps + header)</h3>
+        <h3>4.4 Visual tokens (link, modal, steps)</h3>
         <table>
           <thead>
             <tr><th>Element</th><th>Value</th><th>Notes</th></tr>
           </thead>
           <tbody>
-            <tr><td>Section padding</td><td><code class="inline">24px 16px 20px</code></td><td>Wraps the entire <code class="inline">.price-journey</code>.</td></tr>
-            <tr><td>Header margin-bottom</td><td><code class="inline">20px</code></td><td>Between header row and steps.</td></tr>
+            <tr><td>Link row</td><td><code class="inline">min-height: 36px / padding: 10px 20px 6px</code></td><td><code class="inline">.journey-link-row</code> reserves space on every card.</td></tr>
+            <tr><td>Link text</td><td><code class="inline">font 16/14px · weight 600 · colour #2E7DC1</code></td><td><code class="inline">.journey-link</code>, underlined with <code class="inline">text-decoration-color rgba(46,125,193,0.5)</code> that solidifies on hover (<code class="inline">#136BA3</code>).</td></tr>
+            <tr><td>Link chevron</td><td><code class="inline">font 18/16px · colour #ed6b1f · weight 700</code></td><td>Orange <code class="inline">›</code>, slides 2px right on hover via <code class="inline">transform: translateX(2px)</code>.</td></tr>
+            <tr><td>Modal backdrop</td><td><code class="inline">rgba(0,0,0,0.6)</code> + <code class="inline">backdrop-filter: blur(2px)</code></td><td><code class="inline">.modal-overlay</code>, <code class="inline">z-index: 1000</code>, fades over 0.2s.</td></tr>
+            <tr><td>Modal panel</td><td><code class="inline">max-width: 560px · max-height: 86vh · radius: 20px</code></td><td><code class="inline">.modal-panel</code>, shadow <code class="inline">0 30px 80px rgba(0,0,0,0.35)</code>. Mobile: full-screen bottom-sheet.</td></tr>
+            <tr><td>Modal header</td><td><code class="inline">padding: 14px 16px 14px 20px</code></td><td>Title (16px / weight 700) + close ✕ (36×36 rounded button on <code class="inline">#f3f5f8</code>).</td></tr>
+            <tr><td>Modal body</td><td><code class="inline">padding: 20px 24px 24px</code></td><td><code class="inline">overflow-y: auto</code>; hosts the <code class="inline">.price-journey</code> block at zero inner padding.</td></tr>
+            <tr><td>Modal footer</td><td><code class="inline">padding: 14px 16px</code></td><td>Sticky bottom row: recap (plan + price) on the left, dup CTA on the right.</td></tr>
+            <tr><td>Header margin-bottom</td><td><code class="inline">20px</code></td><td>Between header row and steps inside <code class="inline">.price-journey</code>.</td></tr>
             <tr><td>Step radius</td><td><code class="inline">16px</code></td><td>Applied to each <code class="inline">.journey-step</code>.</td></tr>
             <tr><td>Step padding</td><td><code class="inline">18px 8px 14px</code></td><td>Top extra room reserved for the floating tag.</td></tr>
             <tr><td>Step layout</td><td><code class="inline">flex: 1 / column / center</code></td><td>Each step grows equally; <code class="inline">.journey-steps</code> is <code class="inline">display: flex; gap: 0</code>.</td></tr>
@@ -638,23 +702,30 @@
 
         <h3>4.5 Interaction model</h3>
         <ul>
-          <li>The accordion uses a <code class="inline">max-height</code> transition (see <a href="#motion" style="color:#ed6b1f;font-weight:600;">§Motion</a>) — <strong>0.85s open / 0.7s close</strong>, easing <code class="inline">cubic-bezier(0.65, 0, 0.35, 1)</code>.</li>
-          <li><code class="inline">aria-expanded</code> flips on the toggle button; the arrow pictogram rotates 180° over 0.6s.</li>
-          <li>Repeater controls (<code class="inline">+ Add step</code> / <code class="inline">×</code>) are CMS-only and never rendered in production.</li>
-          <li>Adding or removing steps must not break the layout — the row uses <code class="inline">display: flex</code> with <code class="inline">flex: 1</code> per step.</li>
-          <li>The summary banner is independent of the step list — editors can hide it without removing any step.</li>
+          <li><strong>Open</strong> — click <code class="inline">.journey-link</code> (or call <code class="inline">vm.openJourney()</code>). The overlay fades in over 0.2s (<code class="inline">opacity 0 → 1</code> + <code class="inline">visibility hidden → visible</code>) and the panel slides up 12px with <code class="inline">cubic-bezier(0.16, 1, 0.3, 1)</code>.</li>
+          <li><strong>Close</strong> — four entry points, all routed through <code class="inline">vm.closeJourney()</code>: the ✕ button, a click on the backdrop (guarded by <code class="inline">$event.target === $event.currentTarget</code> in <code class="inline">vm.closeJourneyOnBackdrop</code>), the <kbd>Escape</kbd> key (registered once on <code class="inline">document</code>, fires through <code class="inline">$scope.$evalAsync</code>), or programmatically.</li>
+          <li><strong>Focus management</strong> — <code class="inline">vm.openJourney()</code> stores <code class="inline">document.activeElement</code> in a private <code class="inline">lastTrigger</code>, then moves focus to <code class="inline">.modal-close</code> after a 50ms <code class="inline">$timeout</code> (let Angular paint first). <code class="inline">vm.closeJourney()</code> returns focus to <code class="inline">lastTrigger</code> on close.</li>
+          <li><strong>Body scroll lock</strong> — a <code class="inline">$scope.$watch</code> on <code class="inline">vm.ui.journeyModalOpen</code> sets <code class="inline">document.body.style.overflow</code> to <code class="inline">'hidden'</code> while open and restores it on close. Prevents the page behind the backdrop from scrolling on touch devices.</li>
+          <li><strong>Reserved space</strong> — the <code class="inline">.journey-link-row</code> is rendered on every card, even when <code class="inline">vm.plan.journey.enabled === false</code>. This keeps CTAs and legal notes vertically aligned across cards in a multi-card row.</li>
+          <li><strong>Repeater controls</strong> (<code class="inline">+ Add step</code> / <code class="inline">×</code>) are CMS-only and never rendered in production.</li>
+          <li><strong>Step layout</strong> — adding or removing steps must not break the row; <code class="inline">.journey-steps</code> uses <code class="inline">display: flex</code> with <code class="inline">flex: 1</code> per step. The summary banner is independent of the step list.</li>
         </ul>
 
         <h3>4.6 CMS fields to expose</h3>
         <ol class="numbered">
-          <li><strong>Show Price Journey</strong> — boolean, default <strong>OFF</strong>.</li>
-          <li><strong>Toggle label</strong> — string, default <em>“See price journey”</em>.</li>
-          <li><strong>Header title</strong> — string, default <strong>empty</strong>.</li>
-          <li><strong>Savings text</strong> — free-text string (the entire phrase, not just the number), default <em>“Save $240/year”</em>.</li>
-          <li><strong>Steps</strong> — repeater of <code class="inline">{ period, price, tag, subtext, style }</code> objects.</li>
-          <li><strong>Show summary banner</strong> — boolean, default <strong>ON</strong>.</li>
-          <li><strong>Summary banner text</strong> — string, default <em>“Free for 3 months, then $39/mo. through month 12, then $45/mo. ongoing.”</em></li>
+          <li><strong>Show “See price journey” link</strong> (<code class="inline">journey.enabled</code>) — boolean, default <strong>OFF</strong>. Controls whether the link renders below the CTA; the reserved row is always present.</li>
+          <li><strong>Link text</strong> (<code class="inline">journey.toggleLabel</code>) — string, default <em>“See price journey”</em>. Drives the visible label on the link.</li>
+          <li><strong>Header title</strong> (<code class="inline">journey.title</code>) — string, default <strong>empty</strong>. Renders inside the modal body above the steps.</li>
+          <li><strong>Savings text</strong> (<code class="inline">journey.savingsText</code>) — free-text string (the entire phrase, not just the number), default <em>“Save $240/year”</em>.</li>
+          <li><strong>Steps</strong> (<code class="inline">journey.steps</code>) — repeater of <code class="inline">{ period, price, tag, subtext, style }</code> objects.</li>
+          <li><strong>Show summary banner</strong> (<code class="inline">journey.summary.enabled</code>) — boolean, default <strong>ON</strong>.</li>
+          <li><strong>Summary banner text</strong> (<code class="inline">journey.summary.text</code>) — string, default <em>“Free for 3 months, then $39/mo. through month 12, then $45/mo. ongoing.”</em></li>
         </ol>
+
+        <div class="callout info">
+          <strong>Modal title fallback</strong>
+          The modal title is rendered as <code class="inline">{{ vm.plan.badge }} — Price journey</code>. It re-uses the badge text (<em>“Internet 1G”</em>) instead of introducing a new field, so editors never need to maintain a duplicate label.
+        </div>
       </section>
 
       <!-- 5. Tokens -->
@@ -829,10 +900,10 @@
       <!-- 8. Motion & transitions -->
       <section id="motion">
         <h2><span class="num">8</span> Motion &amp; transitions</h2>
-        <p>Motion in the card is intentionally restrained. Only the accordions (Price Journey, What's included), the CTA hover, the chevron rotation and a handful of UI states animate. Everything else is static.</p>
+        <p>Motion in the card is intentionally restrained. Only the <em>What’s included</em> accordion, the price-journey modal, the CTA hover, the chevron rotation, and a handful of UI states animate. Everything else is static.</p>
 
-        <h3>8.1 Accordion (Price Journey + What's included)</h3>
-        <p>Both accordions share the same CSS class <code class="inline">.price-breakdown-section</code> and animate by transitioning <code class="inline">max-height</code> between <code class="inline">0</code> and <code class="inline">600px</code>. The closed/open states use <strong>different</strong> durations on purpose — opening reads as “unfolding”, closing reads as “tidying up” and feels faster.</p>
+        <h3>8.1 Accordion (“What’s included”)</h3>
+        <p>The single in-card accordion uses the CSS class <code class="inline">.price-breakdown-section</code> and animates by transitioning <code class="inline">max-height</code> between <code class="inline">0</code> and <code class="inline">600px</code>. The closed/open states use <strong>different</strong> durations on purpose — opening reads as “unfolding”, closing reads as “tidying up” and feels faster.</p>
         <table>
           <thead><tr><th>State</th><th>Property</th><th>Duration</th><th>Easing</th></tr></thead>
           <tbody>
@@ -862,7 +933,39 @@
           <code class="inline">cubic-bezier(0.65, 0, 0.35, 1)</code> is an easeInOutCubic — the motion starts softly, accelerates through the middle, and decelerates smoothly to a stop. It avoids the “snap-open / snap-close” feel of <code class="inline">ease-out</code> on a max-height transition.
         </div>
 
-        <h3>8.2 CTA button hover</h3>
+        <h3>8.2 Modal (Price Journey)</h3>
+        <p>The modal uses two layered transitions to feel light: the backdrop fades in via <code class="inline">opacity</code> + <code class="inline">visibility</code>, and the panel slides up 12px on a soft ease-out curve. Closing reverses both. The journey link itself animates its underline and the trailing chevron on hover.</p>
+        <table>
+          <thead><tr><th>Element</th><th>Property</th><th>Duration</th><th>Easing</th></tr></thead>
+          <tbody>
+            <tr><td>Overlay fade</td><td><code class="inline">opacity, visibility</code></td><td><code class="inline">0.2s</code></td><td><code class="inline">ease</code></td></tr>
+            <tr><td>Panel slide-up</td><td><code class="inline">transform</code></td><td><code class="inline">0.22s</code></td><td><code class="inline">cubic-bezier(0.16, 1, 0.3, 1)</code></td></tr>
+            <tr><td>Close button press</td><td><code class="inline">background, transform</code></td><td><code class="inline">0.15s</code></td><td><code class="inline">ease</code></td></tr>
+            <tr><td>Link hover (text)</td><td><code class="inline">color, text-decoration-color</code></td><td><code class="inline">0.2s</code></td><td><code class="inline">ease</code></td></tr>
+            <tr><td>Link hover (chevron)</td><td><code class="inline">transform</code></td><td><code class="inline">0.2s</code></td><td><code class="inline">ease</code></td></tr>
+          </tbody>
+        </table>
+        <span class="lang-tag">css</span>
+<pre><code>.modal-overlay {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s;
+}
+.modal-overlay.open { opacity: 1; visibility: visible; }
+
+.modal-panel {
+  transform: translateY(12px);
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.modal-overlay.open .modal-panel { transform: translateY(0); }
+
+.journey-link:hover .chev { transform: translateX(2px); }</code></pre>
+        <div class="callout info">
+          <strong>Why two curves?</strong>
+          The overlay needs a neutral <code class="inline">ease</code> to feel like “the lights dim”; the panel needs an expressive ease-out (<code class="inline">cubic-bezier(0.16, 1, 0.3, 1)</code>) so the slide-up reads as “brought forward” rather than “dropped in”. Reduced-motion overrides neutralise both — see §8.5.
+        </div>
+
+        <h3>8.3 CTA button hover</h3>
         <p>The CTA fills with solid black from the bottom up using a pseudo-element animating <code class="inline">height</code> from <code class="inline">0%</code> to <code class="inline">100%</code>. Text colour cross-fades to white at the same time.</p>
         <table>
           <thead><tr><th>Property</th><th>Duration</th><th>Easing</th></tr></thead>
@@ -872,19 +975,21 @@
           </tbody>
         </table>
 
-        <h3>8.3 Floating UI controls</h3>
+        <h3>8.4 Floating UI controls</h3>
         <table>
           <thead><tr><th>Element</th><th>Property</th><th>Duration</th><th>Easing</th></tr></thead>
           <tbody>
             <tr><td>Gear button hover / rotate</td><td><code class="inline">background, transform</code></td><td><code class="inline">0.2s / 0.3s</code></td><td><code class="inline">linear</code></td></tr>
             <tr><td>Docs button hover</td><td><code class="inline">background, transform</code></td><td><code class="inline">0.2s</code></td><td><code class="inline">linear</code></td></tr>
             <tr><td>Stories button hover</td><td><code class="inline">background, transform</code></td><td><code class="inline">0.2s</code></td><td><code class="inline">linear</code></td></tr>
+            <tr><td>Demo button hover (<code class="inline">.demo-btn</code> on <code class="inline">template.html</code>)</td><td><code class="inline">background, transform</code></td><td><code class="inline">0.2s</code></td><td><code class="inline">linear</code></td></tr>
+            <tr><td>Template button hover (<code class="inline">.template-btn</code> on <code class="inline">rate-cards-demo.html</code>)</td><td><code class="inline">background, transform</code></td><td><code class="inline">0.2s</code></td><td><code class="inline">linear</code></td></tr>
             <tr><td>Configurator slide</td><td><code class="inline">right</code></td><td><code class="inline">0.35s</code></td><td><code class="inline">cubic-bezier(0.4, 0, 0.2, 1)</code></td></tr>
             <tr><td>Overlay fade</td><td><code class="inline">opacity</code></td><td><code class="inline">0.3s</code></td><td><code class="inline">linear</code></td></tr>
           </tbody>
         </table>
 
-        <h3>8.4 Reduced motion</h3>
+        <h3>8.5 Reduced motion</h3>
         <p>If the user has expressed a preference for reduced motion, all transitions should be neutralised. Add this at the bottom of the stylesheet:</p>
         <span class="lang-tag">css</span>
 <pre><code>@media (prefers-reduced-motion: reduce) {
@@ -931,43 +1036,6 @@
     &lt;/div&gt;
   &lt;/div&gt;
 
-  &lt;!-- PRICE JOURNEY (hidden by default in production) --&gt;
-  &lt;div class="hidden-el"&gt;&lt;!-- wrapper toggled by editor --&gt;
-    &lt;button class="breakdown-toggle" aria-expanded="false"&gt;
-      &lt;span&gt;See price journey&lt;/span&gt;
-      &lt;span class="arrow"&gt;&lt;/span&gt;
-    &lt;/button&gt;
-    &lt;div class="price-breakdown-section"&gt;
-      &lt;div class="price-journey"&gt;
-        &lt;div class="journey-header"&gt;
-          &lt;span class="journey-title"&gt;&lt;/span&gt;
-          &lt;span class="journey-savings"&gt;
-            &lt;svg class="savings-icon" viewBox="0 0 24 24"&gt;&lt;!-- price-tag --&gt;&lt;/svg&gt;
-            &lt;span&gt;Save $240/year&lt;/span&gt;
-          &lt;/span&gt;
-        &lt;/div&gt;
-        &lt;div class="journey-steps"&gt;
-          &lt;div class="journey-step active"&gt;
-            &lt;span class="step-tag"&gt;Free trial&lt;/span&gt;
-            &lt;span class="step-period"&gt;Months 1-3&lt;/span&gt;
-            &lt;span class="step-price"&gt;Free&lt;/span&gt;
-            &lt;span class="step-subtext"&gt;3 months on us&lt;/span&gt;
-          &lt;/div&gt;
-          &lt;span class="journey-chevron" aria-hidden="true"&gt;›&lt;/span&gt;
-          &lt;div class="journey-step active"&gt;
-            &lt;span class="step-period"&gt;Months 4-12&lt;/span&gt;
-            &lt;span class="step-price"&gt;$39/mo&lt;/span&gt;
-            &lt;span class="step-subtext"&gt;$6 off/mo.&lt;/span&gt;
-          &lt;/div&gt;
-        &lt;/div&gt;
-        &lt;div class="journey-summary"&gt;
-          &lt;svg class="summary-icon" viewBox="0 0 24 24"&gt;&lt;!-- info circle --&gt;&lt;/svg&gt;
-          &lt;span&gt;Free for 3 months, then $39/mo. through month 12, then $45/mo. ongoing.&lt;/span&gt;
-        &lt;/div&gt;
-      &lt;/div&gt;
-    &lt;/div&gt;
-  &lt;/div&gt;
-
   &lt;!-- INTERNET SPECS (always visible) --&gt;
   &lt;div class="internet-specs"&gt;
     &lt;div class="specs-title"&gt;Internet specs&lt;/div&gt;
@@ -996,13 +1064,43 @@
   &lt;/div&gt;
 
   &lt;!-- CTA --&gt;
-  &lt;div class="card-content"&gt;
+  &lt;div class="card-content" style="padding:16px 20px 0;"&gt;
     &lt;button class="cta-button"&gt;Choose This Plan&lt;/button&gt;
+  &lt;/div&gt;
+
+  &lt;!-- PRICE JOURNEY LINK (reserved row; link itself hidden by default in production) --&gt;
+  &lt;div class="journey-link-row"&gt;
+    &lt;button class="journey-link" type="button"
+            aria-haspopup="dialog" aria-controls="journeyModal"&gt;
+      &lt;span&gt;See price journey&lt;/span&gt;
+      &lt;span class="chev" aria-hidden="true"&gt;›&lt;/span&gt;
+    &lt;/button&gt;
   &lt;/div&gt;
 
   &lt;!-- LEGAL --&gt;
   &lt;p class="legal-note"&gt;*Promotional pricing. $95/mo. starting month 13. Taxes extra.&lt;/p&gt;
 
+&lt;/div&gt;
+
+&lt;!-- PRICE JOURNEY MODAL (single instance per page, sibling of .pricing-card) --&gt;
+&lt;div class="modal-overlay" id="journeyModal"&gt;
+  &lt;div class="modal-panel" role="dialog" aria-modal="true"
+       aria-labelledby="journeyModalTitle"&gt;
+    &lt;header class="modal-header"&gt;
+      &lt;h2 id="journeyModalTitle" class="modal-title"&gt;Internet 1G — Price journey&lt;/h2&gt;
+      &lt;button class="modal-close" aria-label="Close"&gt;✕&lt;/button&gt;
+    &lt;/header&gt;
+    &lt;div class="modal-body"&gt;
+      &lt;div class="price-journey"&gt;&lt;!-- see §4 for the full body markup --&gt;&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;footer class="modal-footer"&gt;
+      &lt;div class="recap"&gt;
+        &lt;span class="recap-plan"&gt;Internet 1G&lt;/span&gt;
+        &lt;span class="recap-price"&gt;$75/mo.&lt;/span&gt;
+      &lt;/div&gt;
+      &lt;button class="cta-button"&gt;Choose This Plan&lt;/button&gt;
+    &lt;/footer&gt;
+  &lt;/div&gt;
 &lt;/div&gt;</code></pre>
         <div class="callout info">
           <strong>Visibility primitives</strong>
@@ -1130,7 +1228,7 @@
       <!-- 12. AngularJS -->
       <section id="angularjs">
         <h2><span class="num">12</span> AngularJS 1.8.2 integration</h2>
-        <p>The component is plain HTML/CSS — AngularJS 1.8.2 drives <strong>three things</strong> only: (a) data binding from the CMS model (<code class="inline">vm.plan</code>), (b) the <code class="inline">.active</code> / <code class="inline">.open</code> classes on the accordion toggles, and (c) the visibility booleans that toggle the <code class="inline">.hidden-el</code> utility. Everything else (motion, layout, hover) stays in CSS.</p>
+        <p>The component is plain HTML/CSS — AngularJS 1.8.2 drives <strong>four things</strong> only: (a) data binding from the CMS model (<code class="inline">vm.plan</code>), (b) the <code class="inline">.active</code> / <code class="inline">.open</code> classes on the <em>What's included</em> accordion, (c) the <code class="inline">.open</code> class on the price-journey modal overlay, and (d) the visibility booleans that toggle the <code class="inline">.hidden-el</code> utility. Everything else (motion, layout, hover) stays in CSS.</p>
 
         <div class="callout info">
           <strong>Dependencies</strong>
@@ -1221,21 +1319,22 @@
 };</code></pre>
 
         <h3>12.3 Controller</h3>
-        <p>Keep the controller thin. It exposes the model (<code class="inline">vm.plan</code>), preview UI state (<code class="inline">vm.ui</code>), one helper for sanitized SVG, and one helper for the journey step CSS class. Don't add formatters here — the CMS is responsible for shipping ready-to-display strings.</p>
+        <p>Keep the controller thin. It exposes the model (<code class="inline">vm.plan</code>), preview UI state (<code class="inline">vm.ui</code>), three helpers for the price-journey modal, one helper for sanitized SVG, and one helper for the journey step CSS class. Don't add formatters here — the CMS is responsible for shipping ready-to-display strings.</p>
         <span class="lang-tag">javascript</span>
 <pre><code>angular
   .module('fhiRateCard')
-  .controller('RateCardCtrl', ['$sce', function ($sce) {
+  .controller('RateCardCtrl', ['$scope', '$sce', '$timeout',
+  function ($scope, $sce, $timeout) {
 
     var vm = this;
 
     /* --- Bind the CMS payload --- */
     vm.plan = window.__RATE_CARD_PAYLOAD__;   // injected server-side
 
-    /* --- Collapsible UI state (preview-only) --- */
+    /* --- UI state (preview-only) --- */
     vm.ui = {
-      journeyOpen:  false,   // Price Journey accordion
-      featuresOpen: false    // What's included accordion
+      journeyModalOpen: false,   // price-journey modal open/closed
+      featuresOpen:     false    // "What's included" accordion
     };
 
     /* --- Card helpers used in template bindings --- */
@@ -1253,6 +1352,47 @@
     vm.stepClass = function (step) {
       return step.style === 'active' || step.style === 'discounted' ? step.style : '';
     };
+
+    /* --- Price-journey modal: open / close / Escape / backdrop --- */
+    var lastTrigger = null;   // element focused at open time
+
+    vm.openJourney = function () {
+      lastTrigger = document.activeElement;
+      vm.ui.journeyModalOpen = true;
+      $timeout(function () {
+        var btn = document.querySelector('#journeyModal .modal-close');
+        if (btn) { btn.focus(); }
+      }, 50);
+    };
+
+    vm.closeJourney = function () {
+      vm.ui.journeyModalOpen = false;
+      if (lastTrigger && typeof lastTrigger.focus === 'function') {
+        $timeout(function () { lastTrigger.focus(); });
+      }
+    };
+
+    // Backdrop click — close only when the target IS the overlay,
+    // not when the click bubbles up from inside the panel.
+    vm.closeJourneyOnBackdrop = function ($event) {
+      if ($event.target === $event.currentTarget) { vm.closeJourney(); }
+    };
+
+    // Esc key. Registered once on document; the open-guard makes
+    // the handler a no-op when the modal isn't visible.
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && vm.ui.journeyModalOpen) {
+        $scope.$evalAsync(vm.closeJourney);
+      }
+    });
+
+    // Body scroll lock — keep the page behind the backdrop still.
+    $scope.$watch(
+      function () { return vm.ui.journeyModalOpen; },
+      function (open) {
+        document.body.style.overflow = open ? 'hidden' : '';
+      }
+    );
 
     /* --- Static SVG library for features, trusted once at boot --- */
     var SVGS = {
@@ -1280,7 +1420,7 @@
         </div>
 
         <h3>12.4 View template</h3>
-        <p>This is the minimal markup the production card needs. Every value reads from <code class="inline">vm.plan</code>; every show/hide toggle reads from <code class="inline">vm.plan.show.*</code> / <code class="inline">vm.plan.*.enabled</code>; the two accordions read from <code class="inline">vm.ui.*Open</code>. See <a href="#angularjs" style="color:#ed6b1f;font-weight:600;">§12.5</a> for an optional one-time-binding optimisation for static CMS payloads.</p>
+        <p>This is the minimal markup the production card needs. Every value reads from <code class="inline">vm.plan</code>; every show/hide toggle reads from <code class="inline">vm.plan.show.*</code> / <code class="inline">vm.plan.*.enabled</code>; the <em>What's included</em> accordion reads from <code class="inline">vm.ui.featuresOpen</code>; the price-journey modal reads from <code class="inline">vm.ui.journeyModalOpen</code> and is driven by <code class="inline">vm.openJourney()</code> / <code class="inline">vm.closeJourney()</code>. See <a href="#angularjs" style="color:#ed6b1f;font-weight:600;">§12.5</a> for an optional one-time-binding optimisation for static CMS payloads.</p>
         <span class="lang-tag">html</span>
 <pre><code>&lt;div class="pricing-card"&gt;
 
@@ -1314,56 +1454,6 @@
           &lt;!-- price-tag path, stroke="currentColor" --&gt;
         &lt;/svg&gt;
         &lt;span&gt;{{ vm.plan.savings }}&lt;/span&gt;
-      &lt;/div&gt;
-    &lt;/div&gt;
-  &lt;/div&gt;
-
-  &lt;!-- PRICE JOURNEY (rendered only when editor enables it) --&gt;
-  &lt;div ng-if="vm.plan.journey.enabled"&gt;
-    &lt;button class="breakdown-toggle"
-            ng-class="{active: vm.ui.journeyOpen}"
-            ng-click="vm.ui.journeyOpen = !vm.ui.journeyOpen"
-            ng-attr-aria-expanded="{{ vm.ui.journeyOpen }}"&gt;
-      &lt;span&gt;{{ vm.plan.journey.toggleLabel }}&lt;/span&gt;
-      &lt;span class="arrow"&gt;&lt;/span&gt;
-    &lt;/button&gt;
-    &lt;div class="price-breakdown-section"
-         ng-class="{open: vm.ui.journeyOpen}"&gt;
-      &lt;div class="price-journey"&gt;
-        &lt;div class="journey-header"&gt;
-          &lt;span class="journey-title"&gt;{{ vm.plan.journey.title }}&lt;/span&gt;
-          &lt;span class="journey-savings"&gt;
-            &lt;svg class="savings-icon" viewBox="0 0 24 24" aria-hidden="true"&gt;
-              &lt;!-- price-tag path, stroke="currentColor" --&gt;
-            &lt;/svg&gt;
-            &lt;span&gt;{{ vm.plan.journey.savingsText }}&lt;/span&gt;
-          &lt;/span&gt;
-        &lt;/div&gt;
-
-        &lt;div class="journey-steps"&gt;
-          &lt;span ng-repeat-start="step in vm.plan.journey.steps track by $index"
-                ng-if="$index &gt; 0"
-                class="journey-chevron"
-                aria-hidden="true"&gt;›&lt;/span&gt;
-          &lt;div ng-repeat-end
-               class="journey-step"
-               ng-class="vm.stepClass(step)"&gt;
-            &lt;span class="step-tag"     ng-if="step.tag"&gt;{{ step.tag }}&lt;/span&gt;
-            &lt;span class="step-period"&gt;{{ step.period }}&lt;/span&gt;
-            &lt;span class="step-price"&gt;{{ step.price }}&lt;/span&gt;
-            &lt;span class="step-subtext" ng-if="step.subtext"&gt;{{ step.subtext }}&lt;/span&gt;
-          &lt;/div&gt;
-        &lt;/div&gt;
-
-        &lt;div class="journey-summary"
-             ng-class="{'hidden-el': !vm.plan.journey.summary.enabled}"&gt;
-          &lt;svg class="summary-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"&gt;
-            &lt;circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/&gt;
-            &lt;line x1="12" y1="16" x2="12" y2="12" stroke="currentColor" stroke-width="2"/&gt;
-            &lt;line x1="12" y1="8" x2="12.01" y2="8" stroke="currentColor" stroke-width="2"/&gt;
-          &lt;/svg&gt;
-          &lt;span&gt;{{ vm.plan.journey.summary.text }}&lt;/span&gt;
-        &lt;/div&gt;
       &lt;/div&gt;
     &lt;/div&gt;
   &lt;/div&gt;
@@ -1406,16 +1496,62 @@
   &lt;/div&gt;
 
   &lt;!-- CTA --&gt;
-  &lt;div class="card-content"&gt;
+  &lt;div class="card-content" style="padding:16px 20px 0;"&gt;
     &lt;button class="cta-button"
             ng-style="{background: vm.plan.cta.color}"&gt;
       {{ vm.plan.cta.label }}
     &lt;/button&gt;
   &lt;/div&gt;
 
+  &lt;!-- PRICE JOURNEY LINK (reserved row, link itself only when enabled) --&gt;
+  &lt;div class="journey-link-row"&gt;
+    &lt;button class="journey-link"
+            type="button"
+            ng-if="vm.plan.journey &amp;&amp; vm.plan.journey.enabled"
+            ng-click="vm.openJourney()"
+            aria-haspopup="dialog"
+            aria-controls="journeyModal"&gt;
+      &lt;span&gt;{{ vm.plan.journey.toggleLabel }}&lt;/span&gt;
+      &lt;span class="chev" aria-hidden="true"&gt;›&lt;/span&gt;
+    &lt;/button&gt;
+  &lt;/div&gt;
+
   &lt;!-- LEGAL --&gt;
   &lt;p class="legal-note"
      ng-class="{'hidden-el': !vm.plan.showLegal}"&gt;{{ vm.plan.legal }}&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;!-- PRICE JOURNEY MODAL (sibling of .pricing-card) --&gt;
+&lt;div class="modal-overlay" id="journeyModal"
+     ng-class="{open: vm.ui.journeyModalOpen}"
+     ng-click="vm.closeJourneyOnBackdrop($event)"
+     ng-attr-aria-hidden="{{ !vm.ui.journeyModalOpen }}"&gt;
+  &lt;div class="modal-panel"
+       role="dialog" aria-modal="true"
+       aria-labelledby="journeyModalTitle"&gt;
+    &lt;header class="modal-header"&gt;
+      &lt;h2 id="journeyModalTitle" class="modal-title"&gt;
+        {{ vm.plan.badge }} — Price journey
+      &lt;/h2&gt;
+      &lt;button class="modal-close" type="button"
+              ng-click="vm.closeJourney()" aria-label="Close"&gt;✕&lt;/button&gt;
+    &lt;/header&gt;
+    &lt;div class="modal-body"&gt;
+      &lt;div class="price-journey" ng-if="vm.plan.journey"&gt;
+        &lt;!-- Header (title + savings), .journey-steps with ng-repeat-start/end,
+             and optional .journey-summary — identical bindings to the previous
+             accordion-hosted version. See §4.1 for the full body markup. --&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;footer class="modal-footer"&gt;
+      &lt;div class="recap"&gt;
+        &lt;span class="recap-plan"&gt;{{ vm.plan.badge }}&lt;/span&gt;
+        &lt;span class="recap-price"&gt;${{ vm.plan.currentPrice }}{{ vm.plan.period }}&lt;/span&gt;
+      &lt;/div&gt;
+      &lt;button class="cta-button" type="button"
+              ng-style="{background: vm.plan.cta.color}"&gt;{{ vm.plan.cta.label }}&lt;/button&gt;
+    &lt;/footer&gt;
+  &lt;/div&gt;
 &lt;/div&gt;</code></pre>
 
         <h3>12.5 Performance &amp; digest discipline</h3>
@@ -1502,7 +1638,9 @@
         <h3>12.8 Gotchas specific to AngularJS 1.8.2</h3>
         <ul>
           <li><strong>SVG + <code class="inline">ng-bind-html</code></strong> — Without <code class="inline">ngSanitize</code> loaded, inline SVG strings render as text. Always load <code class="inline">angular-sanitize</code> and pipe through <code class="inline">$sce.trustAsHtml</code> as in §12.3.</li>
-          <li><strong><code class="inline">aria-expanded</code></strong> — Use <code class="inline">ng-attr-aria-expanded="{{ vm.ui.journeyOpen }}"</code>, not plain <code class="inline">aria-expanded="{{...}}"</code>. The <code class="inline">ng-attr-</code> prefix prevents the browser from reading the literal <code class="inline">{{...}}</code> before the first digest.</li>
+          <li><strong><code class="inline">aria-expanded</code></strong> — Use <code class="inline">ng-attr-aria-expanded="{{ vm.ui.featuresOpen }}"</code> on the <em>What's included</em> toggle, not plain <code class="inline">aria-expanded="{{...}}"</code>. The <code class="inline">ng-attr-</code> prefix prevents the browser from reading the literal <code class="inline">{{...}}</code> before the first digest.</li>
+          <li><strong>Modal <code class="inline">aria-hidden</code></strong> — Same rule for the modal overlay: <code class="inline">ng-attr-aria-hidden="{{ !vm.ui.journeyModalOpen }}"</code>. The negation keeps the modal hidden from assistive tech when closed.</li>
+          <li><strong>Esc key + digest</strong> — The <code class="inline">keydown</code> listener on <code class="inline">document</code> fires outside Angular's digest. Always wrap the close call in <code class="inline">$scope.$evalAsync(vm.closeJourney)</code> (not <code class="inline">$apply</code>, which would throw if a digest is already in progress).</li>
           <li><strong>Inline styles vs. CSS classes</strong> — Editor-controlled colours (badge background, headline colour, CTA, header gradient) use <code class="inline">ng-style</code>. Editor-controlled visibility uses <code class="inline">ng-class</code> with <code class="inline">.hidden-el</code>. <strong>Never</strong> mix the two; <code class="inline">display: none</code> in inline styles will fight the CSS animation on the accordions.</li>
           <li><strong>Repeater + chevron pattern</strong> — The chevron between journey steps is rendered with <code class="inline">ng-repeat-start / ng-repeat-end</code> so the chevron and the step share the same iteration. Do <em>not</em> author chevrons in the data — the front-end inserts them.</li>
           <li><strong><code class="inline">type="range"</code> + <code class="inline">ng-model</code></strong> — Angular returns a <em>string</em> from a range input. The shipped template handles this by string-concatenating <code class="inline">+ 'px'</code> inside <code class="inline">ng-style</code>; if you need a true number elsewhere, coerce with <code class="inline">parseInt</code> or use <code class="inline">type="number"</code>.</li>
@@ -1607,11 +1745,16 @@
       <section id="a11y">
         <h2><span class="num">14</span> Accessibility</h2>
         <ul>
-          <li><strong>Semantic toggles:</strong> the collapsible bars are <code class="inline">&lt;button&gt;</code> elements with <code class="inline">aria-expanded</code> kept in sync with the open/closed state via <code class="inline">ng-attr-aria-expanded</code>.</li>
-          <li><strong>Decorative SVG:</strong> all pictograms carry <code class="inline">aria-hidden="true"</code> — they sit next to descriptive text, so they do not need an explicit label.</li>
-          <li><strong>Focus ring:</strong> all interactive elements expose the default focus ring; do not <code class="inline">outline: none</code> without an equivalent <code class="inline">:focus-visible</code> style.</li>
-          <li><strong>Colour contrast (WCAG AA):</strong> orange CTA on white passes 4.5:1. White text on the navy gradient header passes 7+. Summary banner text (<code class="inline">#5d3a1a</code> on <code class="inline">#fff7f0</code>) passes 7+. Step periods/subtexts on the active blue background pass 4.5+.</li>
-          <li><strong>Reduced motion:</strong> the accordion durations (0.7–0.85s) and CTA hover (0.3s) are non-essential — apply the <code class="inline">prefers-reduced-motion</code> guard from <a href="#motion" style="color:#ed6b1f;font-weight:600;">§8.4</a>.</li>
+          <li><strong>Semantic toggles:</strong> the <em>What's included</em> accordion is a <code class="inline">&lt;button&gt;</code> element with <code class="inline">aria-expanded</code> kept in sync with the open/closed state via <code class="inline">ng-attr-aria-expanded</code>.</li>
+          <li><strong>Modal dialog:</strong> the price-journey modal uses <code class="inline">role="dialog"</code>, <code class="inline">aria-modal="true"</code>, and <code class="inline">aria-labelledby</code> pointing at the <code class="inline">.modal-title</code>. Its outer <code class="inline">.modal-overlay</code> mirrors the open state through <code class="inline">ng-attr-aria-hidden="{{ !vm.ui.journeyModalOpen }}"</code> so assistive tech hides the entire region while closed.</li>
+          <li><strong>Trigger affordance:</strong> the <em>See price journey</em> link carries <code class="inline">aria-haspopup="dialog"</code> and <code class="inline">aria-controls="journeyModal"</code> so screen readers announce that activating it will open a dialog.</li>
+          <li><strong>Focus management (modal):</strong> on open, focus moves to <code class="inline">.modal-close</code> after a 50ms <code class="inline">$timeout</code>; on close, focus is returned to the link that opened the modal (<code class="inline">lastTrigger</code>). This satisfies WAI-ARIA Authoring Practices for dialog focus restoration.</li>
+          <li><strong>Keyboard close:</strong> <kbd>Escape</kbd> closes the modal from anywhere on the page. The handler is registered once on <code class="inline">document</code> and is a no-op when the modal isn't open.</li>
+          <li><strong>Scroll trap:</strong> while the modal is open, <code class="inline">document.body.style.overflow</code> is set to <code class="inline">'hidden'</code> so the page behind the backdrop cannot scroll under the user's touch or wheel.</li>
+          <li><strong>Decorative SVG:</strong> all pictograms carry <code class="inline">aria-hidden="true"</code> — they sit next to descriptive text, so they do not need an explicit label. The orange chevron next to the link (<code class="inline">.journey-link .chev</code>) is also <code class="inline">aria-hidden</code>.</li>
+          <li><strong>Focus ring:</strong> all interactive elements expose the default focus ring; <code class="inline">.journey-link:focus-visible</code> renders a 2px <code class="inline">#2E7DC1</code> outline. Do not <code class="inline">outline: none</code> without an equivalent <code class="inline">:focus-visible</code> style.</li>
+          <li><strong>Colour contrast (WCAG AA):</strong> orange CTA on white passes 4.5:1. White text on the navy gradient header passes 7+. Summary banner text (<code class="inline">#5d3a1a</code> on <code class="inline">#fff7f0</code>) passes 7+. Step periods/subtexts on the active blue background pass 4.5+. The journey link (<code class="inline">#2E7DC1</code> on white) passes 4.5:1; the orange chevron is decorative (not relied upon for meaning).</li>
+          <li><strong>Reduced motion:</strong> the accordion durations (0.7–0.85s), the modal fade/slide (0.2–0.22s), and the CTA hover (0.3s) are all non-essential — apply the <code class="inline">prefers-reduced-motion</code> guard from <a href="#motion" style="color:#ed6b1f;font-weight:600;">§8.5</a>.</li>
           <li><strong>Form-only fields:</strong> if the CTA becomes a form submit, ensure the surrounding <code class="inline">&lt;form&gt;</code> exposes a meaningful <code class="inline">aria-label</code> (e.g. <em>"Subscribe to Internet 1G plan"</em>).</li>
         </ul>
       </section>

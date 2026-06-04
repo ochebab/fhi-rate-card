@@ -389,7 +389,7 @@
   <!-- Header -->
   <header class="doc-header">
     <div class="doc-header-inner">
-      <a href="../template.html" class="doc-header-back">
+      <a href="template.html" class="doc-header-back">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="15 18 9 12 15 6"/>
         </svg>
@@ -447,7 +447,7 @@
       <!-- 1. Overview -->
       <section id="overview">
         <h2><span class="num">1</span> Overview &amp; conventions</h2>
-        <p>This document is the single source of truth for the customer-facing behaviour of the FHI Internet rate card. It complements the <a href="instruction.html" style="color:#ed6b1f;font-weight:600;">developer documentation</a>: where the dev doc describes <em>how</em> to build, this one captures <em>why</em> and <em>for whom</em>.</p>
+        <p>This document is the single source of truth for the customer-facing behaviour of the FHI Internet rate card. It complements the <a href="instructions.html" style="color:#ed6b1f;font-weight:600;">developer documentation</a>: where the dev doc describes <em>how</em> to build, this one captures <em>why</em> and <em>for whom</em>.</p>
         <p>The reference implementation ships in <code class="inline">template.html</code> as a single-controller <strong>AngularJS 1.8.2</strong> module (<code class="inline">RateCardCtrl as vm</code>, payload bound to <code class="inline">vm.plan</code>). Every “Component” reference inside a story points at a CSS class in that file; every CMS-editable field maps to a single path on <code class="inline">vm.plan</code> documented in the dev guide.</p>
 
         <h3>How to read a story</h3>
@@ -676,23 +676,24 @@
               <span class="badge size-m">M</span>
             </div>
           </div>
-          <div class="story-title">Reveal the Price Journey on demand</div>
+          <div class="story-title">Open the Price Journey breakdown on demand</div>
           <div class="story-narrative">
             <em>As</em> Marc the skeptic,<br>
-            <em>I want</em> to expand a "See price journey" panel,<br>
-            <em>so that</em> I can review every price step from month 1 to the end of the promo without leaving the card.
+            <em>I want</em> to open a focused <em>See price journey</em> panel,<br>
+            <em>so that</em> I can review every price step from month 1 to the end of the promo without losing sight of the plan I’m considering.
           </div>
           <div class="ac-title">Acceptance criteria</div>
           <ul class="ac-list">
-            <li><strong class="gwt">Given</strong> the editor has enabled "Show Price Journey" in the CMS,</li>
-            <li><strong class="gwt">When</strong> a user taps or clicks the toggle bar,</li>
-            <li><strong class="gwt">Then</strong> the journey panel expands with a 0.3s max-height transition.</li>
-            <li><strong class="gwt">And</strong> the toggle's <code class="inline">aria-expanded</code> flips to <code class="inline">true</code>.</li>
-            <li><strong class="gwt">And</strong> the orange chevron arrow rotates 180°.</li>
-            <li><strong class="gwt">And</strong> the panel is closed by default on first render.</li>
+            <li><strong class="gwt">Given</strong> the editor has flipped “Show ‘See price journey’ link” ON in the CMS,</li>
+            <li><strong class="gwt">Then</strong> a blue underlined link with an orange chevron renders below the CTA.</li>
+            <li><strong class="gwt">When</strong> a user taps or clicks that link,</li>
+            <li><strong class="gwt">Then</strong> a modal opens with a dark backdrop (overlay fades over 0.2s; panel slides up 12px over 0.22s).</li>
+            <li><strong class="gwt">And</strong> the modal header echoes the plan badge (<em>e.g. “Internet 1G — Price journey”</em>); the body shows the same step timeline + summary banner authored in the CMS; the footer recaps the price and offers a duplicated CTA for one-click conversion.</li>
+            <li><strong class="gwt">And</strong> the modal can be closed by clicking ✕, the backdrop, or pressing <kbd>Escape</kbd>; the page behind the backdrop cannot scroll while it is open.</li>
+            <li><strong class="gwt">And</strong> the link is hidden by default on first render — it surfaces only when the editor enables it.</li>
           </ul>
           <div class="story-meta-row">
-            <span><strong>Component:</strong> <code class="inline">.breakdown-toggle</code> + <code class="inline">.price-journey</code></span>
+            <span><strong>Component:</strong> <code class="inline">.journey-link</code> → <code class="inline">.modal-overlay</code> + <code class="inline">.modal-panel</code></span>
             <span><strong>Persona:</strong> Marc</span>
           </div>
         </article>
@@ -780,6 +781,35 @@
           <div class="story-meta-row">
             <span><strong>Component:</strong> <code class="inline">.journey-header</code> + <code class="inline">.journey-savings</code></span>
             <span><strong>Persona:</strong> Marc</span>
+          </div>
+        </article>
+
+        <!-- B-05 -->
+        <article class="story">
+          <div class="story-head">
+            <span class="story-id">RC-B-05</span>
+            <div class="story-badges">
+              <span class="badge must">MUST</span>
+              <span class="badge size-s">S</span>
+            </div>
+          </div>
+          <div class="story-title">Keep card heights aligned in multi-card layouts</div>
+          <div class="story-narrative">
+            <em>As</em> a content designer placing several rate cards side by side,<br>
+            <em>I want</em> every card to reserve the same vertical space for the price-journey link,<br>
+            <em>so that</em> CTAs and legal notes line up across the row — even when only some plans have a journey configured.
+          </div>
+          <div class="ac-title">Acceptance criteria</div>
+          <ul class="ac-list">
+            <li><strong class="gwt">Given</strong> a row of N rate cards in which some plans have a journey and others do not,</li>
+            <li><strong class="gwt">Then</strong> the <code class="inline">.journey-link-row</code> is rendered on <em>every</em> card with <code class="inline">min-height: 36px</code> and <code class="inline">padding: 10px 20px 6px</code>.</li>
+            <li><strong class="gwt">And</strong> the link <code class="inline">&lt;button&gt;</code> inside the row is only emitted when <code class="inline">journey.enabled === true</code> (otherwise the row stays empty but reserved).</li>
+            <li><strong class="gwt">And</strong> the CTA top edge, journey-link row top edge, and legal note top edge are identical across every card in the row (± 1px sub-pixel rounding).</li>
+            <li><strong class="gwt">And</strong> the spacing rule survives a re-flow when an editor toggles a journey on or off without other layout shifts.</li>
+          </ul>
+          <div class="story-meta-row">
+            <span><strong>Component:</strong> <code class="inline">.journey-link-row</code> (reserved space) · see <code class="inline">rate-cards-demo.html</code> for the multi-card preview</span>
+            <span><strong>Persona:</strong> Christine (PO), Sophie (designer)</span>
           </div>
         </article>
       </section>
@@ -1027,9 +1057,9 @@
           <div class="ac-title">Acceptance criteria</div>
           <ul class="ac-list">
             <li><strong class="gwt">Given</strong> a keyboard,</li>
-            <li><strong class="gwt">Then</strong> tabbing visits the breakdown toggle, the features toggle, and the CTA in DOM order.</li>
+            <li><strong class="gwt">Then</strong> tabbing visits, in DOM order: the “What’s included” toggle, the CTA, and (when enabled) the “See price journey” link.</li>
             <li><strong class="gwt">And</strong> each focused element shows a visible focus ring of ≥ 2px with contrast ratio ≥ 3:1 against the background.</li>
-            <li><strong class="gwt">And</strong> pressing <code class="inline">Enter</code> or <code class="inline">Space</code> on a toggle expands / collapses its panel.</li>
+            <li><strong class="gwt">And</strong> pressing <code class="inline">Enter</code> or <code class="inline">Space</code> on the “What’s included” toggle expands / collapses its panel; pressing it on the journey link opens the modal (see <strong>RC-F-05</strong>).</li>
           </ul>
           <div class="story-meta-row">
             <span><strong>Standard:</strong> WCAG 2.1 — 2.1.1, 2.4.7</span>
@@ -1055,10 +1085,11 @@
           <div class="ac-title">Acceptance criteria</div>
           <ul class="ac-list">
             <li><strong class="gwt">Given</strong> VoiceOver / NVDA / TalkBack is active,</li>
-            <li><strong class="gwt">Then</strong> reading order is: badge → headline → original price → current price → savings → toggles → specs → features → CTA → legal.</li>
-            <li><strong class="gwt">And</strong> decorative SVGs declare <code class="inline">aria-hidden="true"</code> (chevron, sparkles, etc.).</li>
-            <li><strong class="gwt">And</strong> toggles announce <em>"collapsed" / "expanded"</em> via <code class="inline">aria-expanded</code>.</li>
-            <li><strong class="gwt">And</strong> the CTA's accessible name matches its visible label.</li>
+            <li><strong class="gwt">Then</strong> reading order is: badge → headline → original price → current price → savings → specs → “What’s included” toggle → CTA → (optional) “See price journey” link → legal.</li>
+            <li><strong class="gwt">And</strong> decorative SVGs declare <code class="inline">aria-hidden="true"</code> (chevron next to the link, summary icon, etc.).</li>
+            <li><strong class="gwt">And</strong> the “What’s included” toggle announces <em>“collapsed” / “expanded”</em> via <code class="inline">aria-expanded</code>.</li>
+            <li><strong class="gwt">And</strong> the price-journey link announces <em>“has pop-up dialog”</em> via <code class="inline">aria-haspopup="dialog"</code>.</li>
+            <li><strong class="gwt">And</strong> the CTA’s accessible name matches its visible label.</li>
           </ul>
           <div class="story-meta-row">
             <span><strong>Standard:</strong> WCAG 2.1 — 1.3.1, 4.1.2</span>
@@ -1117,6 +1148,41 @@
           <div class="story-meta-row">
             <span><strong>Standard:</strong> WCAG 2.1 — 1.4.3</span>
             <span><strong>Persona:</strong> Jean-Pierre</span>
+          </div>
+        </article>
+
+        <!-- F-05 -->
+        <article class="story">
+          <div class="story-head">
+            <span class="story-id">RC-F-05</span>
+            <div class="story-badges">
+              <span class="badge must">MUST</span>
+              <span class="badge size-l">L</span>
+            </div>
+          </div>
+          <div class="story-title">Operate the Price Journey modal without a mouse</div>
+          <div class="story-narrative">
+            <em>As</em> Aïcha (screen-reader user) and Jean-Pierre (keyboard-only user),<br>
+            <em>I want</em> the price-journey modal to behave like a proper dialog,<br>
+            <em>so that</em> I can open it, navigate its content, and close it without sight or a pointer.
+          </div>
+          <div class="ac-title">Acceptance criteria</div>
+          <ul class="ac-list">
+            <li><strong class="gwt">Given</strong> the journey link is rendered,</li>
+            <li><strong class="gwt">Then</strong> the link carries <code class="inline">aria-haspopup="dialog"</code> and <code class="inline">aria-controls="journeyModal"</code>.</li>
+            <li><strong class="gwt">And</strong> the modal uses <code class="inline">role="dialog"</code>, <code class="inline">aria-modal="true"</code>, and <code class="inline">aria-labelledby</code> pointing at its visible title.</li>
+            <li><strong class="gwt">When</strong> the link is activated (Enter, Space, or click),</li>
+            <li><strong class="gwt">Then</strong> focus moves to the ✕ close button within ~50ms.</li>
+            <li><strong class="gwt">And</strong> pressing <kbd>Escape</kbd> anywhere on the page closes the modal.</li>
+            <li><strong class="gwt">And</strong> clicking the backdrop closes the modal; clicking inside the panel does NOT.</li>
+            <li><strong class="gwt">When</strong> the modal closes,</li>
+            <li><strong class="gwt">Then</strong> focus returns to the link that opened it (the stored <code class="inline">lastTrigger</code>).</li>
+            <li><strong class="gwt">And</strong> the page behind the backdrop never scrolls while the modal is open (<code class="inline">body.style.overflow = 'hidden'</code> during the open state).</li>
+            <li><strong class="gwt">And</strong> the overlay’s <code class="inline">aria-hidden</code> attribute mirrors the closed state so assistive tech ignores the entire region when shut.</li>
+          </ul>
+          <div class="story-meta-row">
+            <span><strong>Standard:</strong> WCAG 2.1 — 2.1.1, 2.1.2, 2.4.3, 4.1.2 · WAI-ARIA Dialog pattern</span>
+            <span><strong>Persona:</strong> Aïcha, Jean-Pierre</span>
           </div>
         </article>
       </section>
@@ -1199,11 +1265,41 @@
           <ul class="ac-list">
             <li><strong class="gwt">Given</strong> viewport ≤ 480px,</li>
             <li><strong class="gwt">Then</strong> headline scales to 32px, hero amount to 48px.</li>
-            <li><strong class="gwt">And</strong> all 16px body text scales to 14px, including specs, features, CTA, and savings label.</li>
+            <li><strong class="gwt">And</strong> all 16px body text scales to 14px, including specs, features, CTA, savings label, and the “See price journey” link.</li>
             <li><strong class="gwt">And</strong> the legal note scales from 14px → 12px.</li>
           </ul>
           <div class="story-meta-row">
             <span><strong>Component:</strong> media query <code class="inline">@media (max-width: 480px)</code></span>
+            <span><strong>Persona:</strong> Sarah</span>
+          </div>
+        </article>
+
+        <!-- G-04 -->
+        <article class="story">
+          <div class="story-head">
+            <span class="story-id">RC-G-04</span>
+            <div class="story-badges">
+              <span class="badge must">MUST</span>
+              <span class="badge size-m">M</span>
+            </div>
+          </div>
+          <div class="story-title">Open the Price Journey as a bottom sheet on mobile</div>
+          <div class="story-narrative">
+            <em>As</em> Sarah on her phone,<br>
+            <em>I want</em> the price-journey modal to fill the bottom of my screen instead of floating in the middle,<br>
+            <em>so that</em> I can read the breakdown and reach the CTA with my thumb without stretching.
+          </div>
+          <div class="ac-title">Acceptance criteria</div>
+          <ul class="ac-list">
+            <li><strong class="gwt">Given</strong> a viewport ≤ 480px,</li>
+            <li><strong class="gwt">When</strong> the journey link is activated,</li>
+            <li><strong class="gwt">Then</strong> the <code class="inline">.modal-overlay</code> drops its 24px padding, aligns to <code class="inline">flex-end</code>, and the <code class="inline">.modal-panel</code> fills 100vh with a top radius of <code class="inline">20px 20px 0 0</code> (bottom-sheet feel).</li>
+            <li><strong class="gwt">And</strong> the modal body padding shrinks to <code class="inline">16px 18px 20px</code>; the footer CTA shrinks to <code class="inline">padding 12px 16px / font-size 14px</code> so the duplicated CTA stays within thumb reach.</li>
+            <li><strong class="gwt">And</strong> the page behind the backdrop cannot scroll while the modal is open (<code class="inline">body.style.overflow = 'hidden'</code> from §12.3 of the dev doc).</li>
+            <li><strong class="gwt">And</strong> the modal close behaviour stays identical to desktop: ✕, backdrop tap, or <kbd>Escape</kbd> (via on-screen keyboard chord).</li>
+          </ul>
+          <div class="story-meta-row">
+            <span><strong>Component:</strong> <code class="inline">.modal-overlay</code> / <code class="inline">.modal-panel</code> at <code class="inline">@media (max-width: 480px)</code></span>
             <span><strong>Persona:</strong> Sarah</span>
           </div>
         </article>
@@ -1216,7 +1312,7 @@
 
         <div class="callout info">
           <strong>Configurator = CMS admin panel</strong>
-          Every field visible in the live <a href="../template.html" style="color:#1e3a5f;font-weight:700;">Rate Card Builder</a> right-side panel should ship as a corresponding field in the CMS form. Field names, default values, and visibility toggles map 1:1.
+          Every field visible in the live <a href="template.html" style="color:#1e3a5f;font-weight:700;">Rate Card Builder</a> right-side panel should ship as a corresponding field in the CMS form. Field names, default values, and visibility toggles map 1:1.
         </div>
 
         <!-- H-01 -->
@@ -1237,7 +1333,7 @@
           <div class="ac-title">Acceptance criteria</div>
           <ul class="ac-list">
             <li><strong class="gwt">Given</strong> the CMS form,</li>
-            <li><strong class="gwt">Then</strong> editable fields exist for: badge, headline, regular price, current price, period, price note, savings label, journey label, journey title, savings-per-year, specs values + labels, CTA copy, legal note.</li>
+            <li><strong class="gwt">Then</strong> editable fields exist for: badge, headline, regular price, current price, period, price note, savings label, <em>“See price journey”</em> link text, journey title, savings-per-year (free-text), specs values + labels, CTA copy, legal note.</li>
             <li><strong class="gwt">And</strong> each field maps 1:1 to a stable path on the <code class="inline">vm.plan</code> model (full field map in the dev doc §12.7).</li>
             <li><strong class="gwt">And</strong> empty fields hide their associated element via the <code class="inline">.hidden-el</code> utility rather than rendering a blank.</li>
           </ul>
@@ -1293,9 +1389,10 @@
           <div class="ac-title">Acceptance criteria</div>
           <ul class="ac-list">
             <li><strong class="gwt">Given</strong> the CMS form,</li>
-            <li><strong class="gwt">Then</strong> toggles exist for: savings label, regular price, headline, internet specs (whole panel + specs title), legal note, and the entire Price Journey block.</li>
-            <li><strong class="gwt">And</strong> the Price Journey toggle defaults to <strong>OFF</strong> in production.</li>
-            <li><strong class="gwt">And</strong> turning a toggle off removes the element from the DOM (no empty space left).</li>
+            <li><strong class="gwt">Then</strong> toggles exist for: savings label, regular price, headline, internet specs (whole panel + specs title), legal note, and the <em>“See price journey”</em> link (which opens the modal).</li>
+            <li><strong class="gwt">And</strong> the journey link toggle (<code class="inline">journey.enabled</code>) defaults to <strong>OFF</strong> in production.</li>
+            <li><strong class="gwt">And</strong> turning the journey toggle off hides the link but the <code class="inline">.journey-link-row</code> stays in the DOM (reserved space) so multi-card layouts stay aligned — see <strong>RC-B-05</strong>.</li>
+            <li><strong class="gwt">And</strong> turning any <em>other</em> toggle off removes the corresponding element from the DOM (no empty space left).</li>
           </ul>
           <div class="story-meta-row">
             <span><strong>Persona:</strong> Pat</span>
@@ -1324,6 +1421,36 @@
             <li><strong class="gwt">And</strong> defaults follow the design tokens (badge <code class="inline">#17599C</code>, icons <code class="inline">#2E7DC1</code>, plus pill <code class="inline">#ed6b1f</code>).</li>
           </ul>
           <div class="story-meta-row">
+            <span><strong>Persona:</strong> Pat</span>
+          </div>
+        </article>
+
+        <!-- H-05 -->
+        <article class="story">
+          <div class="story-head">
+            <span class="story-id">RC-H-05</span>
+            <div class="story-badges">
+              <span class="badge should">SHOULD</span>
+              <span class="badge size-s">S</span>
+            </div>
+          </div>
+          <div class="story-title">Preview the Price Journey modal without leaving the editor</div>
+          <div class="story-narrative">
+            <em>As</em> Pat,<br>
+            <em>I want</em> a one-click “Preview modal” button inside the Price Journey configurator section,<br>
+            <em>so that</em> I can validate the breakdown copy + step layout I just edited without scrolling all the way down to the card and clicking the live link.
+          </div>
+          <div class="ac-title">Acceptance criteria</div>
+          <ul class="ac-list">
+            <li><strong class="gwt">Given</strong> the CMS / configurator “Price Journey” section is open,</li>
+            <li><strong class="gwt">Then</strong> a “👁️ Preview modal” button is rendered below the visibility toggle.</li>
+            <li><strong class="gwt">And</strong> the button is <code class="inline">disabled</code> when <code class="inline">journey.enabled === false</code> (you can’t preview what won’t render).</li>
+            <li><strong class="gwt">When</strong> Pat clicks the button,</li>
+            <li><strong class="gwt">Then</strong> the modal opens exactly as it would for an end-user (same <code class="inline">vm.openJourney()</code> entry point, same backdrop, same focus rules from <strong>RC-F-05</strong>).</li>
+            <li><strong class="gwt">And</strong> Pat can keep editing journey fields while the modal is open — every change reflects live thanks to two-way binding (no “Save to preview” step).</li>
+          </ul>
+          <div class="story-meta-row">
+            <span><strong>Component:</strong> <code class="inline">.data-io-btn[ng-click="vm.openJourney()"]</code> inside the Price Journey configurator section</span>
             <span><strong>Persona:</strong> Pat</span>
           </div>
         </article>

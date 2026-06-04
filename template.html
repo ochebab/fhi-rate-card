@@ -37,7 +37,7 @@
 
    Then replace the in-controller default model (`defaultPlan()`) with your CMS
    payload — every field maps 1-to-1 to a CMS-editable property. See the developer
-   docs at /template/instruction.html for the full CMS field map.
+   docs at instructions.html for the full CMS field map.
 
   ================================================================================
    ARCHITECTURE NOTES
@@ -161,6 +161,22 @@
     }
     .stories-btn:hover { background: #0d4d7a; transform: translateY(-1px); }
     .stories-btn svg   { width: 22px; height: 22px; stroke: #fff; fill: none; stroke-width: 2; }
+
+    /* ── Demo button (link to the multi-card rate-cards preview) ── */
+    .demo-btn {
+      position: fixed; top: 20px; right: 200px;
+      width: 48px; height: 48px;
+      background: #0d9488;
+      border: none; border-radius: 50%;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+      z-index: 200;
+      transition: background 0.2s, transform 0.2s;
+      text-decoration: none;
+    }
+    .demo-btn:hover { background: #0f766e; transform: translateY(-1px); }
+    .demo-btn svg   { width: 22px; height: 22px; stroke: #fff; fill: none; stroke-width: 2; }
 
     /* ── Configurator panel shell ── */
     .config-panel {
@@ -415,21 +431,31 @@
     }
 
     /* ── Top banner (optional "ribbon" tab above the header) ─── */
+    /* The banner sits BEHIND the card-header: extra bottom padding +
+       negative margin pulls the card-header up over the banner's
+       lower edge, so only the top "tab" portion of the banner is
+       visible (mirrors the screenshot reference). */
     .card-top-banner {
+      position: relative;
+      z-index: 1;
       background: #2E7DC1;
       color: #ffffff;
       font-size: 16px;
       font-weight: 600;
       text-align: center;
-      padding: 14px 20px;
+      padding: 14px 20px 34px;   /* 20px of bottom padding is hidden behind .card-header */
+      margin-bottom: -20px;
       letter-spacing: 0.2px;
       /* Top corners are clipped automatically by .pricing-card's
          overflow:hidden + border-radius:20px, so no own radius needed. */
     }
 
-    /* When the banner is present, give the header its own top radius
-       so the blue strip visibly wraps around the card-header. */
+    /* When the banner is present, the header sits ON TOP of the banner
+       with its own 20px top radius — same radius as the card itself —
+       producing the "tab behind" effect from the screenshot. */
     .card-top-banner + .card-header {
+      position: relative;
+      z-index: 2;
       border-top-left-radius: 20px;
       border-top-right-radius: 20px;
     }
@@ -682,6 +708,161 @@
       border-top: 1px solid #f0f0f0;
     }
 
+    /* ── Journey link (replaces the old accordion-style trigger) ───
+       Sits BELOW the CTA, above the legal note. .journey-link-row
+       holds the reserved space whether or not the link is rendered,
+       so cards stay aligned in a multi-card layout even when only
+       some plans have a price journey. */
+    .journey-link-row {
+      min-height: 36px;
+      padding: 10px 20px 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #fff;
+    }
+    .journey-link {
+      background: none;
+      border: 0;
+      padding: 4px 8px;
+      font-family: inherit;
+      font-size: 16px;
+      font-weight: 600;
+      color: #2E7DC1;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      text-decoration-thickness: 1px;
+      text-decoration-color: rgba(46, 125, 193, 0.5);
+      transition: color 0.2s, text-decoration-color 0.2s;
+    }
+    .journey-link:hover {
+      color: #136BA3;
+      text-decoration-color: currentColor;
+    }
+    .journey-link:focus-visible {
+      outline: 2px solid #2E7DC1;
+      outline-offset: 2px;
+      border-radius: 4px;
+    }
+    .journey-link .chev {
+      color: #ed6b1f;
+      font-size: 18px;
+      font-weight: 700;
+      line-height: 1;
+      transition: transform 0.2s;
+    }
+    .journey-link:hover .chev { transform: translateX(2px); }
+
+    /* ── Price-journey modal ───────────────────────────────
+       Opens when the user clicks .journey-link. Mirrors the modal
+       pattern used on /fhi/ for the TV-channels deep dive. */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(2px);
+      -webkit-backdrop-filter: blur(2px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 24px;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.2s ease, visibility 0.2s;
+    }
+    .modal-overlay.open { opacity: 1; visibility: visible; }
+
+    .modal-panel {
+      background: #fff;
+      border-radius: 20px;
+      width: 100%;
+      max-width: 560px;
+      max-height: 86vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transform: translateY(12px);
+      transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.35);
+    }
+    .modal-overlay.open .modal-panel { transform: translateY(0); }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 16px 14px 20px;
+      border-bottom: 1px solid #eef0f3;
+      background: #fff;
+    }
+    .modal-title {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 700;
+      color: #0a1628;
+      flex: 1;
+      min-width: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .modal-close {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: #f3f5f8;
+      border: none;
+      color: #0a1628;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center;
+      transition: background 0.15s, transform 0.15s;
+      padding: 0;
+      flex-shrink: 0;
+      font-family: inherit;
+    }
+    .modal-close:hover  { background: #e6eaf0; }
+    .modal-close:active { transform: scale(0.92); }
+
+    .modal-body {
+      padding: 20px 24px 24px;
+      overflow-y: auto;
+      flex: 1;
+    }
+    /* When the modal hosts the .price-journey block, drop the inner
+       padding it had when it lived inside the accordion. */
+    .modal-body .price-journey { padding: 0; }
+
+    .modal-footer {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 16px;
+      border-top: 1px solid #eef0f3;
+      background: #fff;
+    }
+    .modal-footer .recap {
+      display: flex; flex-direction: column;
+      flex: 1;
+      min-width: 0;
+    }
+    .modal-footer .recap-plan {
+      font-size: 14px; color: #6b7280;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .modal-footer .recap-price {
+      font-size: 18px; font-weight: 700; color: #0a1628;
+    }
+    .modal-footer .cta-button {
+      width: auto;
+      padding: 14px 22px;
+      font-size: 15px;
+      flex-shrink: 0;
+    }
+
 
     /* ============================================================
        §3.4  RESPONSIVE  (≤ 480px)
@@ -696,7 +877,9 @@
       .specs-title,
       .speed-item,
       .features-list li,
-      .cta-button       { font-size: 14px; }
+      .cta-button,
+      .journey-link     { font-size: 14px; }
+      .journey-link .chev { font-size: 16px; }
       .savings-label    { font-size: 12px; }
       .price-note       { font-size: 12px; }
       .plan-headline    { font-size: 32px !important; }
@@ -706,6 +889,17 @@
       .step-period,
       .step-subtext,
       .step-tag         { font-size: 12px; }
+
+      /* Modal becomes a full-screen bottom sheet on mobile */
+      .modal-overlay { padding: 0; align-items: flex-end; }
+      .modal-panel {
+        border-radius: 20px 20px 0 0;
+        max-width: 100%;
+        max-height: 100vh;
+        height: 100vh;
+      }
+      .modal-body   { padding: 16px 18px 20px; }
+      .modal-footer .cta-button { padding: 12px 16px; font-size: 14px; }
     }
   </style>
 </head>
@@ -726,8 +920,20 @@
        Drop this entire block when shipping the rate card.
        ============================================================ -->
 
+  <!-- Demo button → multi-card rate-cards preview -->
+  <a class="demo-btn" href="rate-cards-demo.html"
+     title="View multi-card demo" aria-label="Open the multi-card rate cards demo">
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
+         stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3"  y="3"  width="7" height="7" rx="1"/>
+      <rect x="14" y="3"  width="7" height="7" rx="1"/>
+      <rect x="3"  y="14" width="7" height="7" rx="1"/>
+      <rect x="14" y="14" width="7" height="7" rx="1"/>
+    </svg>
+  </a>
+
   <!-- Stories button → user-stories backlog -->
-  <a class="stories-btn" href="template/user-stories.html"
+  <a class="stories-btn" href="user-stories.html"
      title="Product user stories" aria-label="Open user stories">
     <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
          stroke-linecap="round" stroke-linejoin="round">
@@ -739,7 +945,7 @@
   </a>
 
   <!-- Docs button → developer instructions -->
-  <a class="docs-btn" href="template/instruction.html"
+  <a class="docs-btn" href="instructions.html"
      title="Developer instructions" aria-label="Open developer instructions">
     <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
          stroke-linecap="round" stroke-linejoin="round">
@@ -883,13 +1089,26 @@
         </button>
         <div class="config-section-content" ng-class="{hidden: !vm.ui.sections.journey}">
           <div class="toggle-field">
-            <label>Show Price Journey</label>
+            <label>Show "See price journey" link</label>
             <button class="toggle"
                     ng-class="{on: vm.plan.journey.enabled}"
                     ng-click="vm.plan.journey.enabled = !vm.plan.journey.enabled"></button>
           </div>
+          <p class="data-io-help" style="padding: 0 4px 8px;">
+            When enabled, a link appears below the CTA. Clicking it opens
+            a modal showing the steps configured below. The reserved row
+            stays present even when disabled, so multi-card layouts stay
+            aligned regardless of which plans expose a journey.
+          </p>
+          <button class="data-io-btn"
+                  style="margin-bottom: 12px;"
+                  ng-disabled="!vm.plan.journey.enabled"
+                  ng-click="vm.openJourney()"
+                  title="Preview the price-journey modal">
+            👁️ Preview modal
+          </button>
           <div class="field">
-            <label>Toggle label</label>
+            <label>Link text</label>
             <input type="text" ng-model="vm.plan.journey.toggleLabel">
           </div>
           <div class="field-row">
@@ -1271,60 +1490,6 @@
         </div>
       </div>
 
-      <!-- ── Price Journey accordion (hidden by default in production) ── -->
-      <div ng-if="vm.plan.journey.enabled">
-        <button class="breakdown-toggle"
-                ng-class="{active: vm.ui.journeyOpen}"
-                ng-click="vm.ui.journeyOpen = !vm.ui.journeyOpen"
-                ng-attr-aria-expanded="{{ vm.ui.journeyOpen }}">
-          <span>{{ vm.plan.journey.toggleLabel }}</span>
-          <span class="arrow"></span>
-        </button>
-        <div class="price-breakdown-section" ng-class="{open: vm.ui.journeyOpen}">
-          <div class="price-journey">
-
-            <!-- Header: title + savings indicator -->
-            <div class="journey-header">
-              <span class="journey-title">{{ vm.plan.journey.title }}</span>
-              <span class="journey-savings">
-                <svg class="savings-icon" viewBox="0 0 24 24" fill="none"
-                     xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                  <path d="M8 8H8.01M4.56274 2.93726L2.93726 4.56274C2.59136 4.90864 2.4184 5.0816 2.29472 5.28343C2.18506 5.46237 2.10425 5.65746 2.05526 5.86154C2 6.09171 2 6.3363 2 6.82548V9.67452C2 10.1637 2 10.4083 2.05526 10.6385C2.10425 10.8425 2.18506 11.0376 2.29472 11.2166C2.4184 11.4184 2.59135 11.5914 2.93726 11.9373L10.6059 19.6059C11.7939 20.7939 12.388 21.388 13.0729 21.6105C13.6755 21.8063 14.3245 21.8063 14.927 21.6105C15.612 21.388 16.2061 20.7939 17.3941 19.6059L19.6059 17.3941C20.7939 16.2061 21.388 15.612 21.6105 14.927C21.8063 14.3245 21.8063 13.6755 21.6105 13.0729C21.388 12.388 20.7939 11.7939 19.6059 10.6059L11.9373 2.93726C11.5914 2.59136 11.4184 2.4184 11.2166 2.29472C11.0376 2.18506 10.8425 2.10425 10.6385 2.05526C10.4083 2 10.1637 2 9.67452 2H6.82548C6.3363 2 6.09171 2 5.86154 2.05526C5.65746 2.10425 5.46237 2.18506 5.28343 2.29472C5.0816 2.4184 4.90865 2.59135 4.56274 2.93726ZM8.5 8C8.5 8.27614 8.27614 8.5 8 8.5C7.72386 8.5 7.5 8.27614 7.5 8C7.5 7.72386 7.72386 7.5 8 7.5C8.27614 7.5 8.5 7.72386 8.5 8Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                <span>{{ vm.plan.journey.savingsText }}</span>
-              </span>
-            </div>
-
-            <!-- Steps timeline: chevron + step (chevron skipped for first item) -->
-            <div class="journey-steps">
-              <span ng-repeat-start="step in vm.plan.journey.steps track by $index"
-                    ng-if="$index > 0"
-                    class="journey-chevron"
-                    aria-hidden="true">›</span>
-              <div ng-repeat-end class="journey-step" ng-class="vm.stepClass(step)">
-                <span class="step-tag" ng-if="step.tag">{{ step.tag }}</span>
-                <span class="step-period">{{ step.period }}</span>
-                <span class="step-price">{{ step.price }}</span>
-                <span class="step-subtext" ng-if="step.subtext">{{ step.subtext }}</span>
-              </div>
-            </div>
-
-            <!-- Summary banner (optional) -->
-            <div class="journey-summary"
-                 ng-class="{'hidden-el': !vm.plan.journey.summary.enabled}">
-              <svg class="summary-icon" viewBox="0 0 24 24" fill="none"
-                   stroke="currentColor" stroke-width="2"
-                   stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <circle cx="12" cy="12" r="10"/>
-                <line x1="12" y1="16" x2="12" y2="12"/>
-                <line x1="12" y1="8" x2="12.01" y2="8"/>
-              </svg>
-              <span>{{ vm.plan.journey.summary.text }}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <!-- ── Internet specs panel ── -->
       <div class="internet-specs" ng-class="{'hidden-el': !vm.plan.specs.enabled}">
         <div class="specs-title" ng-class="{'hidden-el': !vm.plan.specs.showTitle}">{{ vm.plan.specs.title }}</div>
@@ -1392,13 +1557,114 @@
         </div>
       </div>
 
-      <!-- ── CTA (always visible) ── -->
-      <div class="card-content" style="padding-top:16px;">
+      <!-- ── CTA (always visible) ──
+           NOTE: padding-bottom is dropped to 0 so the gap below the CTA
+           is owned by the .journey-link-row that follows (10px top).
+           This matches the spacing used on the multi-card demo page. -->
+      <div class="card-content" style="padding:16px 20px 0;">
         <button class="cta-button" ng-style="{background: vm.plan.cta.color}">{{ vm.plan.cta.label }}</button>
+      </div>
+
+      <!-- ── Price-journey link ──
+           Reserved row, rendered on EVERY card so plans with and without
+           a journey stay vertically aligned in a multi-card layout.
+           When vm.plan.journey.enabled is true, the link opens the modal
+           defined in §4c below. -->
+      <div class="journey-link-row">
+        <button class="journey-link"
+                type="button"
+                ng-if="vm.plan.journey && vm.plan.journey.enabled"
+                ng-click="vm.openJourney()"
+                aria-haspopup="dialog"
+                aria-controls="journeyModal">
+          <span>{{ vm.plan.journey.toggleLabel }}</span>
+          <span class="chev" aria-hidden="true">›</span>
+        </button>
       </div>
 
       <!-- ── Legal note ── -->
       <p class="legal-note" ng-class="{'hidden-el': !vm.plan.showLegal}">{{ vm.plan.legal }}</p>
+    </div>
+  </div>
+
+
+  <!-- ============================================================
+       §4c. PRICE JOURNEY MODAL          (PRODUCTION COMPONENT)
+       ------------------------------------------------------------
+       Opens when the user clicks the "See price journey" link under
+       the CTA. Dark backdrop + centred panel on desktop, full-screen
+       bottom-sheet on mobile. State lives on vm.ui.journeyModalOpen,
+       and the modal body re-uses the same .price-journey block the
+       accordion used to host.
+       ============================================================ -->
+  <div class="modal-overlay"
+       id="journeyModal"
+       ng-class="{open: vm.ui.journeyModalOpen}"
+       ng-click="vm.closeJourneyOnBackdrop($event)"
+       ng-attr-aria-hidden="{{ !vm.ui.journeyModalOpen }}">
+    <div class="modal-panel"
+         role="dialog"
+         aria-modal="true"
+         aria-labelledby="journeyModalTitle">
+
+      <header class="modal-header">
+        <h2 class="modal-title" id="journeyModalTitle">{{ vm.plan.badge }} — Price journey</h2>
+        <button class="modal-close" type="button" ng-click="vm.closeJourney()" aria-label="Close">✕</button>
+      </header>
+
+      <div class="modal-body">
+        <div class="price-journey" ng-if="vm.plan.journey">
+
+          <!-- Header: title + savings indicator -->
+          <div class="journey-header">
+            <span class="journey-title">{{ vm.plan.journey.title }}</span>
+            <span class="journey-savings">
+              <svg class="savings-icon" viewBox="0 0 24 24" fill="none"
+                   xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M8 8H8.01M4.56274 2.93726L2.93726 4.56274C2.59136 4.90864 2.4184 5.0816 2.29472 5.28343C2.18506 5.46237 2.10425 5.65746 2.05526 5.86154C2 6.09171 2 6.3363 2 6.82548V9.67452C2 10.1637 2 10.4083 2.05526 10.6385C2.10425 10.8425 2.18506 11.0376 2.29472 11.2166C2.4184 11.4184 2.59135 11.5914 2.93726 11.9373L10.6059 19.6059C11.7939 20.7939 12.388 21.388 13.0729 21.6105C13.6755 21.8063 14.3245 21.8063 14.927 21.6105C15.612 21.388 16.2061 20.7939 17.3941 19.6059L19.6059 17.3941C20.7939 16.2061 21.388 15.612 21.6105 14.927C21.8063 14.3245 21.8063 13.6755 21.6105 13.0729C21.388 12.388 20.7939 11.7939 19.6059 10.6059L11.9373 2.93726C11.5914 2.59136 11.4184 2.4184 11.2166 2.29472C11.0376 2.18506 10.8425 2.10425 10.6385 2.05526C10.4083 2 10.1637 2 9.67452 2H6.82548C6.3363 2 6.09171 2 5.86154 2.05526C5.65746 2.10425 5.46237 2.18506 5.28343 2.29472C5.0816 2.4184 4.90865 2.59135 4.56274 2.93726ZM8.5 8C8.5 8.27614 8.27614 8.5 8 8.5C7.72386 8.5 7.5 8.27614 7.5 8C7.5 7.72386 7.72386 7.5 8 7.5C8.27614 7.5 8.5 7.72386 8.5 8Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <span>{{ vm.plan.journey.savingsText }}</span>
+            </span>
+          </div>
+
+          <!-- Steps timeline -->
+          <div class="journey-steps">
+            <span ng-repeat-start="step in vm.plan.journey.steps track by $index"
+                  ng-if="$index > 0"
+                  class="journey-chevron"
+                  aria-hidden="true">›</span>
+            <div ng-repeat-end class="journey-step" ng-class="vm.stepClass(step)">
+              <span class="step-tag" ng-if="step.tag">{{ step.tag }}</span>
+              <span class="step-period">{{ step.period }}</span>
+              <span class="step-price">{{ step.price }}</span>
+              <span class="step-subtext" ng-if="step.subtext">{{ step.subtext }}</span>
+            </div>
+          </div>
+
+          <!-- Summary banner (optional) -->
+          <div class="journey-summary"
+               ng-class="{'hidden-el': !vm.plan.journey.summary.enabled}">
+            <svg class="summary-icon" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2"
+                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="16" x2="12" y2="12"/>
+              <line x1="12" y1="8" x2="12.01" y2="8"/>
+            </svg>
+            <span>{{ vm.plan.journey.summary.text }}</span>
+          </div>
+
+        </div>
+      </div>
+
+      <footer class="modal-footer">
+        <div class="recap">
+          <span class="recap-plan">{{ vm.plan.badge }}</span>
+          <span class="recap-price">${{ vm.plan.currentPrice }}{{ vm.plan.period }}</span>
+        </div>
+        <button class="cta-button" type="button" ng-style="{background: vm.plan.cta.color}">{{ vm.plan.cta.label }}</button>
+      </footer>
+
     </div>
   </div>
 
@@ -1481,9 +1747,9 @@
         'show.savings':           'boolean · Show / hide the savings badge.',
 
         /* Price Journey */
-        'journey.enabled':        'boolean · Render the Price Journey accordion at all.',
-        'journey.toggleLabel':    'string  · Text on the accordion toggle (e.g. "See price journey").',
-        'journey.title':          'string  · Optional title shown inside the accordion (empty = hidden).',
+        'journey.enabled':        'boolean · Render the "See price journey" link below the CTA. When true, the link opens a modal with the price-journey breakdown.',
+        'journey.toggleLabel':    'string  · Text on the price-journey link (e.g. "See price journey").',
+        'journey.title':          'string  · Optional title shown inside the price-journey modal (empty = hidden).',
         'journey.savingsText':    'string  · Optional headline inside the journey (e.g. "Save $240/year").',
         'journey.steps[].period':  'string  · Period label for a step (e.g. "Months 1-3").',
         'journey.steps[].price':   'string  · Price label for a step (e.g. "$39/mo" or "Free").',
@@ -1609,7 +1875,7 @@
        * ======================================================== */
       angular
         .module('fhiRateCard')
-        .controller('RateCardCtrl', ['$sce', '$timeout', function ($sce, $timeout) {
+        .controller('RateCardCtrl', ['$scope', '$sce', '$timeout', function ($scope, $sce, $timeout) {
 
           var vm = this;
 
@@ -1626,9 +1892,9 @@
            * closed by default (or move the two booleans up).
            * ---------------------------------------------------- */
           vm.ui = {
-            panelOpen:    false,   // configurator side-panel
-            journeyOpen:  false,   // Price Journey accordion
-            featuresOpen: false,   // What's included accordion
+            panelOpen:        false,   // configurator side-panel
+            journeyModalOpen: false,   // Price journey modal (was: accordion before §4c migration)
+            featuresOpen:     false,   // What's included accordion
             sections: {            // configurator collapsibles
               badge:    false,
               pricing:  false,
@@ -1681,6 +1947,65 @@
 
 
           /* ----------------------------------------------------
+           * Price-journey modal — open / close / Esc / backdrop.
+           *
+           * The modal markup lives in §4c and is driven by the
+           * boolean vm.ui.journeyModalOpen. lastTrigger remembers
+           * the focused element at open time so we can restore
+           * focus on close (a11y).
+           *
+           * This block is SAFE to ship in production — it has no
+           * dependency on the configurator. Only `setStatus` calls
+           * and `vm.resetAll` etc. below this point belong to the
+           * preview-only configurator.
+           * ---------------------------------------------------- */
+          var lastTrigger = null;
+
+          vm.openJourney = function () {
+            lastTrigger = document.activeElement;
+            vm.ui.journeyModalOpen = true;
+            // Move focus into the modal once Angular has rendered it
+            $timeout(function () {
+              var closeBtn = document.querySelector('#journeyModal .modal-close');
+              if (closeBtn) { closeBtn.focus(); }
+            }, 50);
+          };
+
+          vm.closeJourney = function () {
+            vm.ui.journeyModalOpen = false;
+            if (lastTrigger && typeof lastTrigger.focus === 'function') {
+              $timeout(function () { lastTrigger.focus(); });
+            }
+          };
+
+          vm.closeJourneyOnBackdrop = function ($event) {
+            // Only close when the click hits the overlay itself — not
+            // when it bubbles up from inside the panel.
+            if ($event.target === $event.currentTarget) {
+              vm.closeJourney();
+            }
+          };
+
+          // Esc closes the modal. Registered once on document; the
+          // guard on journeyModalOpen makes the handler a no-op when
+          // the modal isn't visible.
+          document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && vm.ui.journeyModalOpen) {
+              $scope.$evalAsync(vm.closeJourney);
+            }
+          });
+
+          // Lock body scroll while the modal is open so the page
+          // behind the backdrop doesn't scroll under the user's finger.
+          $scope.$watch(
+            function () { return vm.ui.journeyModalOpen; },
+            function (open) {
+              document.body.style.overflow = open ? 'hidden' : '';
+            }
+          );
+
+
+          /* ----------------------------------------------------
            * Configurator actions — preview-only.
            * Safe to delete in production.
            * ---------------------------------------------------- */
@@ -1716,8 +2041,8 @@
           // Restore every editable field — and re-close all UI
           vm.resetAll = function () {
             vm.plan = defaultPlan();
-            vm.ui.journeyOpen  = false;
-            vm.ui.featuresOpen = false;
+            vm.ui.journeyModalOpen = false;
+            vm.ui.featuresOpen     = false;
             setStatus('Plan reset to defaults.', 'info');
           };
 
